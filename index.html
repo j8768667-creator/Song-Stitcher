@@ -73,7 +73,10 @@
   .iconbtn{
     width:30px;height:26px;border-radius:6px;border:1px solid var(--line);background:var(--panel-2);
     color:var(--text);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    flex-shrink:0;
   }
+  .previewbtn{width:34px;height:34px;font-size:14px;}
+  .previewbtn:disabled{opacity:.35;}
   .iconbtn:active{background:var(--amber);color:#14161a;border-color:var(--amber);}
   .rmbtn{color:var(--red);border-color:var(--red);background:transparent;}
 
@@ -406,6 +409,29 @@ function ensureCtx(){
   return sharedCtx;
 }
 
+/* Blend the tail of a WAV buffer into its head with a short equal-power
+   crossfade so it loops with no click/pop at the seam. */
+function makeSeamlessLoopBuffer(buffer, fadeSec){
+  const sr = buffer.sampleRate;
+  const fadeSamples = Math.min(Math.floor(fadeSec*sr), Math.floor(buffer.length/4));
+  if(fadeSamples<8 || buffer.length<=fadeSamples*2) return buffer;
+  const newLen = buffer.length - fadeSamples;
+  const outCtx = ensureCtx();
+  const out = outCtx.createBuffer(buffer.numberOfChannels, newLen, sr);
+  for(let c=0;c<buffer.numberOfChannels;c++){
+    const src = buffer.getChannelData(c);
+    const dst = out.getChannelData(c);
+    for(let i=0;i<newLen;i++) dst[i]=src[i];
+    for(let i=0;i<fadeSamples;i++){
+      const x = i/fadeSamples;
+      const fadeIn = Math.sin(x*Math.PI/2);
+      const fadeOut = Math.cos(x*Math.PI/2);
+      dst[i] = dst[i]*fadeIn + src[newLen+i]*fadeOut;
+    }
+  }
+  return out;
+}
+
 async function analyzeFile(item){
   const buf = await item.file.arrayBuffer();
   const lower = item.file.name.toLowerCase();
@@ -422,8 +448,9 @@ async function analyzeFile(item){
     const audioBuffer = await ctx.decodeAudioData(buf.slice(0));
     const tempo = detectTempo(audioBuffer);
     const keyInfo = detectKeyAndCentroid(audioBuffer);
+    const loopBuffer = makeSeamlessLoopBuffer(audioBuffer, 0.015);
     Object.assign(item, {
-      type:'wav', tempo, duration: audioBuffer.duration, buffer: audioBuffer,
+      type:'wav', tempo, duration: audioBuffer.duration, buffer: audioBuffer, loopBuffer,
       key: keyInfo.key, mode: keyInfo.mode, pitchClass: keyInfo.pitchClass, centroid: keyInfo.centroid
     });
   }
@@ -481,13 +508,16 @@ function renderChannels(){
   items.forEach((item, idx)=>{
     const row = document.createElement('div');
     row.className='channel';
+    row.dataset.id = item.id;
     const stats = item.error
       ? '<span style="color:var(--red)">'+item.error+'</span>'
       : (item.tempo!==undefined
           ? '<b>'+item.tempo+' BPM</b> · <b>'+item.key+' '+item.mode+'</b> · '+fmtTime(item.duration)+' · '+item.type.toUpperCase()
           : 'analyzing…');
+    const canPreview = !item.error && item.tempo!==undefined;
     row.innerHTML = `
       <div class="num">${idx+1}</div>
+      <button class="iconbtn previewbtn" ${canPreview?'':'disabled'} title="Preview">▶</button>
       <div class="meta">
         <div class="name">${escapeHtml(item.name)}</div>
         <div class="stats">${stats}</div>
@@ -500,9 +530,22 @@ function renderChannels(){
     `;
     row.querySelector('.up').onclick=()=>{ moveItem(idx,-1); };
     row.querySelector('.down').onclick=()=>{ moveItem(idx,1); };
-    row.querySelector('.rmbtn').onclick=()=>{ items.splice(idx,1); renderChannels(); updateAfterAnalysis(); };
+    row.querySelector('.rmbtn').onclick=()=>{
+      if(previewItemId===item.id) stopPreview();
+      items.splice(idx,1); renderChannels(); updateAfterAnalysis();
+    };
+    if(canPreview){
+      row.querySelector('.previewbtn').onclick=(e)=>togglePreview(item, e.currentTarget);
+    }
     channelList.appendChild(row);
   });
+  // resync the preview button's label if a preview is still playing after a re-render
+  if(previewItemId!=null){
+    const row = channelList.querySelector('[data-id="'+previewItemId+'"]');
+    const btn = row && row.querySelector('.previewbtn');
+    if(btn){ btn.textContent='⏸'; previewBtnEl = btn; }
+    else stopPreview();
+  }
 }
 
 function moveItem(idx, dir){
@@ -510,6 +553,49 @@ function moveItem(idx, dir){
   if(j<0 || j>=items.length) return;
   const tmp = items[idx]; items[idx]=items[j]; items[j]=tmp;
   renderChannels(); renderReel();
+}
+
+/* ---------------------------------------------------------
+   SAMPLE PREVIEW (play / pause, one at a time)
+--------------------------------------------------------- */
+let previewSource = null;
+let previewItemId = null;
+let previewBtnEl = null;
+
+function stopPreview(){
+  if(previewSource){
+    try{ previewSource.onended=null; previewSource.stop(); }catch(e){}
+    try{ previewSource.disconnect(); }catch(e){}
+  }
+  previewSource = null;
+  previewItemId = null;
+  if(previewBtnEl) previewBtnEl.textContent='▶';
+  previewBtnEl = null;
+}
+
+async function togglePreview(item, btn){
+  if(previewItemId===item.id){ stopPreview(); return; }
+  stopPreview();
+  const ctx = ensureCtx();
+  let buffer;
+  if(item.type==='wav'){
+    buffer = item.buffer;
+  } else {
+    btn.textContent='…';
+    if(!item.previewBuffer){
+      item.previewBuffer = await renderMidiSegment(item, item.tempo, 0, item.duration+0.3, 44100);
+    }
+    buffer = item.previewBuffer;
+  }
+  const src = ctx.createBufferSource();
+  src.buffer = buffer;
+  src.connect(ctx.destination);
+  src.onended = ()=>{ if(previewSource===src) stopPreview(); };
+  previewSource = src;
+  previewItemId = item.id;
+  previewBtnEl = btn;
+  btn.textContent='⏸';
+  src.start();
 }
 
 function fmtTime(s){
@@ -624,6 +710,7 @@ function renderReel(){
 
 const resetBtn = document.getElementById('resetBtn');
 resetBtn.addEventListener('click', ()=>{
+  stopPreview();
   items = [];
   window.__userReordered = false;
   delete targetTempoInput.dataset.touched;
@@ -774,6 +861,9 @@ async function buildSong(order, targetTempo, targetPC, totalLengthRequested, cro
   const PPQ = 480;
   const secToTick = (s)=> s*(targetTempo/60)*PPQ;
 
+  const targetBeatLen = 60/targetTempo;
+  const targetBarLen = targetBeatLen*4;
+
   for(let i=0;i<n;i++){
     const item = order[i];
     const startTime = i*(segLen-crossfade);
@@ -781,10 +871,18 @@ async function buildSong(order, targetTempo, targetPC, totalLengthRequested, cro
     let segBuffer, playbackRate=1, detuneCents=0;
 
     if(item.type==='wav'){
-      playbackRate = Math.max(0.5, Math.min(2, targetTempo/item.tempo));
+      // Beat-matching: rather than trusting the detected BPM directly (rounding
+      // error there would drift over repeated loops), work out how many bars
+      // this clip most likely represents, then compute the exact stretch ratio
+      // that makes it fill precisely that many target-tempo bars. That locks
+      // every loop repeat to the beat grid with zero cumulative drift.
+      const sourceBarLen = 4*(60/item.tempo);
+      const estBars = Math.max(1, Math.round(item.duration/sourceBarLen));
+      playbackRate = item.duration/(estBars*targetBarLen);
+      playbackRate = Math.max(0.5, Math.min(2, playbackRate));
       const rateCents = 1200*Math.log2(playbackRate);
       detuneCents = semis*100 - rateCents;
-      segBuffer = item.buffer;
+      segBuffer = item.loopBuffer || item.buffer;
     } else {
       segBuffer = await renderMidiSegment(item, targetTempo, semis, segLen, sampleRate);
       const rateScale = item.tempo/targetTempo;
@@ -802,8 +900,12 @@ async function buildSong(order, targetTempo, targetPC, totalLengthRequested, cro
 
     const gainNode = ctx.createGain();
     gainNode.connect(master);
-    const fadeIn = i===0 ? 0 : crossfade;
-    const fadeOut = i===n-1 ? 0 : crossfade;
+    // Every segment gets a real fade, even the very first/last of the whole
+    // song — an instant 0-to-1 jump can still click if the source's first
+    // sample isn't at zero-crossing.
+    const edgeFade = Math.min(0.02, segLen*0.05);
+    const fadeIn = i===0 ? edgeFade : crossfade;
+    const fadeOut = i===n-1 ? edgeFade : crossfade;
     applyCrossfadeGain(gainNode, startTime, segLen, fadeIn, fadeOut);
 
     const src = ctx.createBufferSource();
@@ -900,6 +1002,7 @@ const midiNote = document.getElementById('midiNote');
 buildBtn.addEventListener('click', async ()=>{
   const ready = items.filter(i=>!i.error && i.tempo!==undefined);
   if(ready.length===0) return;
+  stopPreview();
   ensureCtx();
   buildBtn.disabled = true;
   buildStatus.classList.remove('err');
@@ -934,12 +1037,20 @@ buildBtn.addEventListener('click', async ()=>{
     dlLink.classList.remove('hidden');
 
     const hasMidiSource = ready.some(i=>i.type==='midi');
+    const hasWavSource = ready.some(i=>i.type==='wav');
     if(hasMidiSource && midiExportEvents.length){
       const midiBlob = buildMidiFile(midiExportEvents, targetTempo, ppq);
       const midiUrl = URL.createObjectURL(midiBlob);
       dlMidiLink.href = midiUrl;
       dlMidiLink.classList.remove('hidden');
-      if(ready.some(i=>i.type==='wav')) midiNote.classList.remove('hidden');
+      if(hasWavSource){
+        midiNote.textContent = 'Only the MIDI-sourced clips are included — WAV clips are audio, not note data, so they can\'t be represented in a MIDI file.';
+        midiNote.classList.remove('hidden');
+      }
+    } else {
+      dlMidiLink.classList.add('hidden');
+      midiNote.textContent = 'No MIDI download this time: this arrangement is built entirely from WAV files, which are audio (not note data), so there\'s nothing to write into a MIDI file. Load a .mid/.midi file to get a MIDI export alongside the WAV.';
+      midiNote.classList.remove('hidden');
     }
 
     buildStatus.textContent = 'Done — '+fmtTime(actualLength)+' @ '+targetTempo+' BPM, '+KEY_NAMES[targetPC]+' '+mode+'.';
