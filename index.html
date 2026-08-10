@@ -164,17 +164,17 @@
         <input type="checkbox" id="djFilter" checked style="width:16px;height:16px;"> DJ filter sweep on joins
       </label>
       <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);flex:1;min-width:150px;">
-        <input type="checkbox" id="rhythmPulse" checked style="width:16px;height:16px;"> Rhythmic pulse
+        <input type="checkbox" id="rhythmPulse" style="width:16px;height:16px;"> Rhythmic pulse (audible thump — off by default)
       </label>
     </div>
-    <p class="hint">"DJ filter sweep" rolls the highs/bass off the outgoing clip and opens them back up on the incoming one during each crossfade — like a DJ working the filter knob on a mix, rather than a flat volume fade. "Rhythmic pulse" adds a steady low beat at the target tempo under the whole song to hold the groove together.</p>
+    <p class="hint">"DJ filter sweep" rolls the highs/bass off the outgoing clip and opens them back up on the incoming one during each crossfade — like a DJ working the filter knob on a mix, rather than a flat volume fade. "Rhythmic pulse" adds a synthesized low thump on every beat under the whole song — it's audible on its own, not just a subtle glue, so it's off unless you want that effect.</p>
     <div class="row" style="margin-top:14px;">
       <div class="field">
         <label>Max pitch shift (semitones)</label>
-        <input type="number" id="maxShift" value="3" min="0" max="6" step="1">
+        <input type="number" id="maxShift" value="6" min="0" max="6" step="1">
       </div>
     </div>
-    <p class="hint">Clips get retuned toward the target key with the file's own playback speed — past a few semitones that starts sounding artificial/robotic rather than musical. Clips that would need a bigger shift than this are capped at this limit instead of being forced fully into key, so they still sound natural.</p>
+    <p class="hint">Left at 6 (full range) clips get retuned exactly onto the target key. Turning this down makes big shifts sound less robotic, but a partial correction can leave two overlapping clips slightly out of tune with each other during a crossfade, which is more jarring than either an exact match or no correction — so only lower it if a specific clip sounds artificial, and consider 0 (no retuning) over a middle value.</p>
   </section>
 
 
