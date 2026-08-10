@@ -161,14 +161,22 @@
     <p class="hint">Auto-filled from what Splice Deck heard across your files — tweak either field if you want to steer it. Order below sets the sequence; reorder with the arrows. Segment and crossfade lengths snap to whole bars at the target tempo so transitions land on a downbeat instead of an arbitrary point.</p>
     <div class="row" style="margin-top:14px;">
       <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);flex:1;min-width:150px;">
-        <input type="checkbox" id="gluePad" checked style="width:16px;height:16px;"> Sustained glue pad
+        <input type="checkbox" id="djFilter" checked style="width:16px;height:16px;"> DJ filter sweep on joins
       </label>
       <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);flex:1;min-width:150px;">
         <input type="checkbox" id="rhythmPulse" checked style="width:16px;height:16px;"> Rhythmic pulse
       </label>
     </div>
-    <p class="hint">These add a soft continuous drone in the target key and a steady low pulse at the target tempo underneath the whole song, so the spliced clips feel like one track instead of samples taking turns. Turn off either if you'd rather hear the clips alone.</p>
+    <p class="hint">"DJ filter sweep" rolls the highs/bass off the outgoing clip and opens them back up on the incoming one during each crossfade — like a DJ working the filter knob on a mix, rather than a flat volume fade. "Rhythmic pulse" adds a steady low beat at the target tempo under the whole song to hold the groove together.</p>
+    <div class="row" style="margin-top:14px;">
+      <div class="field">
+        <label>Max pitch shift (semitones)</label>
+        <input type="number" id="maxShift" value="3" min="0" max="6" step="1">
+      </div>
+    </div>
+    <p class="hint">Clips get retuned toward the target key with the file's own playback speed — past a few semitones that starts sounding artificial/robotic rather than musical. Clips that would need a bigger shift than this are capped at this limit instead of being forced fully into key, so they still sound natural.</p>
   </section>
+
 
   <section id="buildSection" class="hidden">
     <h2>03 · Build</h2>
@@ -765,33 +773,30 @@ function applyCrossfadeGain(gainNode, startTime, segLen, fadeIn, fadeOut){
   }
 }
 
-/* A soft sustained drone (root + fifth, low-passed, gentle swell) running
-   under the whole song — this is what stops a sequence of crossfaded clips
-   from sounding like isolated samples taking turns. */
-function addGluePad(ctx, master, targetPC, totalLength){
-  const rootFreq = 440*Math.pow(2, (48+targetPC-69)/12);
-  const fifthFreq = 440*Math.pow(2, (48+targetPC+7-69)/12);
-  const filter = ctx.createBiquadFilter();
-  filter.type='lowpass'; filter.frequency.value=900; filter.Q.value=0.6;
-  filter.connect(master);
-  [rootFreq, fifthFreq].forEach((f,idx)=>{
-    const osc = ctx.createOscillator();
-    osc.type='sine'; osc.frequency.value=f;
-    const g = ctx.createGain();
-    const base = idx===0 ? 0.07 : 0.045;
-    const attack = Math.min(3, totalLength*0.2);
-    const release = Math.min(3, totalLength*0.2);
-    const midDur = Math.max(0.1, totalLength-attack-release);
-    g.gain.setValueAtTime(0.0001, 0);
-    g.gain.linearRampToValueAtTime(base, attack);
-    const points = 40;
-    const curve = new Float32Array(points);
-    for(let i=0;i<points;i++) curve[i] = base*(0.7+0.3*Math.sin(i/points*Math.PI*4+idx));
-    g.gain.setValueCurveAtTime(curve, attack, midDur);
-    g.gain.linearRampToValueAtTime(0.0001, totalLength);
-    osc.connect(g); g.connect(filter);
-    osc.start(0); osc.stop(totalLength+0.05);
-  });
+/* DJ-style filter sweep: instead of (or alongside) a flat volume crossfade,
+   roll a lowpass filter closed on the outgoing clip as it fades and open it
+   back up on the incoming clip as it arrives — the "filter knob" move DJs
+   use so a transition sounds like a deliberate blend rather than a hard cut
+   softened by volume alone. */
+function applyTransitionFilter(filterNode, startTime, segLen, fadeIn, fadeOut){
+  const OPEN = 19000, CLOSED = 350;
+  filterNode.type = 'lowpass';
+  filterNode.Q.value = 0.6;
+  const eps = 0.0005;
+  if(fadeIn>0){
+    filterNode.frequency.setValueAtTime(CLOSED, startTime);
+    filterNode.frequency.exponentialRampToValueAtTime(OPEN, startTime+fadeIn);
+  } else {
+    filterNode.frequency.setValueAtTime(OPEN, startTime);
+  }
+  const sustainStart = startTime+fadeIn+(fadeIn>0?eps:0);
+  const fadeOutStart = Math.max(sustainStart, startTime+segLen-fadeOut);
+  filterNode.frequency.setValueAtTime(OPEN, sustainStart);
+  if(fadeOutStart>sustainStart) filterNode.frequency.setValueAtTime(OPEN, fadeOutStart);
+  if(fadeOut>0){
+    filterNode.frequency.setValueAtTime(OPEN, fadeOutStart+eps);
+    filterNode.frequency.exponentialRampToValueAtTime(CLOSED, startTime+segLen);
+  }
 }
 
 /* A steady low pulse at the target tempo — a shared heartbeat that glues
@@ -867,7 +872,9 @@ async function buildSong(order, targetTempo, targetPC, totalLengthRequested, cro
   for(let i=0;i<n;i++){
     const item = order[i];
     const startTime = i*(segLen-crossfade);
-    const semis = semitoneDiff(item.pitchClass, targetPC);
+    let semis = semitoneDiff(item.pitchClass, targetPC);
+    const cap = Number.isFinite(opts.maxShift) ? opts.maxShift : 3;
+    semis = Math.max(-cap, Math.min(cap, semis));
     let segBuffer, playbackRate=1, detuneCents=0;
 
     if(item.type==='wav'){
@@ -908,9 +915,17 @@ async function buildSong(order, targetTempo, targetPC, totalLengthRequested, cro
     const fadeOut = i===n-1 ? edgeFade : crossfade;
     applyCrossfadeGain(gainNode, startTime, segLen, fadeIn, fadeOut);
 
+    let chainInput = gainNode;
+    if(opts.djFilter){
+      const filterNode = ctx.createBiquadFilter();
+      applyTransitionFilter(filterNode, startTime, segLen, i===0?0:crossfade, i===n-1?0:crossfade);
+      filterNode.connect(gainNode);
+      chainInput = filterNode;
+    }
+
     const src = ctx.createBufferSource();
     src.buffer = segBuffer;
-    src.connect(gainNode);
+    src.connect(chainInput);
     if(item.type==='wav'){
       src.playbackRate.value = playbackRate;
       src.detune.value = detuneCents;
@@ -923,7 +938,6 @@ async function buildSong(order, targetTempo, targetPC, totalLengthRequested, cro
     if(onProgress) onProgress((i+1)/(n+2));
   }
 
-  if(opts.gluePad) addGluePad(ctx, master, targetPC, totalLength);
   if(opts.rhythmPulse) addRhythmPulse(ctx, master, targetPC, targetTempo, totalLength);
   if(onProgress) onProgress((n+1)/(n+2));
 
@@ -1021,8 +1035,9 @@ buildBtn.addEventListener('click', async ()=>{
     const [pcStr, mode] = targetKeySelect.value.split('-');
     const targetPC = Number(pcStr);
     const opts = {
-      gluePad: document.getElementById('gluePad').checked,
-      rhythmPulse: document.getElementById('rhythmPulse').checked
+      rhythmPulse: document.getElementById('rhythmPulse').checked,
+      djFilter: document.getElementById('djFilter').checked,
+      maxShift: Number(document.getElementById('maxShift').value)
     };
 
     const {rendered, midiExportEvents, ppq, actualLength} = await buildSong(
