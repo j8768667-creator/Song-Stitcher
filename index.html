@@ -598,7 +598,7 @@ function renderChannels(){
       }
       row.querySelector('.layerSelect').addEventListener('change', (e)=>{
         const val = e.target.value;
-        item.layerTarget = val || undefined;
+        item.layerTarget = val ? Number(val) : undefined;
         if(item.layerTarget){
           // this clip is no longer a valid host for others — anything that
           // was layering onto it reverts to its own sequential segment
