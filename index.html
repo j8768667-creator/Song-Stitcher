@@ -432,6 +432,46 @@ function ensureCtx(){
   return sharedCtx;
 }
 
+/* Finds the strongest transient near the start of a clip (within the first
+   ~4s) so playback — and every loop repeat — can begin exactly on that
+   beat instead of at sample 0, which might be lead-in silence or land
+   mid-bar. Beat-matching alone only locks tempo (speed); this is what
+   locks phase (where the downbeat falls) so multiple layered clips'
+   beats actually coincide instead of just running at the same speed. */
+function detectFirstStrongOnset(buffer){
+  const sr = buffer.sampleRate;
+  const data = buffer.getChannelData(0);
+  const hop = 512;
+  const scanSamples = Math.min(data.length, sr*4);
+  const frames = Math.floor(scanSamples/hop);
+  if(frames<4) return 0;
+  const energy = new Float32Array(frames);
+  for(let i=0;i<frames;i++){
+    let sum=0; const base=i*hop;
+    for(let j=0;j<hop;j++){ const s=data[base+j]||0; sum+=s*s; }
+    energy[i]=Math.sqrt(sum/hop);
+  }
+  const onset = new Float32Array(frames);
+  for(let i=1;i<frames;i++) onset[i]=Math.max(0, energy[i]-energy[i-1]);
+  let bestIdx=0, bestVal=-Infinity;
+  for(let i=0;i<frames;i++){ if(onset[i]>bestVal){ bestVal=onset[i]; bestIdx=i; } }
+  return Math.max(0, (bestIdx*hop)/sr - 0.008);
+}
+
+function trimToOnset(buffer, onsetSec){
+  const sr = buffer.sampleRate;
+  const startSample = Math.min(buffer.length-1, Math.round(onsetSec*sr));
+  if(startSample<8) return buffer;
+  const newLen = buffer.length-startSample;
+  if(newLen < sr*0.2) return buffer;
+  const outCtx = ensureCtx();
+  const out = outCtx.createBuffer(buffer.numberOfChannels, newLen, sr);
+  for(let c=0;c<buffer.numberOfChannels;c++){
+    out.getChannelData(c).set(buffer.getChannelData(c).subarray(startSample));
+  }
+  return out;
+}
+
 /* Blend the tail of a WAV buffer into its head with a short equal-power
    crossfade so it loops with no click/pop at the seam. */
 function makeSeamlessLoopBuffer(buffer, fadeSec){
@@ -471,9 +511,12 @@ async function analyzeFile(item){
     const audioBuffer = await ctx.decodeAudioData(buf.slice(0));
     const tempo = detectTempo(audioBuffer);
     const keyInfo = detectKeyAndCentroid(audioBuffer);
-    const loopBuffer = makeSeamlessLoopBuffer(audioBuffer, 0.015);
+    const onsetOffset = detectFirstStrongOnset(audioBuffer);
+    const trimmed = trimToOnset(audioBuffer, onsetOffset);
+    const loopBuffer = makeSeamlessLoopBuffer(trimmed, 0.015);
     Object.assign(item, {
-      type:'wav', tempo, duration: audioBuffer.duration, buffer: audioBuffer, loopBuffer,
+      type:'wav', tempo, duration: audioBuffer.duration, loopDuration: trimmed.duration,
+      buffer: audioBuffer, loopBuffer,
       key: keyInfo.key, mode: keyInfo.mode, pitchClass: keyInfo.pitchClass, centroid: keyInfo.centroid
     });
   }
@@ -711,6 +754,31 @@ function computeTimingPerItem(order, totalLengthRequested, crossfadeRequested, t
   return {segLens, starts, crossfade, totalLength, barLen, beatLen};
 }
 
+/* Autocorrelation tempo detection can lock onto a subdivision or syncopation
+   instead of the real beat (e.g. reporting 161 BPM for something that's
+   actually 120 BPM but has a strong dotted/triplet feel). A clip whose
+   tempo is way off from the rest of the group, but close to a simple ratio
+   of the group's tempo, is far more likely a misdetection than a genuinely
+   unrelated tempo — snap it, since leaving it wrong silently wrecks beat
+   alignment for anything layered against it. */
+function refineTempoOutliers(readyItems){
+  if(readyItems.length<2) return;
+  const sorted = readyItems.map(i=>i.tempo).sort((a,b)=>a-b);
+  const roughMedian = sorted[Math.floor(sorted.length/2)];
+  const ratios = [2/3, 3/4, 4/5, 1, 5/4, 4/3, 3/2, 2];
+  readyItems.forEach(item=>{
+    const r = item.tempo/roughMedian;
+    let best=null, bestDiff=0.06; // within 6% of a simple ratio
+    for(const cand of ratios){
+      const diff = Math.abs(r-cand)/cand;
+      if(diff<bestDiff){ bestDiff=diff; best=cand; }
+    }
+    if(best!==null && best!==1){
+      item.tempo = Math.round(roughMedian*best);
+    }
+  });
+}
+
 function updateAfterAnalysis(){
   const ready = items.filter(i=>!i.error && i.tempo!==undefined);
   if(ready.length===0){
@@ -720,6 +788,8 @@ function updateAfterAnalysis(){
     renderReel();
     return;
   }
+  refineTempoOutliers(ready);
+  renderChannels();
   // default order: ascending brightness (centroid) for a gentle arc
   if(!window.__userReordered){
     items.sort((a,b)=>{
@@ -964,10 +1034,14 @@ async function scheduleClip(ctx, master, item, startTime, segLen, fadeIn, fadeOu
     // error there would drift over repeated loops), work out how many bars
     // this clip most likely represents, then compute the exact stretch ratio
     // that makes it fill precisely that many target-tempo bars. That locks
-    // every loop repeat to the beat grid with zero cumulative drift.
+    // every loop repeat to the beat grid with zero cumulative drift. Uses
+    // the onset-trimmed loop length (what's actually being looped), not the
+    // raw file length, since lead-in before the first beat would otherwise
+    // throw the bar-count estimate off.
+    const loopDur = item.loopDuration || item.duration;
     const sourceBarLen = 4*(60/item.tempo);
-    const estBars = Math.max(1, Math.round(item.duration/sourceBarLen));
-    playbackRate = item.duration/(estBars*targetBarLen);
+    const estBars = Math.max(1, Math.round(loopDur/sourceBarLen));
+    playbackRate = loopDur/(estBars*targetBarLen);
     playbackRate = Math.max(0.5, Math.min(2, playbackRate));
     const rateCents = 1200*Math.log2(playbackRate);
     detuneCents = semis*100 - rateCents;
@@ -1004,6 +1078,18 @@ async function scheduleClip(ctx, master, item, startTime, segLen, fadeIn, fadeOu
     applyTransitionFilter(filterNode, startTime, segLen, fadeIn, fadeOut);
     filterNode.connect(gainNode);
     chainInput = filterNode;
+  }
+  if(gainScale!==1){
+    // Stacking multiple full loops piles up low end fast (multiple
+    // basslines/kicks in the same range reads as "muddy"). Only the
+    // primary clip keeps its full low end; layered clips get a gentle
+    // permanent high-pass so they sit around it instead of fighting it.
+    const carveNode = ctx.createBiquadFilter();
+    carveNode.type = 'highpass';
+    carveNode.frequency.value = 160;
+    carveNode.Q.value = 0.5;
+    carveNode.connect(chainInput);
+    chainInput = carveNode;
   }
 
   const src = ctx.createBufferSource();
