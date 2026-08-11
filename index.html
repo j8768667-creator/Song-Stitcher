@@ -61,10 +61,12 @@
   input[type=file]{display:none;}
 
   .channel{
-    display:flex;align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid var(--line);
+    padding:10px 8px;border-bottom:1px solid var(--line);
   }
   .channel:last-child{border-bottom:none;}
-  .channel .num{font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:11px;width:16px;flex-shrink:0;}
+  .chRow1{display:flex;align-items:center;gap:10px;}
+  .chRow2{display:flex;align-items:center;gap:8px;margin-top:8px;padding-left:60px;}
+  .channel .num{font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:13px;width:16px;flex-shrink:0;text-align:center;}
   .channel .meta{flex:1;min-width:0;}
   .channel .name{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .channel .stats{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px;}
@@ -75,6 +77,7 @@
     color:var(--text);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;
     flex-shrink:0;
   }
+  .iconbtn:disabled{opacity:.25;cursor:default;}
   .previewbtn{width:34px;height:34px;font-size:14px;}
   .previewbtn:disabled{opacity:.35;}
   .lenInput{
@@ -84,6 +87,11 @@
   }
   .lenInput:focus{outline:none;border-color:var(--amber);}
   .lenInput::placeholder{color:var(--muted);}
+  .layerSelect{
+    flex:1;min-width:0;padding:7px 6px;border-radius:6px;border:1px solid var(--line);
+    background:var(--panel-2);color:var(--text);font-size:12px;font-family:'Space Grotesk',sans-serif;
+  }
+  .layerSelect:focus{outline:none;border-color:var(--amber);}
   .iconbtn:active{background:var(--amber);color:#14161a;border-color:var(--amber);}
   .rmbtn{color:var(--red);border-color:var(--red);background:transparent;}
 
@@ -165,7 +173,7 @@
         <select id="targetKey"></select>
       </div>
     </div>
-    <p class="hint">Auto-filled from what Splice Deck heard across your files — tweak either field if you want to steer it. Order below sets the sequence; reorder with the arrows. Each clip also has a length field (seconds) in step 01 — leave it blank for an equal automatic share of the song, or set a number to pin that clip's length; the remaining clips split whatever time is left. Segment and crossfade lengths snap to whole bars at the target tempo so transitions land on a downbeat instead of an arbitrary point.</p>
+    <p class="hint">Auto-filled from what Splice Deck heard across your files — tweak either field if you want to steer it. Order below sets the sequence; reorder with the arrows. Each clip also has a length field (seconds) in step 01 — leave it blank for an equal automatic share of the song, or set a number to pin that clip's length; the remaining clips split whatever time is left. Every clip can also be set to "Layer onto" another clip instead of taking its own segment — it then plays simultaneously with that clip, sharing its timing and crossfades, rather than one-after-the-other. Segment and crossfade lengths snap to whole bars at the target tempo so transitions land on a downbeat instead of an arbitrary point.</p>
     <div class="row" style="margin-top:14px;">
       <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);flex:1;min-width:150px;">
         <input type="checkbox" id="djFilter" checked style="width:16px;height:16px;"> DJ filter sweep on joins
@@ -520,6 +528,10 @@ fileInput.addEventListener('change', async (e)=>{
 
 function renderChannels(){
   channelList.innerHTML='';
+  let primaryCounter = 0;
+  const primaryIndexById = {};
+  items.forEach(it=>{ if(!it.layerTarget){ primaryCounter++; primaryIndexById[it.id]=primaryCounter; } });
+
   items.forEach((item, idx)=>{
     const row = document.createElement('div');
     row.className='channel';
@@ -530,33 +542,69 @@ function renderChannels(){
           ? '<b>'+item.tempo+' BPM</b> · <b>'+item.key+' '+item.mode+'</b> · '+fmtTime(item.duration)+' · '+item.type.toUpperCase()
           : 'analyzing…');
     const canPreview = !item.error && item.tempo!==undefined;
+    const isLayer = !!item.layerTarget;
+    const numLabel = isLayer ? '↳' : (primaryIndexById[item.id]||'');
     const lenVal = item.customLen>0 ? item.customLen : '';
+
+    let row2 = '';
+    if(canPreview){
+      const candidates = items.filter(o=> o.id!==item.id && !o.layerTarget && !o.error && o.tempo!==undefined);
+      let selectHtml = '<option value="">Sequential (own segment)</option>';
+      candidates.forEach(c=>{
+        selectHtml += `<option value="${c.id}" ${item.layerTarget===c.id?'selected':''}>Layer onto: ${escapeHtml(c.name)}</option>`;
+      });
+      const lenControl = isLayer
+        ? '<span class="hint" style="margin:0;flex:1;">plays for the length of its host clip</span>'
+        : `<input type="number" class="lenInput" min="1" step="1" placeholder="auto" value="${lenVal}" title="Length in seconds for this clip (blank = auto)">`;
+      row2 = `
+      <div class="chRow2">
+        ${lenControl}
+        <select class="layerSelect" title="Play simultaneously with another clip instead of its own segment">${selectHtml}</select>
+      </div>`;
+    }
+
     row.innerHTML = `
-      <div class="num">${idx+1}</div>
-      <button class="iconbtn previewbtn" ${canPreview?'':'disabled'} title="Preview">▶</button>
-      <div class="meta">
-        <div class="name">${escapeHtml(item.name)}</div>
-        <div class="stats">${stats}</div>
+      <div class="chRow1">
+        <div class="num">${numLabel}</div>
+        <button class="iconbtn previewbtn" ${canPreview?'':'disabled'}title="Preview">▶</button>
+        <div class="meta">
+          <div class="name">${escapeHtml(item.name)}</div>
+          <div class="stats">${stats}</div>
+        </div>
+        <div class="ord">
+          <button class="iconbtn up" ${isLayer?'disabled':''}>▲</button>
+          <button class="iconbtn down" ${isLayer?'disabled':''}>▼</button>
+        </div>
+        <button class="iconbtn rmbtn">✕</button>
       </div>
-      ${canPreview ? `<input type="number" class="lenInput" min="1" step="1" placeholder="auto" value="${lenVal}" title="Length in seconds for this clip (blank = auto)">` : ''}
-      <div class="ord">
-        <button class="iconbtn up" ${idx===0?'disabled':''}>▲</button>
-        <button class="iconbtn down" ${idx===items.length-1?'disabled':''}>▼</button>
-      </div>
-      <button class="iconbtn rmbtn">✕</button>
+      ${row2}
     `;
     row.querySelector('.up').onclick=()=>{ moveItem(idx,-1); };
     row.querySelector('.down').onclick=()=>{ moveItem(idx,1); };
     row.querySelector('.rmbtn').onclick=()=>{
       if(previewItemId===item.id) stopPreview();
+      items.forEach(o=>{ if(o.layerTarget===item.id) o.layerTarget=undefined; });
       items.splice(idx,1); renderChannels(); updateAfterAnalysis();
     };
     if(canPreview){
       row.querySelector('.previewbtn').onclick=(e)=>togglePreview(item, e.currentTarget);
-      row.querySelector('.lenInput').addEventListener('input', (e)=>{
-        const v = Number(e.target.value);
-        item.customLen = v>0 ? v : undefined;
-        renderReel();
+      const lenInput = row.querySelector('.lenInput');
+      if(lenInput){
+        lenInput.addEventListener('input', (e)=>{
+          const v = Number(e.target.value);
+          item.customLen = v>0 ? v : undefined;
+          renderReel();
+        });
+      }
+      row.querySelector('.layerSelect').addEventListener('change', (e)=>{
+        const val = e.target.value;
+        item.layerTarget = val || undefined;
+        if(item.layerTarget){
+          // this clip is no longer a valid host for others — anything that
+          // was layering onto it reverts to its own sequential segment
+          items.forEach(other=>{ if(other.layerTarget===item.id) other.layerTarget=undefined; });
+        }
+        renderChannels(); renderReel();
       });
     }
     channelList.appendChild(row);
@@ -571,7 +619,9 @@ function renderChannels(){
 }
 
 function moveItem(idx, dir){
-  const j = idx+dir;
+  if(items[idx].layerTarget) return;
+  let j = idx+dir;
+  while(j>=0 && j<items.length && items[j].layerTarget) j+=dir;
   if(j<0 || j>=items.length) return;
   const tmp = items[idx]; items[idx]=items[j]; items[j]=tmp;
   renderChannels(); renderReel();
@@ -717,8 +767,9 @@ function parseLength(str){
 
 function renderReel(){
   const ready = items.filter(i=>!i.error && i.tempo!==undefined);
+  const primaries = ready.filter(i=>!i.layerTarget);
   const reelStatus = document.getElementById('reelStatus');
-  if(ready.length===0){
+  if(primaries.length===0){
     reel.innerHTML = '<div class="empty">— no files loaded —</div>';
     reelStatus.textContent='';
     return;
@@ -726,17 +777,18 @@ function renderReel(){
   const totalLengthRequested = parseLength(document.getElementById('songLength').value);
   const crossfadeRequested = Number(document.getElementById('crossfade').value)||0;
   const targetTempo = Number(targetTempoInput.value) || 120;
-  const n = ready.length;
-  const {segLens, totalLength, crossfade} = computeTimingPerItem(ready, totalLengthRequested, crossfadeRequested, targetTempo);
+  const n = primaries.length;
+  const {segLens, totalLength, crossfade} = computeTimingPerItem(primaries, totalLengthRequested, crossfadeRequested, targetTempo);
   const palette = ['#e8a33d','#4fd1c5','#e2635a','#c792ea','#7fd88f','#f6c453'];
   reel.innerHTML='';
-  ready.forEach((item, i)=>{
+  primaries.forEach((item, i)=>{
     const widthPct = (segLens[i]/totalLength)*100;
+    const layerCount = ready.filter(x=>x.layerTarget===item.id).length;
     const seg = document.createElement('div');
     seg.className='seg';
     seg.style.flex = '0 0 '+widthPct.toFixed(3)+'%';
     seg.style.background = palette[i%palette.length];
-    seg.textContent = (i+1)+' · '+fmtTime(segLens[i]);
+    seg.textContent = (i+1)+' · '+fmtTime(segLens[i])+(layerCount?' (+'+layerCount+')':'');
     if(i>0){ const f=document.createElement('div'); f.className='fade'; seg.appendChild(f); }
     if(i<n-1){ const f=document.createElement('div'); f.className='fade right'; seg.appendChild(f); }
     reel.appendChild(seg);
@@ -894,7 +946,78 @@ async function renderMidiNotes(notes, semis, segLen, sampleRate){
   return await octx.startRendering();
 }
 
-async function buildSong(order, targetTempo, targetPC, totalLengthRequested, crossfadeRequested, opts, onProgress){
+/* Schedules one clip (WAV or MIDI) into the mix at startTime for segLen
+   seconds, with its own crossfade envelope and optional DJ filter sweep.
+   Used for both the primary (sequential) clip in a slot and any clips
+   layered simultaneously on top of it. gainScale lets layered clips sit
+   a little under the primary so stacking clips doesn't clip/overpower. */
+async function scheduleClip(ctx, master, item, startTime, segLen, fadeIn, fadeOut, targetTempo, targetPC, targetBarLen, opts, sampleRate, midiExportEvents, secToTick, gainScale){
+  let semis = semitoneDiff(item.pitchClass, targetPC);
+  const cap = Number.isFinite(opts.maxShift) ? opts.maxShift : 3;
+  semis = Math.max(-cap, Math.min(cap, semis));
+  let segBuffer, playbackRate=1, detuneCents=0;
+
+  if(item.type==='wav'){
+    // Beat-matching: rather than trusting the detected BPM directly (rounding
+    // error there would drift over repeated loops), work out how many bars
+    // this clip most likely represents, then compute the exact stretch ratio
+    // that makes it fill precisely that many target-tempo bars. That locks
+    // every loop repeat to the beat grid with zero cumulative drift.
+    const sourceBarLen = 4*(60/item.tempo);
+    const estBars = Math.max(1, Math.round(item.duration/sourceBarLen));
+    playbackRate = item.duration/(estBars*targetBarLen);
+    playbackRate = Math.max(0.5, Math.min(2, playbackRate));
+    const rateCents = 1200*Math.log2(playbackRate);
+    detuneCents = semis*100 - rateCents;
+    segBuffer = item.loopBuffer || item.buffer;
+  } else {
+    const rateScale = item.tempo/targetTempo;
+    const expandedNotes = expandMidiNotesForSegment(item, rateScale, segLen);
+    segBuffer = await renderMidiNotes(expandedNotes, semis, segLen, sampleRate);
+    for(const note of expandedNotes){
+      const pitch = note.pitch+semis;
+      const onTick = secToTick(startTime+note.t);
+      const offTick = secToTick(startTime+note.t+note.dur);
+      midiExportEvents.push({tick:onTick, type:'on', pitch, velocity:note.velocity});
+      midiExportEvents.push({tick:offTick, type:'off', pitch, velocity:note.velocity});
+    }
+  }
+
+  const gainNode = ctx.createGain();
+  gainNode.connect(master);
+  applyCrossfadeGain(gainNode, startTime, segLen, fadeIn, fadeOut);
+  if(gainScale!==1){
+    // scale the whole envelope down for a layered clip by riding a second
+    // gain stage, so its fade shape stays identical to the primary's
+    const scaleNode = ctx.createGain();
+    scaleNode.gain.value = gainScale;
+    gainNode.connect(scaleNode);
+    scaleNode.connect(master);
+  }
+
+  let chainInput = gainNode;
+  if(opts.djFilter){
+    const filterNode = ctx.createBiquadFilter();
+    applyTransitionFilter(filterNode, startTime, segLen, fadeIn, fadeOut);
+    filterNode.connect(gainNode);
+    chainInput = filterNode;
+  }
+
+  const src = ctx.createBufferSource();
+  src.buffer = segBuffer;
+  src.connect(chainInput);
+  if(item.type==='wav'){
+    src.playbackRate.value = playbackRate;
+    src.detune.value = detuneCents;
+    src.loop = segBuffer.duration < segLen*playbackRate;
+    if(src.loop){ src.loopStart=0; src.loopEnd=segBuffer.duration; }
+    src.start(startTime, 0, segLen*playbackRate);
+  } else {
+    src.start(startTime, 0, Math.min(segLen, segBuffer.duration));
+  }
+}
+
+async function buildSong(order, allReady, targetTempo, targetPC, totalLengthRequested, crossfadeRequested, opts, onProgress){
   const sampleRate = 44100;
   const n = order.length;
   const {segLens, starts, crossfade, totalLength} = computeTimingPerItem(order, totalLengthRequested, crossfadeRequested, targetTempo);
@@ -915,66 +1038,18 @@ async function buildSong(order, targetTempo, targetPC, totalLengthRequested, cro
     const item = order[i];
     const startTime = starts[i];
     const segLen = segLens[i];
-    let semis = semitoneDiff(item.pitchClass, targetPC);
-    const cap = Number.isFinite(opts.maxShift) ? opts.maxShift : 3;
-    semis = Math.max(-cap, Math.min(cap, semis));
-    let segBuffer, playbackRate=1, detuneCents=0;
-
-    if(item.type==='wav'){
-      // Beat-matching: rather than trusting the detected BPM directly (rounding
-      // error there would drift over repeated loops), work out how many bars
-      // this clip most likely represents, then compute the exact stretch ratio
-      // that makes it fill precisely that many target-tempo bars. That locks
-      // every loop repeat to the beat grid with zero cumulative drift.
-      const sourceBarLen = 4*(60/item.tempo);
-      const estBars = Math.max(1, Math.round(item.duration/sourceBarLen));
-      playbackRate = item.duration/(estBars*targetBarLen);
-      playbackRate = Math.max(0.5, Math.min(2, playbackRate));
-      const rateCents = 1200*Math.log2(playbackRate);
-      detuneCents = semis*100 - rateCents;
-      segBuffer = item.loopBuffer || item.buffer;
-    } else {
-      const rateScale = item.tempo/targetTempo;
-      const expandedNotes = expandMidiNotesForSegment(item, rateScale, segLen);
-      segBuffer = await renderMidiNotes(expandedNotes, semis, segLen, sampleRate);
-      for(const note of expandedNotes){
-        const pitch = note.pitch+semis;
-        const onTick = secToTick(startTime+note.t);
-        const offTick = secToTick(startTime+note.t+note.dur);
-        midiExportEvents.push({tick:onTick, type:'on', pitch, velocity:note.velocity});
-        midiExportEvents.push({tick:offTick, type:'off', pitch, velocity:note.velocity});
-      }
-    }
-
-    const gainNode = ctx.createGain();
-    gainNode.connect(master);
     // Every segment gets a real fade, even the very first/last of the whole
     // song — an instant 0-to-1 jump can still click if the source's first
     // sample isn't at zero-crossing.
     const edgeFade = Math.min(0.02, segLen*0.05);
     const fadeIn = i===0 ? edgeFade : crossfade;
     const fadeOut = i===n-1 ? edgeFade : crossfade;
-    applyCrossfadeGain(gainNode, startTime, segLen, fadeIn, fadeOut);
 
-    let chainInput = gainNode;
-    if(opts.djFilter){
-      const filterNode = ctx.createBiquadFilter();
-      applyTransitionFilter(filterNode, startTime, segLen, i===0?0:crossfade, i===n-1?0:crossfade);
-      filterNode.connect(gainNode);
-      chainInput = filterNode;
-    }
+    await scheduleClip(ctx, master, item, startTime, segLen, fadeIn, fadeOut, targetTempo, targetPC, targetBarLen, opts, sampleRate, midiExportEvents, secToTick, 1);
 
-    const src = ctx.createBufferSource();
-    src.buffer = segBuffer;
-    src.connect(chainInput);
-    if(item.type==='wav'){
-      src.playbackRate.value = playbackRate;
-      src.detune.value = detuneCents;
-      src.loop = segBuffer.duration < segLen*playbackRate;
-      if(src.loop){ src.loopStart=0; src.loopEnd=segBuffer.duration; }
-      src.start(startTime, 0, segLen*playbackRate);
-    } else {
-      src.start(startTime, 0, Math.min(segLen, segBuffer.duration));
+    const layers = allReady.filter(x=>x.layerTarget===item.id);
+    for(const layerItem of layers){
+      await scheduleClip(ctx, master, layerItem, startTime, segLen, fadeIn, fadeOut, targetTempo, targetPC, targetBarLen, opts, sampleRate, midiExportEvents, secToTick, 0.75);
     }
     if(onProgress) onProgress((i+1)/(n+2));
   }
@@ -1056,7 +1131,8 @@ const midiNote = document.getElementById('midiNote');
 
 buildBtn.addEventListener('click', async ()=>{
   const ready = items.filter(i=>!i.error && i.tempo!==undefined);
-  if(ready.length===0) return;
+  const primaries = ready.filter(i=>!i.layerTarget);
+  if(primaries.length===0) return;
   stopPreview();
   ensureCtx();
   buildBtn.disabled = true;
@@ -1082,7 +1158,7 @@ buildBtn.addEventListener('click', async ()=>{
     };
 
     const {rendered, midiExportEvents, ppq, actualLength} = await buildSong(
-      ready, targetTempo, targetPC, totalLengthRequested, crossfadeRequested, opts,
+      primaries, ready, targetTempo, targetPC, totalLengthRequested, crossfadeRequested, opts,
       (p)=>{ buildBar.style.width = Math.round(p*100)+'%'; }
     );
     const blob = bufferToWav(rendered);
