@@ -77,6 +77,13 @@
   }
   .previewbtn{width:34px;height:34px;font-size:14px;}
   .previewbtn:disabled{opacity:.35;}
+  .lenInput{
+    width:56px;flex-shrink:0;padding:6px 4px;text-align:center;border-radius:6px;
+    border:1px solid var(--line);background:var(--panel-2);color:var(--text);
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+  }
+  .lenInput:focus{outline:none;border-color:var(--amber);}
+  .lenInput::placeholder{color:var(--muted);}
   .iconbtn:active{background:var(--amber);color:#14161a;border-color:var(--amber);}
   .rmbtn{color:var(--red);border-color:var(--red);background:transparent;}
 
@@ -158,7 +165,7 @@
         <select id="targetKey"></select>
       </div>
     </div>
-    <p class="hint">Auto-filled from what Splice Deck heard across your files — tweak either field if you want to steer it. Order below sets the sequence; reorder with the arrows. Segment and crossfade lengths snap to whole bars at the target tempo so transitions land on a downbeat instead of an arbitrary point.</p>
+    <p class="hint">Auto-filled from what Splice Deck heard across your files — tweak either field if you want to steer it. Order below sets the sequence; reorder with the arrows. Each clip also has a length field (seconds) in step 01 — leave it blank for an equal automatic share of the song, or set a number to pin that clip's length; the remaining clips split whatever time is left. Segment and crossfade lengths snap to whole bars at the target tempo so transitions land on a downbeat instead of an arbitrary point.</p>
     <div class="row" style="margin-top:14px;">
       <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);flex:1;min-width:150px;">
         <input type="checkbox" id="djFilter" checked style="width:16px;height:16px;"> DJ filter sweep on joins
@@ -523,6 +530,7 @@ function renderChannels(){
           ? '<b>'+item.tempo+' BPM</b> · <b>'+item.key+' '+item.mode+'</b> · '+fmtTime(item.duration)+' · '+item.type.toUpperCase()
           : 'analyzing…');
     const canPreview = !item.error && item.tempo!==undefined;
+    const lenVal = item.customLen>0 ? item.customLen : '';
     row.innerHTML = `
       <div class="num">${idx+1}</div>
       <button class="iconbtn previewbtn" ${canPreview?'':'disabled'} title="Preview">▶</button>
@@ -530,6 +538,7 @@ function renderChannels(){
         <div class="name">${escapeHtml(item.name)}</div>
         <div class="stats">${stats}</div>
       </div>
+      ${canPreview ? `<input type="number" class="lenInput" min="1" step="1" placeholder="auto" value="${lenVal}" title="Length in seconds for this clip (blank = auto)">` : ''}
       <div class="ord">
         <button class="iconbtn up" ${idx===0?'disabled':''}>▲</button>
         <button class="iconbtn down" ${idx===items.length-1?'disabled':''}>▼</button>
@@ -544,6 +553,11 @@ function renderChannels(){
     };
     if(canPreview){
       row.querySelector('.previewbtn').onclick=(e)=>togglePreview(item, e.currentTarget);
+      row.querySelector('.lenInput').addEventListener('input', (e)=>{
+        const v = Number(e.target.value);
+        item.customLen = v>0 ? v : undefined;
+        renderReel();
+      });
     }
     channelList.appendChild(row);
   });
@@ -618,19 +632,31 @@ function escapeHtml(s){
 
 /* Bar-quantized timing: segment/crossfade lengths snap to the target tempo's
    beat grid so transitions land on a downbeat rather than an arbitrary point. */
-function computeTiming(n, totalLengthRequested, crossfadeRequested, targetTempo){
+function computeTimingPerItem(order, totalLengthRequested, crossfadeRequested, targetTempo){
+  const n = order.length;
   const beatLen = 60/Math.max(20,targetTempo);
   const barLen = beatLen*4;
-  const rawSeg = (totalLengthRequested + Math.max(0,n-1)*crossfadeRequested)/n;
-  const bars = Math.max(1, Math.round(rawSeg/barLen));
-  let segLen = bars*barLen;
-  let crossfade = Math.min(crossfadeRequested, segLen/2);
+  const customs = order.map(it=> (it.customLen>0 ? it.customLen : null));
+  const customSum = customs.reduce((s,c)=> s+(c||0), 0);
+  const customCount = customs.filter(c=>c!=null).length;
+  const remaining = Math.max(barLen, totalLengthRequested - customSum);
+  const autoShare = customCount<n ? remaining/(n-customCount) : (totalLengthRequested/n);
+  const rawLens = customs.map(c => c!=null ? c : autoShare);
+  const segLens = rawLens.map(raw=>{
+    const bars = Math.max(1, Math.round(raw/barLen));
+    return bars*barLen;
+  });
+  const minSeg = Math.min(...segLens);
+  let crossfade = Math.min(crossfadeRequested, minSeg/2);
   if(crossfade>0){
     const beats = Math.max(1, Math.round(crossfade/beatLen));
-    crossfade = Math.min(beats*beatLen, segLen/2);
+    crossfade = Math.min(beats*beatLen, minSeg/2);
   }
-  const totalLength = n*segLen - Math.max(0,n-1)*crossfade;
-  return {segLen, crossfade, totalLength, barLen, beatLen};
+  const starts = [];
+  let cum = 0;
+  for(let i=0;i<n;i++){ starts.push(cum); cum += segLens[i]-crossfade; }
+  const totalLength = cum+crossfade;
+  return {segLens, starts, crossfade, totalLength, barLen, beatLen};
 }
 
 function updateAfterAnalysis(){
@@ -701,16 +727,16 @@ function renderReel(){
   const crossfadeRequested = Number(document.getElementById('crossfade').value)||0;
   const targetTempo = Number(targetTempoInput.value) || 120;
   const n = ready.length;
-  const {segLen, crossfade, totalLength} = computeTiming(n, totalLengthRequested, crossfadeRequested, targetTempo);
+  const {segLens, totalLength, crossfade} = computeTimingPerItem(ready, totalLengthRequested, crossfadeRequested, targetTempo);
   const palette = ['#e8a33d','#4fd1c5','#e2635a','#c792ea','#7fd88f','#f6c453'];
   reel.innerHTML='';
   ready.forEach((item, i)=>{
-    const widthPct = (segLen/totalLength)*100;
+    const widthPct = (segLens[i]/totalLength)*100;
     const seg = document.createElement('div');
     seg.className='seg';
     seg.style.flex = '0 0 '+widthPct.toFixed(3)+'%';
     seg.style.background = palette[i%palette.length];
-    seg.textContent = (i+1);
+    seg.textContent = (i+1)+' · '+fmtTime(segLens[i]);
     if(i>0){ const f=document.createElement('div'); f.className='fade'; seg.appendChild(f); }
     if(i<n-1){ const f=document.createElement('div'); f.className='fade right'; seg.appendChild(f); }
     reel.appendChild(seg);
@@ -871,7 +897,7 @@ async function renderMidiNotes(notes, semis, segLen, sampleRate){
 async function buildSong(order, targetTempo, targetPC, totalLengthRequested, crossfadeRequested, opts, onProgress){
   const sampleRate = 44100;
   const n = order.length;
-  const {segLen, crossfade, totalLength} = computeTiming(n, totalLengthRequested, crossfadeRequested, targetTempo);
+  const {segLens, starts, crossfade, totalLength} = computeTimingPerItem(order, totalLengthRequested, crossfadeRequested, targetTempo);
   const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
   const ctx = new OfflineCtx(2, Math.ceil(totalLength*sampleRate)+sampleRate, sampleRate);
   const master = ctx.createGain();
@@ -887,7 +913,8 @@ async function buildSong(order, targetTempo, targetPC, totalLengthRequested, cro
 
   for(let i=0;i<n;i++){
     const item = order[i];
-    const startTime = i*(segLen-crossfade);
+    const startTime = starts[i];
+    const segLen = segLens[i];
     let semis = semitoneDiff(item.pitchClass, targetPC);
     const cap = Number.isFinite(opts.maxShift) ? opts.maxShift : 3;
     semis = Math.max(-cap, Math.min(cap, semis));
