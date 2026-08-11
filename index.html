@@ -649,6 +649,7 @@ async function togglePreview(item, btn){
   if(previewItemId===item.id){ stopPreview(); return; }
   stopPreview();
   const ctx = ensureCtx();
+  const resumePromise = ctx.state==='suspended' ? ctx.resume().catch(()=>{}) : null;
   let buffer;
   if(item.type==='wav'){
     buffer = item.buffer;
@@ -661,6 +662,7 @@ async function togglePreview(item, btn){
     }
     buffer = item.previewBuffer;
   }
+  if(resumePromise) await resumePromise;
   const src = ctx.createBufferSource();
   src.buffer = buffer;
   src.connect(ctx.destination);
@@ -984,7 +986,6 @@ async function scheduleClip(ctx, master, item, startTime, segLen, fadeIn, fadeOu
   }
 
   const gainNode = ctx.createGain();
-  gainNode.connect(master);
   applyCrossfadeGain(gainNode, startTime, segLen, fadeIn, fadeOut);
   if(gainScale!==1){
     // scale the whole envelope down for a layered clip by riding a second
@@ -993,6 +994,8 @@ async function scheduleClip(ctx, master, item, startTime, segLen, fadeIn, fadeOu
     scaleNode.gain.value = gainScale;
     gainNode.connect(scaleNode);
     scaleNode.connect(master);
+  } else {
+    gainNode.connect(master);
   }
 
   let chainInput = gainNode;
@@ -1130,14 +1133,31 @@ const dlMidiLink = document.getElementById('dlMidiLink');
 const midiNote = document.getElementById('midiNote');
 
 buildBtn.addEventListener('click', async ()=>{
+  const stillAnalyzing = items.filter(i=>!i.error && i.tempo===undefined);
+  if(stillAnalyzing.length>0){
+    buildStatus.classList.add('err');
+    buildStatus.textContent = 'Still analyzing '+stillAnalyzing.length+' file(s) ('+stillAnalyzing.map(i=>i.name).join(', ')+') — wait for analysis to finish before building, or those files will be left out.';
+    return;
+  }
   const ready = items.filter(i=>!i.error && i.tempo!==undefined);
   const primaries = ready.filter(i=>!i.layerTarget);
-  if(primaries.length===0) return;
+  if(primaries.length===0){
+    buildStatus.classList.add('err');
+    buildStatus.textContent = ready.length===0
+      ? 'No analyzed files to build from yet.'
+      : 'Every loaded clip is set to layer onto another — at least one clip needs to be "Sequential" to anchor the song.';
+    return;
+  }
+  const excluded = items.filter(i=>i.error);
+  if(excluded.length>0){
+    buildStatus.classList.add('err');
+    buildStatus.textContent = 'Note: '+excluded.length+' file(s) failed to analyze and are excluded from this build — '+excluded.map(i=>i.name+' ('+i.error+')').join('; ')+'.';
+  } else {
+    buildStatus.classList.remove('err');
+  }
   stopPreview();
   ensureCtx();
   buildBtn.disabled = true;
-  buildStatus.classList.remove('err');
-  buildStatus.textContent = 'Rendering…';
   buildProgress.style.display='block';
   buildBar.style.width='4%';
   player.classList.add('hidden');
@@ -1185,7 +1205,9 @@ buildBtn.addEventListener('click', async ()=>{
       midiNote.classList.remove('hidden');
     }
 
-    buildStatus.textContent = 'Done — '+fmtTime(actualLength)+' @ '+targetTempo+' BPM, '+KEY_NAMES[targetPC]+' '+mode+'.';
+    const exclusionNote = excluded.length ? ' Excluded ('+excluded.length+'): '+excluded.map(i=>i.name).join(', ')+'.' : '';
+    buildStatus.textContent = 'Done — '+fmtTime(actualLength)+' @ '+targetTempo+' BPM, '+KEY_NAMES[targetPC]+' '+mode+'.'+exclusionNote;
+    if(excluded.length) buildStatus.classList.add('err'); else buildStatus.classList.remove('err');
   } catch(err){
     console.error(err);
     buildStatus.textContent = 'Build failed: '+(err.message||err);
