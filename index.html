@@ -591,7 +591,9 @@ async function togglePreview(item, btn){
   } else {
     btn.textContent='…';
     if(!item.previewBuffer){
-      item.previewBuffer = await renderMidiSegment(item, item.tempo, 0, item.duration+0.3, 44100);
+      const segLen = item.duration+0.3;
+      const notes = expandMidiNotesForSegment(item, 1, segLen);
+      item.previewBuffer = await renderMidiNotes(notes, 0, segLen, 44100);
     }
     buffer = item.previewBuffer;
   }
@@ -821,15 +823,29 @@ function addRhythmPulse(ctx, master, targetPC, targetTempo, totalLength){
   }
 }
 
-async function renderMidiSegment(item, targetTempo, semis, segLen, sampleRate){
-  const rateScale = item.tempo/targetTempo; // scales original event times into target tempo
+/* If a MIDI clip's note content is shorter than the segment it's been given,
+   repeat it (looping, like the WAV seamless-loop path) so it fills the whole
+   slot instead of finishing early and leaving silence before the next join. */
+function expandMidiNotesForSegment(item, rateScale, segLen){
+  const loopLen = Math.max(0.15, item.duration*rateScale);
+  const out = [];
+  for(let repOffset=0; repOffset<segLen; repOffset+=loopLen){
+    for(const note of item.noteEvents){
+      const t = note.start*rateScale + repOffset;
+      if(t>=segLen) continue;
+      const dur = Math.min(segLen-t, Math.max(0.05, note.duration*rateScale));
+      out.push({t, dur, pitch:note.pitch, velocity:note.velocity});
+    }
+  }
+  return out;
+}
+
+async function renderMidiNotes(notes, semis, segLen, sampleRate){
   const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
   const octx = new OfflineCtx(2, Math.ceil(segLen*sampleRate)+sampleRate, sampleRate);
   const master = octx.createGain(); master.connect(octx.destination);
-  for(const note of item.noteEvents){
-    const t = note.start*rateScale;
-    if(t>=segLen) continue;
-    const dur = Math.max(0.05, note.duration*rateScale);
+  for(const note of notes){
+    const t = note.t, dur = note.dur;
     const freq = 440*Math.pow(2,(note.pitch+semis-69)/12);
     const osc = octx.createOscillator();
     osc.type='triangle';
@@ -891,15 +907,13 @@ async function buildSong(order, targetTempo, targetPC, totalLengthRequested, cro
       detuneCents = semis*100 - rateCents;
       segBuffer = item.loopBuffer || item.buffer;
     } else {
-      segBuffer = await renderMidiSegment(item, targetTempo, semis, segLen, sampleRate);
       const rateScale = item.tempo/targetTempo;
-      for(const note of item.noteEvents){
-        const t = note.start*rateScale;
-        if(t>=segLen) continue;
-        const dur = Math.min(segLen-t, Math.max(0.05, note.duration*rateScale));
+      const expandedNotes = expandMidiNotesForSegment(item, rateScale, segLen);
+      segBuffer = await renderMidiNotes(expandedNotes, semis, segLen, sampleRate);
+      for(const note of expandedNotes){
         const pitch = note.pitch+semis;
-        const onTick = secToTick(startTime+t);
-        const offTick = secToTick(startTime+t+dur);
+        const onTick = secToTick(startTime+note.t);
+        const offTick = secToTick(startTime+note.t+note.dur);
         midiExportEvents.push({tick:onTick, type:'on', pitch, velocity:note.velocity});
         midiExportEvents.push({tick:offTick, type:'off', pitch, velocity:note.velocity});
       }
