@@ -60,7 +60,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 7px 12px
+            padding: 7px 12px;
+            flex-wrap: wrap;
         }
         header {
             border-bottom: 1px solid var(--line)
@@ -88,7 +89,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            white-space: nowrap
+            white-space: nowrap;
+            touch-action: manipulation;
         }
         .btn.primary {
             background: var(--a);
@@ -433,24 +435,8 @@
             color: var(--muted);
             margin-right: auto
         }
-        .file-input-wrap {
-            position: relative;
-            display: inline-flex
-        }
-        .file-input-wrap input[type=file] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-            z-index: 2;
-            min-height: 44px
-        }
-        .file-input-wrap .btn {
-            pointer-events: none;
-            z-index: 1
+        #projectFile {
+            display: none;
         }
         @media(max-width:1100px) {
             .app {
@@ -493,11 +479,10 @@
             <div class="status" id="status">READY · 48 kHz</div>
             <button class="btn" id="newBtn">NEW</button>
             <button class="btn" id="saveBtn">SAVE</button>
-            <div class="file-input-wrap">
-                <button class="btn" style="pointer-events:none;z-index:1">LOAD</button>
-                <input id="projectFile" type="file" accept=".json,application/json">
-            </div>
-            <button class="btn" id="exportBtn">EXPORT</button>
+            <button class="btn" id="loadBtn">LOAD</button>
+            <input id="projectFile" type="file" accept=".json,application/json,text/json">
+            <button class="btn" id="exportPadBtn">PAD WAV</button>
+            <button class="btn" id="exportPatBtn">PAT WAV</button>
             <button class="btn" id="exportSongBtn">SONG WAV</button>
         </header>
 
@@ -1218,8 +1203,9 @@
                 setTimeout(() => URL.revokeObjectURL(a.href), 1000);
             }
 
-            async function exportCurrent() {
-                if (!currentBuffer) { alert("Nothing to export."); return; }
+            // --- pad export ---
+            function exportPad() {
+                if (!currentBuffer) { alert("No sample loaded on selected pad."); return; }
                 const p = pads[selected],
                     a = initAudio();
                 if (!a) return;
@@ -1288,7 +1274,71 @@
                 setStatus("PATTERN WAV EXPORTED");
             }
 
-            function resampleSequence() { exportPattern(); }
+            // --- song export ---
+            async function exportSong() {
+                const a = initAudio();
+                if (!a) return;
+                setStatus("RENDERING SONG…");
+                const seq = songArrangement.length ? songArrangement : [1],
+                    bpm = +$("bpm").value || 92,
+                    rate = a.sampleRate || 48000;
+                const bars = seq.length,
+                    seconds = bars * 4 * 60 / bpm;
+                const off = new OfflineAudioContext(2, Math.ceil(seconds * rate), rate);
+                const masterOff = off.createGain();
+                masterOff.gain.value = bus.master;
+                masterOff.connect(off.destination);
+
+                for (let i = 0; i < seq.length; i++) {
+                    const pat = patterns[seq[i]] || makePattern();
+                    const startAt = i * 4 * 60 / bpm;
+                    for (let r = 0; r < 4; r++)
+                        for (let c = 0; c < 16; c++) {
+                            const idx = r * 4 + c,
+                                s = pat[idx];
+                            if (!s?.on || Math.random() > s.prob) continue;
+                            for (let q = 0; q < (s.ratchet || 1); q++) {
+                                const t = startAt + c * 60 / bpm / 4 + q * (60 / bpm / 4) / (s.ratchet || 1) + s.nudge *
+                                    60 / bpm / 4;
+                                const p = pads[idx];
+                                if (p.buffer) {
+                                    try {
+                                        const src = off.createBufferSource(),
+                                            g = off.createGain(),
+                                            f = off.createBiquadFilter();
+                                        src.buffer = p.buffer;
+                                        src.playbackRate.value = Math.pow(2, (p.lock?.pitch || 0) / 12);
+                                        f.type = "lowpass";
+                                        f.frequency.value = p.lock?.filter || 20000;
+                                        g.gain.value = s.velocity * .7;
+                                        src.connect(f).connect(g).connect(masterOff);
+                                        const st = p.start * p.buffer.duration,
+                                            dur = Math.max(.01, (p.end - p.start) * p.buffer.duration / src
+                                            .playbackRate.value);
+                                        if (t < seconds) src.start(Math.max(0, t), st, Math.min(dur, seconds - t));
+                                    } catch (e) {}
+                                } else {
+                                    try {
+                                        const o = off.createOscillator(),
+                                            g = off.createGain();
+                                        o.type = kitType[idx] === "bass" ? "sawtooth" : "sine";
+                                        o.frequency.value = kitFreq[idx];
+                                        g.gain.setValueAtTime(.001, t);
+                                        g.gain.exponentialRampToValueAtTime(.25 * s.velocity, t + .005);
+                                        g.gain.exponentialRampToValueAtTime(.001, t + .28);
+                                        o.connect(g).connect(masterOff);
+                                        o.start(t);
+                                        o.stop(t + .3);
+                                    } catch (e) {}
+                                }
+                            }
+                        }
+                }
+                const out = await off.startRendering();
+                renderWavBuffer(out, "song-export.wav");
+                setStatus("SONG WAV EXPORTED");
+                $("footerInfo").textContent = `Song · ${seq.length} pattern bar(s)`;
+            }
 
             // --- project serialization with PCM embedding ---
             function audioBufferToPCM16Base64(buf) {
@@ -1483,80 +1533,11 @@
                 }
             }
 
-            // --- song export ---
-            async function exportSong() {
-                const a = initAudio();
-                if (!a) return;
-                setStatus("RENDERING SONG…");
-                const seq = songArrangement.length ? songArrangement : [1],
-                    bpm = +$("bpm").value || 92,
-                    rate = a.sampleRate || 48000;
-                const bars = seq.length,
-                    seconds = bars * 4 * 60 / bpm;
-                const off = new OfflineAudioContext(2, Math.ceil(seconds * rate), rate);
-                const masterOff = off.createGain();
-                masterOff.gain.value = bus.master;
-                masterOff.connect(off.destination);
-
-                for (let i = 0; i < seq.length; i++) {
-                    const pat = patterns[seq[i]] || makePattern();
-                    const startAt = i * 4 * 60 / bpm;
-                    const barDur = 4 * 60 / bpm;
-                    for (let r = 0; r < 4; r++)
-                        for (let c = 0; c < 16; c++) {
-                            const idx = r * 4 + c,
-                                s = pat[idx];
-                            if (!s?.on || Math.random() > s.prob) continue;
-                            for (let q = 0; q < (s.ratchet || 1); q++) {
-                                const t = startAt + c * 60 / bpm / 4 + q * (60 / bpm / 4) / (s.ratchet || 1) + s.nudge *
-                                    60 / bpm / 4;
-                                const p = pads[idx];
-                                if (p.buffer) {
-                                    try {
-                                        const src = off.createBufferSource(),
-                                            g = off.createGain(),
-                                            f = off.createBiquadFilter();
-                                        src.buffer = p.buffer;
-                                        src.playbackRate.value = Math.pow(2, (p.lock?.pitch || 0) / 12);
-                                        f.type = "lowpass";
-                                        f.frequency.value = p.lock?.filter || 20000;
-                                        g.gain.value = s.velocity * .7;
-                                        src.connect(f).connect(g).connect(masterOff);
-                                        const st = p.start * p.buffer.duration,
-                                            dur = Math.max(.01, (p.end - p.start) * p.buffer.duration / src
-                                            .playbackRate.value);
-                                        if (t < seconds) src.start(Math.max(0, t), st, Math.min(dur, seconds - t));
-                                    } catch (e) {}
-                                } else {
-                                    try {
-                                        const o = off.createOscillator(),
-                                            g = off.createGain();
-                                        o.type = kitType[idx] === "bass" ? "sawtooth" : "sine";
-                                        o.frequency.value = kitFreq[idx];
-                                        g.gain.setValueAtTime(.001, t);
-                                        g.gain.exponentialRampToValueAtTime(.25 * s.velocity, t + .005);
-                                        g.gain.exponentialRampToValueAtTime(.001, t + .28);
-                                        o.connect(g).connect(masterOff);
-                                        o.start(t);
-                                        o.stop(t + .3);
-                                    } catch (e) {}
-                                }
-                            }
-                        }
-                }
-                const out = await off.startRendering();
-                renderWavBuffer(out, "song-export.wav");
-                setStatus("SONG WAV EXPORTED");
-                $("footerInfo").textContent = `Song · ${seq.length} pattern bar(s)`;
-            }
-
+            // --- song arrangement helpers ---
             function resetSong() { songArrangement = [1];
                 renderSongInfo(); }
 
             function renderSongInfo() { $("footerInfo").textContent = `Song: ${songArrangement.map(x=>String(x).padStart(2,"0")).join(" → ")} · ${songArrangement.length} bar(s)`; }
-
-            function addPatternToSong(id) { songArrangement.push(id);
-                renderSongInfo(); }
 
             // --- FX update ---
             function updateFX() {
@@ -1577,9 +1558,15 @@
             }
 
             // --- event bindings ---
+            // Load button triggers hidden file input
+            $("loadBtn").onclick = () => $("projectFile").click();
+            $("projectFile").addEventListener("change", e => {
+                const f = e.target.files?.[0];
+                if (f) loadProject(f);
+                e.target.value = "";
+            });
+
             $("fileInput").addEventListener("change", e => { const f = e.target.files?.[0]; if (f) importAudioFile(f);
-                e.target.value = ""; });
-            $("projectFile").addEventListener("change", e => { const f = e.target.files?.[0]; if (f) loadProject(f);
                 e.target.value = ""; });
             $("recordBtn").onclick = recordMic;
             $("playBtn").onclick = togglePlay;
@@ -1589,8 +1576,9 @@
                 setStatus("STOPPED"); };
             $("newBtn").onclick = reset;
             $("saveBtn").onclick = saveProject;
-            $("exportBtn").onclick = () => { if (currentBuffer) exportCurrent();
-                else exportPattern(); };
+            $("exportPadBtn").onclick = exportPad;
+            $("exportPatBtn").onclick = exportPattern;
+            $("exportSongBtn").onclick = exportSong;
             $("autoChop").onclick = autoChop;
             $("duplicate").onclick = duplicate;
             $("trimPad").onclick = trimToPad;
@@ -1615,7 +1603,7 @@
             $("levelsBtn").onclick = () => { for (let i = 0; i < 16; i++) currentPattern[i].velocity = (i + 1) / 16;
                 renderGrid();
                 setStatus("16 LEVELS · VELOCITY 1–16"); };
-            $("resampleBtn").onclick = resampleSequence;
+            $("resampleBtn").onclick = exportPattern; // resample = pattern export
             $("skipBtn").onclick = captureSkipback;
             ["stepVel", "stepProb", "stepNudge"].forEach(id => $(id).addEventListener("input", () => {
                 if (selectedStep == null) return;
@@ -1644,14 +1632,13 @@
             $("end").oninput = e => { if (+$("end").value < +$("start").value) $("end").value = $("start").value;
                 drawWave(); if (pads[selected].buffer) pads[selected].end = +$("end").value; };
             $("capture8").onclick = captureSkipback;
-            $("captureSeq").onclick = resampleSequence;
+            $("captureSeq").onclick = exportPattern; // resample sequence
             $("rollHalf").onclick = () => { currentPattern.forEach((s, i) => { if (i % 2 == 0) s.on = true; });
                 renderGrid(); };
             $("rollQuarter").onclick = () => { currentPattern.forEach((s, i) => { if (i % 4 == 0) s.on = true; });
                 renderGrid(); };
             $("rollEighth").onclick = () => { currentPattern.forEach((s, i) => { if (i % 8 == 0) s.on = true; });
                 renderGrid(); };
-            $("exportSongBtn").onclick = exportSong;
             $("songMode").onchange = () => { if ($("songMode").value === "loop") { resetSong(); } else { songArrangement = [
                         1, 2, 3
                     ];
