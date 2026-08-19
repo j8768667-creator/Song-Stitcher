@@ -28,7 +28,7 @@ header{display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1
 select{width:100%;min-height:44px;background:#101216;border:1px solid var(--line);border-radius:6px;color:var(--text);padding:0 8px}
 .seq{display:grid;grid-template-rows:auto 1fr auto;min-height:0}.seqtop{display:flex;align-items:center;gap:8px;padding:10px;border-bottom:1px solid var(--line)}.seqtop .spacer{margin-right:auto}.grid{overflow:auto;padding:10px}.lane{display:grid;grid-template-columns:80px repeat(16,minmax(48px,1fr));min-width:900px;margin-bottom:7px}.lanehead{min-height:52px;display:flex;align-items:center;color:var(--muted);font-size:12px}.step{min-height:52px;border:1px solid #303641;background:#15181d;cursor:pointer;position:relative}.step:first-of-type{border-radius:5px 0 0 5px}.step.on{background:#4a3c19;border-color:var(--accent)}.step i{position:absolute;left:4px;bottom:4px;height:4px;width:calc(100% - 8px);background:var(--green);transform-origin:left}.step small{position:absolute;right:4px;top:3px;color:var(--muted);font-size:9px}.transport{padding:8px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}.right .section{padding:10px;border-bottom:1px solid var(--line)}.row{display:grid;grid-template-columns:1fr 80px;align-items:center;gap:8px;margin-bottom:7px}.readout{font-variant-numeric:tabular-nums;text-align:right;color:var(--accent)}
 footer{border-top:1px solid var(--line);background:#0d0f13;display:flex;align-items:center;padding:5px 12px;gap:8px}.footerinfo{font-size:12px;color:var(--muted);margin-right:auto}
-input[type=file]{touch-action:manipulation;-webkit-appearance:auto}input[type=number]{width:80px;min-height:44px;background:#101216;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:0 8px}
+input[type=file]{touch-action:manipulation;-webkit-appearance:auto;opacity:1;visibility:visible;pointer-events:auto;display:block;min-height:48px;color:var(--text);background:#101216;border:1px solid var(--line);border-radius:6px;padding:6px}input[type=number]{width:80px;min-height:44px;background:#101216;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:0 8px}
 @media(max-width:1100px){.app{min-width:0}.main{grid-template-columns:260px 1fr 280px}.lane{grid-template-columns:70px repeat(16,48px)}}
 </style>
 </head>
@@ -38,8 +38,8 @@ input[type=file]{touch-action:manipulation;-webkit-appearance:auto}input[type=nu
   <div class="brand">SAMPLER</div><div class="status" id="status">READY · 48 kHz</div>
   <button class="btn" id="newBtn">NEW</button>
   <button class="btn" id="saveBtn">SAVE</button>
-  <button class="btn" id="loadBtn">LOAD</button>
-  <input id="projectFile" type="file" accept=".json,application/json" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+  <label class="btn" for="projectFile" id="loadBtn" style="display:inline-flex;align-items:center;justify-content:center;cursor:pointer">LOAD</label>
+  <input id="projectFile" type="file" accept="application/json,.json" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
   <button class="btn" id="exportBtn">EXPORT WAV</button>
 </header>
 <main class="main">
@@ -49,7 +49,7 @@ input[type=file]{touch-action:manipulation;-webkit-appearance:auto}input[type=nu
   <div class="filebox">
     <label for="fileInput" style="display:block;margin-bottom:6px">IMPORT AUDIO / VIDEO</label>
     <input id="fileInput" type="file"
-      accept="audio/wav,audio/x-wav,audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/webm,video/mp4,video/quicktime,video/webm,.wav,.wave,.mp3,.m4a,.aac,.ogg,.webm,.mp4,.mov,.m4v"
+      accept=".wav,.wave,audio/wav,audio/x-wav,audio/vnd.wave,audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/ogg,audio/webm,video/mp4,video/quicktime,video/webm,.mp4,.mov,.m4v,.webm,.mp3,.m4a,.aac,.ogg"
       style="display:block;width:100%;min-height:48px;opacity:1;visibility:visible;pointer-events:auto;position:relative;z-index:10">
     <div style="font-size:11px;color:var(--muted);margin-top:6px">Choose a WAV or video from Files. The app extracts the video's audio track locally.</div>
   </div>
@@ -281,7 +281,7 @@ $("fileInput").addEventListener("change",e=>{
   if(file) importFile(file);
 });
 $("recordBtn").onclick=record;$("playBtn").onclick=togglePlay;$("stopBtn").onclick=()=>{playing=false;clearTimeout(timer);$("playBtn").textContent="PLAY";status("STOPPED")};
-$("exportBtn").onclick=()=>exportWav(currentBuffer);$("saveBtn").onclick=save;$("loadBtn").onclick=()=>$("projectFile").click();$("projectFile").addEventListener("change",e=>e.target.files[0]&&loadProject(e.target.files[0]));
+$("exportBtn").onclick=()=>exportWav(currentBuffer);$("saveBtn").onclick=save;$("projectFile").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(f)loadProject(f);e.target.value="";});
 $("newBtn").onclick=()=>{pattern=Array.from({length:16},()=>({on:false,velocity:1,prob:1,ratchet:1,lock:null}));buildGrid();status("NEW PATTERN")};
 $("patternPlus").onclick=()=>{patternNo++;$("patternName").textContent="PATTERN "+String(patternNo).padStart(2,"0")};$("patternMinus").onclick=()=>{patternNo=Math.max(1,patternNo-1);$("patternName").textContent="PATTERN "+String(patternNo).padStart(2,"0")};
 $("start").oninput=e=>{$("startMark").style.left=(e.target.value*100)+"%";if(+e.target.value>+$("end").value)e.target.value=$("end").value};$("end").oninput=e=>{$("endMark").style.left=(e.target.value*100)+"%";if(+e.target.value<+$("start").value)e.target.value=$("start").value};
