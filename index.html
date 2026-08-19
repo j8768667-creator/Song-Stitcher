@@ -5,463 +5,1106 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#101216">
-<title>Sampler — iPad</title>
+<title>Sampler Studio — iPad</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-:root{--bg:#101216;--p:#171a20;--p2:#20242b;--p3:#292e37;--line:#363c47;--text:#f3f5f7;--muted:#9da5b0;--a:#ffb000;--ok:#49d487;--danger:#e65b64}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;touch-action:manipulation;-webkit-user-select:none;user-select:none}
-button,input,select{font:inherit}button{touch-action:manipulation}
-.app{height:100dvh;min-width:1024px;display:grid;grid-template-rows:58px 1fr 52px}
-header,footer{background:#0c0e12;border-color:var(--line);display:flex;align-items:center;gap:8px;padding:7px 12px}
-header{border-bottom:1px solid var(--line)}footer{border-top:1px solid var(--line)}
-.brand{font-weight:900;letter-spacing:.12em}.status{font-size:12px;color:var(--muted);margin-right:auto}
-.btn{min-height:44px;padding:0 13px;border-radius:6px;border:1px solid var(--line);background:var(--p2);font-weight:750;cursor:pointer}.btn.primary{background:var(--a);border-color:#e6a000;color:#111}.btn.active{border-color:var(--a);background:#3e341e}.btn.danger{background:#381c20;border-color:#704048}.btn:disabled{opacity:.45;cursor:not-allowed}
-.main{min-height:0;display:grid;grid-template-columns:310px 1fr 335px;gap:9px;padding:9px}
-.panel{min-height:0;overflow:hidden;background:var(--p);border:1px solid var(--line);border-radius:7px}.scroll{overflow:auto;height:100%}
-h3{font-size:11px;letter-spacing:.12em;color:var(--muted);margin:0;padding:11px 12px;border-bottom:1px solid var(--line)}
-.section{padding:10px;border-bottom:1px solid var(--line)}
-.filebox{border:1px dashed #626a76;border-radius:6px;padding:9px}.filebox input{display:block;width:100%;min-height:48px;margin-top:5px;color:var(--text);background:#0f1115;border:1px solid var(--line);border-radius:6px;padding:5px;opacity:1;visibility:visible;pointer-events:auto;-webkit-appearance:auto}
-.hint{font-size:10px;line-height:1.35;color:var(--muted);margin-top:6px}
-.wave{height:104px;background:#0c0e12;border:1px solid var(--line);border-radius:5px;position:relative;margin:8px 0;overflow:hidden}.wave canvas{width:100%;height:100%;display:block}.mark{position:absolute;top:0;bottom:0;width:3px;background:var(--a);pointer-events:none}
-.controls{display:grid;grid-template-columns:1fr 1fr;gap:7px}.control label,.row label{display:block;font-size:10px;color:var(--muted)}input[type=range]{width:100%;height:44px;accent-color:var(--a)}select,input[type=number]{width:100%;min-height:44px;border:1px solid var(--line);border-radius:5px;background:#0e1014;color:var(--text);padding:0 8px}
-.padwrap{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:9px}.pad{min-width:0;aspect-ratio:1.12;border:1px solid var(--line);border-radius:6px;background:#252a32;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}.pad.active{background:#40361f;border-color:var(--a)}.pad .n{font-size:10px;color:var(--muted)}.pad .name{font-size:12px;font-weight:850;white-space:nowrap;max-width:95%;overflow:hidden;text-overflow:ellipsis}.meter{height:4px;width:65%;background:#0e1014;border-radius:2px;overflow:hidden}.meter i{display:block;width:0;height:100%;background:var(--ok)}
-.center{display:grid;grid-template-rows:auto 1fr auto;min-height:0}.seqbar{padding:9px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px}.spacer{margin-left:auto}.grid{overflow:auto;padding:9px}.lane{display:grid;grid-template-columns:84px repeat(16,52px);min-width:916px;margin-bottom:7px}.lh{min-height:54px;display:flex;align-items:center;color:var(--muted);font-size:10px;padding-right:7px}.step{min-width:52px;min-height:54px;padding:0;border:1px solid #303641;background:#14171c;position:relative;cursor:pointer}.step.on{background:#493b1c;border-color:var(--a)}.step.play{outline:2px solid #fff;z-index:2}.step .vel{position:absolute;left:5px;right:5px;bottom:5px;height:4px;background:var(--ok);transform-origin:left}.step .prob{position:absolute;top:4px;right:4px;font-size:8px;color:var(--muted)}.step .rat{position:absolute;top:4px;left:4px;font-size:8px;color:var(--a)}.transport{border-top:1px solid var(--line);padding:8px;display:flex;gap:7px;align-items:center}.info{font-size:11px;color:var(--muted);margin-left:auto}
-.right .section{padding:10px}.row{display:grid;grid-template-columns:92px 1fr 54px;gap:6px;align-items:center;margin-bottom:4px}.val{text-align:right;font-variant-numeric:tabular-nums;color:var(--a);font-size:11px}
-.twocol{display:grid;grid-template-columns:1fr 1fr;gap:7px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.smalltitle{font-size:10px;color:var(--muted);letter-spacing:.08em;margin-bottom:7px}.meterbig{height:8px;background:#0c0e12;border:1px solid var(--line);border-radius:4px;overflow:hidden}.meterbig i{display:block;width:0;height:100%;background:var(--ok)}
-footer .foot{font-size:11px;color:var(--muted);margin-right:auto}
-input[type=file]::file-selector-button{min-height:36px;margin-right:7px;border:1px solid var(--line);border-radius:4px;background:var(--p2);color:var(--text)}
-@media(max-width:1100px){.app{min-width:1024px}}
+:root {
+  --bg: #0f1115;
+  --panel: #161920;
+  --panel-border: #262c36;
+  --accent: #ffb000;
+  --accent-glow: rgba(255,176,0,0.25);
+  --active: #332a15;
+  --text: #f3f5f7;
+  --muted: #8c96a5;
+  --ok: #49d487;
+  --danger: #e65b64;
+}
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+html, body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #090a0d;
+  height: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid #000;
+}
+select, input[type=number] {
+  background: #090a0d;
+  color: var(--text);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  min-height: 44px;
+  padding: 0 8px;
+}
+.btn {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  background: #1e232d;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.btn:active, .btn.active {
+  border-color: var(--accent);
+  background: var(--active);
+  color: var(--accent);
+}
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+  border-color: #d99600;
+}
+.btn-primary:active {
+  background: #e6a000;
+  color: #000;
+}
+.pad {
+  aspect-ratio: 1;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  background: #1c212b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px;
+  cursor: pointer;
+  position: relative;
+}
+.pad.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+  background: #2a2416;
+}
+.pad.playing {
+  background: var(--accent) !important;
+  color: #000 !important;
+}
+.pad.playing .pad-name, .pad.playing .pad-num {
+  color: #000 !important;
+}
+.step-btn {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #232934;
+  background: #101217;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+}
+.step-btn.on {
+  background: #473611;
+  border-color: var(--accent);
+}
+.step-btn.active-step {
+  outline: 2px solid #fff;
+  z-index: 10;
+}
 </style>
 </head>
-<body>
-<div class="app">
-<header>
-<div class="brand">SAMPLER</div><div class="status" id="status">READY · 48 kHz</div>
-<button class="btn" id="newBtn">NEW</button>
-<button class="btn" id="saveBtn">SAVE</button>
-<label class="btn" for="projectFile" style="display:inline-flex;align-items:center;cursor:pointer">LOAD</label>
-<input id="projectFile" type="file" accept=".json,application/json" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-<button class="btn" id="exportBtn">EXPORT</button>
-<button class="btn" id="exportSongBtn">SONG WAV</button>
-</header>
+<body class="flex flex-col h-screen w-screen overflow-hidden antialiased">
 
-<main class="main">
-<section class="panel">
-<h3>SAMPLE / CAPTURE</h3>
-<div class="scroll">
-<div class="section">
-<div class="filebox">
-<label style="font-size:10px;color:var(--muted)">IMPORT AUDIO OR VIDEO</label>
-<input id="fileInput" type="file" accept=".wav,.wave,audio/wav,audio/x-wav,audio/vnd.wave,audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/ogg,audio/webm,video/mp4,video/quicktime,video/webm,.mp3,.m4a,.aac,.ogg,.webm,.mp4,.mov,.m4v">
-<div class="hint">WAV, MP3, M4A and common MP4/MOV video files. Files stay on the device.</div>
-</div>
-<button class="btn primary" id="recordBtn" style="width:100%;margin-top:8px">● RECORD MIC / INTERFACE</button>
-<div class="meterbig" style="margin-top:8px"><i id="inputMeter"></i></div>
-</div>
+  <!-- TOP BAR / HEADER -->
+  <header class="h-[58px] bg-[#0a0c0e] border-b border-[#262c36] flex items-center justify-between px-3 shrink-0">
+    <div class="flex items-center gap-3">
+      <span class="font-black text-sm tracking-widest text-[#ffb000]">SAMPLER//10.9</span>
+      <span id="status" class="text-xs text-[#8c96a5] font-mono hidden md:inline">SYSTEM READY · 48kHz</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btnNew" class="btn">NEW</button>
+      <button id="btnSave" class="btn">SAVE</button>
+      <label class="btn cursor-pointer">
+        LOAD
+        <input id="fileProject" type="file" accept=".json" class="hidden">
+      </label>
+      <button id="btnExportPad" class="btn">PAD WAV</button>
+      <button id="btnExportPattern" class="btn">PAT WAV</button>
+      <button id="btnExportSong" class="btn btn-primary">SONG WAV</button>
+    </div>
+  </header>
 
-<div class="section">
-<div class="wave"><canvas id="wave"></canvas><div class="mark" id="startMark"></div><div class="mark" id="endMark"></div></div>
-<div class="controls">
-<div class="control"><label>START</label><input id="start" type="range" min="0" max="1" step=".001" value="0"></div>
-<div class="control"><label>END</label><input id="end" type="range" min="0" max="1" step=".001" value="1"></div>
-<div class="control"><label>PITCH</label><input id="pitch" type="range" min="-24" max="24" value="0"></div>
-<div class="control"><label>LEVEL</label><input id="level" type="range" min="0" max="1" step=".01" value=".9"></div>
-<div class="control"><label>ATTACK</label><input id="attack" type="range" min="0" max="1" step=".01" value=".01"></div>
-<div class="control"><label>RELEASE</label><input id="release" type="range" min=".01" max="2" step=".01" value=".18"></div>
-<div class="control"><label>FILTER</label><input id="filter" type="range" min="100" max="20000" value="20000"></div>
-<div class="control"><label>MODE</label><select id="mode"><option value="oneshot">ONE SHOT</option><option value="gate">GATE</option><option value="loop">LOOP</option></select></div>
-</div>
-</div>
+  <!-- MAIN APP WORKSPACE (3 COLUMN LAYOUT) -->
+  <main class="flex-1 grid grid-cols-12 gap-2 p-2 min-h-0 bg-[#0f1115]">
+    
+    <!-- LEFT PANEL: SAMPLE & CAPTURE -->
+    <section class="col-span-3 bg-[#161920] border border-[#262c36] rounded-lg flex flex-col min-h-0">
+      <div class="text-[10px] font-bold tracking-wider text-[#8c96a5] p-2 border-b border-[#262c36] bg-[#111318]">
+        SAMPLE / INPUT CAPTURE
+      </div>
+      <div class="flex-1 overflow-y-auto p-2 space-y-3">
+        
+        <!-- Import Control -->
+        <div class="border border-dashed border-[#363c47] rounded p-2 bg-[#0d0f12]">
+          <label class="block text-[10px] text-[#8c96a5] font-bold mb-1">IMPORT AUDIO / VIDEO</label>
+          <input id="fileAudio" type="file" accept="audio/*,video/*,.mp3,.wav,.m4a,.mov,.mp4" class="block w-full text-xs text-[#8c96a5] file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-bold file:bg-[#262c36] file:text-white cursor-pointer">
+        </div>
 
-<div class="section">
-<div class="twocol">
-<button class="btn" id="autoChop">AUTO CHOP 16</button><button class="btn" id="duplicate">DUPLICATE PAD</button>
-<button class="btn" id="trimPad">TRIM TO PAD</button><button class="btn" id="clearPad">CLEAR PAD</button>
-</div>
-</div>
-<div class="section"><div class="smalltitle">16 PADS</div><div class="padwrap" id="pads"></div></div>
-</div>
-</section>
+        <!-- Mic Control -->
+        <div>
+          <button id="btnRecord" class="btn w-full btn-primary font-bold">● RECORD MIC / INPUT</button>
+          <div class="w-full bg-[#090a0d] h-2 rounded border border-[#262c36] mt-2 overflow-hidden">
+            <div id="meterMic" class="bg-[#49d487] h-full w-0 transition-all duration-75"></div>
+          </div>
+        </div>
 
-<section class="panel center">
-<div class="seqbar">
-<b id="patternName">PATTERN 01</b>
-<button class="btn" id="prevPat">−</button><button class="btn" id="nextPat">+</button>
-<button class="btn" id="tempoMinus">− BPM</button><input id="bpm" type="number" value="92" min="40" max="240" style="width:75px">
-<button class="btn" id="tempoPlus">+ BPM</button>
-<span class="spacer"></span><button class="btn primary" id="playBtn">PLAY</button><button class="btn" id="stopBtn">STOP</button>
-</div>
-<div class="grid" id="grid"></div>
-<div class="transport">
-<button class="btn" id="rollBtn">ROLL</button><button class="btn" id="levelsBtn">16 LEVELS</button><button class="btn" id="resampleBtn">RESAMPLE</button><button class="btn" id="skipBtn">SKIPBACK</button>
-<span class="info" id="stepInfo">STEP —</span>
-</div>
-</section>
+        <!-- Waveform display -->
+        <div class="relative h-24 bg-[#090a0d] border border-[#262c36] rounded overflow-hidden">
+          <canvas id="waveCanvas" class="w-full h-full block"></canvas>
+          <div id="markStart" class="absolute top-0 bottom-0 w-1 bg-[#ffb000] pointer-events-none" style="left:0%"></div>
+          <div id="markEnd" class="absolute top-0 bottom-0 w-1 bg-[#e65b64] pointer-events-none" style="left:100%"></div>
+        </div>
 
-<section class="panel">
-<h3>SEQUENCER / FX / PERFORMANCE</h3>
-<div class="scroll">
-<div class="section">
-<div class="smalltitle">SELECTED STEP</div>
-<div class="row"><label>VELOCITY</label><input id="stepVel" type="range" min="0" max="1" step=".01" value="1"><span class="val" id="stepVelVal">100%</span></div>
-<div class="row"><label>PROBABILITY</label><input id="stepProb" type="range" min="0" max="1" step=".01" value="1"><span class="val" id="stepProbVal">100%</span></div>
-<div class="row"><label>RATCHET</label><select id="stepRat"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option></select><span></span></div>
-<div class="row"><label>NUDGE</label><input id="stepNudge" type="range" min="-0.45" max=".45" step=".01" value="0"><span class="val" id="stepNudgeVal">0%</span></div>
-</div>
+        <!-- Trim & Parameter Controls -->
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <label class="text-[9px] text-[#8c96a5] block">START</label>
+            <input id="trimStart" type="range" min="0" max="1" step="0.001" value="0" class="w-full touch-target">
+          </div>
+          <div>
+            <label class="text-[9px] text-[#8c96a5] block">END</label>
+            <input id="trimEnd" type="range" min="0" max="1" step="0.001" value="1" class="w-full touch-target">
+          </div>
+          <div>
+            <label class="text-[9px] text-[#8c96a5] block">PITCH (SEMI)</label>
+            <input id="padPitch" type="range" min="-24" max="24" step="1" value="0" class="w-full touch-target">
+          </div>
+          <div>
+            <label class="text-[9px] text-[#8c96a5] block">FILTER (HZ)</label>
+            <input id="padFilter" type="range" min="100" max="20000" step="100" value="20000" class="w-full touch-target">
+          </div>
+          <div>
+            <label class="text-[9px] text-[#8c96a5] block">ATTACK (S)</label>
+            <input id="padAttack" type="range" min="0" max="1" step="0.01" value="0.001" class="w-full touch-target">
+          </div>
+          <div>
+            <label class="text-[9px] text-[#8c96a5] block">RELEASE (S)</label>
+            <input id="padRelease" type="range" min="0.01" max="2" step="0.01" value="0.2" class="w-full touch-target">
+          </div>
+        </div>
 
-<div class="section">
-<div class="smalltitle">PARAMETER LOCKS</div>
-<div class="row"><label>LOCK PITCH</label><input id="lockPitch" type="range" min="-24" max="24" value="0"><span class="val" id="lockPitchVal">0</span></div>
-<div class="row"><label>LOCK FILTER</label><input id="lockFilter" type="range" min="100" max="20000" value="20000"><span class="val" id="lockFilterVal">20k</span></div>
-<button class="btn" id="applyLock" style="width:100%">LOCK TO SELECTED STEP</button>
-</div>
+        <!-- Chop / Utility actions -->
+        <div class="grid grid-cols-2 gap-1">
+          <button id="btnAutoChop" class="btn text-[10px]">CHOP 16</button>
+          <button id="btnTrimPad" class="btn text-[10px]">CROP PAD</button>
+          <button id="btnDupPad" class="btn text-[10px]">DUP PAD</button>
+          <button id="btnClearPad" class="btn text-[10px] text-[#e65b64]">CLEAR</button>
+        </div>
 
-<div class="section">
-<div class="smalltitle">BUS FX</div>
-<div class="row"><label>REVERB</label><input id="reverb" type="range" min="0" max="1" step=".01" value="0"><span class="val" id="reverbVal">0%</span></div>
-<div class="row"><label>DELAY</label><input id="delay" type="range" min="0" max="1" step=".01" value="0"><span class="val" id="delayVal">0%</span></div>
-<div class="row"><label>DRIVE</label><input id="drive" type="range" min="0" max="1" step=".01" value="0"><span class="val" id="driveVal">0%</span></div>
-<div class="row"><label>MASTER</label><input id="master" type="range" min="0" max="1" step=".01" value=".8"><span class="val" id="masterVal">80%</span></div>
-</div>
+        <!-- 4x4 Pads Grid -->
+        <div>
+          <div class="text-[10px] font-bold text-[#8c96a5] mb-1">4x4 SAMPLER PADS</div>
+          <div id="padsGrid" class="grid grid-cols-4 gap-1.5"></div>
+        </div>
 
-<div class="section">
-<div class="smalltitle">PERFORMANCE</div>
-<div class="three"><button class="btn" id="rollHalf">1/2</button><button class="btn" id="rollQuarter">1/4</button><button class="btn" id="rollEighth">1/8</button></div>
-<div style="height:7px"></div>
-<div class="twocol"><button class="btn" id="capture8">CAPTURE 8 BARS</button><button class="btn" id="captureSeq">RESAMPLE SEQUENCE</button></div>
-</div>
+      </div>
+    </section>
 
-<div class="section">
-<div class="smalltitle">SONG ARRANGEMENT</div>
-<select id="songMode"><option value="loop">PATTERN LOOP</option><option value="song">SONG: 01 → 02 → 03</option></select>
-<div class="hint">Song export renders the current pattern. Pattern memory is preserved for editing and project save/load.</div>
-</div>
-</div>
-</section>
-</main>
+    <!-- CENTER PANEL: SEQUENCER & GRID -->
+    <section class="col-span-6 bg-[#161920] border border-[#262c36] rounded-lg flex flex-col min-h-0">
+      
+      <!-- Sequencer Controls Header -->
+      <div class="p-2 border-b border-[#262c36] bg-[#111318] flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1">
+          <button id="btnPrevPat" class="btn touch-target">◄</button>
+          <span id="patDisplay" class="font-mono text-xs font-bold w-16 text-center">PAT 01</span>
+          <button id="btnNextPat" class="btn touch-target">►</button>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="text-xs text-[#8c96a5]">BPM</span>
+          <input id="inputBpm" type="number" min="40" max="240" value="92" class="w-16 font-mono text-center">
+        </div>
+        <div class="flex items-center gap-1">
+          <button id="btnPlay" class="btn btn-primary touch-target w-20">PLAY</button>
+          <button id="btnStop" class="btn touch-target">STOP</button>
+        </div>
+      </div>
 
-<footer><span class="foot" id="footerInfo">Built-in synth kit ready · Select a pad and tap PLAY</span><button class="btn" id="micCheck">MIC CHECK</button><button class="btn" id="kitBtn">BUILT-IN KIT</button></footer>
-</div>
+      <!-- Sequencer Matrix -->
+      <div class="flex-1 overflow-auto p-2">
+        <div id="seqMatrix" class="space-y-1.5 min-w-[500px]"></div>
+      </div>
+
+      <!-- Live Performance Toolbar -->
+      <div class="p-2 border-t border-[#262c36] bg-[#111318] flex items-center justify-between">
+        <div class="flex gap-1">
+          <button id="btn16Levels" class="btn touch-target">16 LEVELS</button>
+          <button id="btnRoll" class="btn touch-target">ROLL</button>
+          <button id="btnResample" class="btn touch-target">RESAMPLE</button>
+          <button id="btnSkipback" class="btn touch-target text-[#ffb000]">SKIPBACK (8B)</button>
+        </div>
+        <span id="stepDisplay" class="text-xs font-mono text-[#8c96a5]">STEP --</span>
+      </div>
+
+    </section>
+
+    <!-- RIGHT PANEL: STEP EDIT / FX / SONG -->
+    <section class="col-span-3 bg-[#161920] border border-[#262c36] rounded-lg flex flex-col min-h-0">
+      <div class="text-[10px] font-bold tracking-wider text-[#8c96a5] p-2 border-b border-[#262c36] bg-[#111318]">
+        STEP LOCKS / MASTER FX / SONG
+      </div>
+      <div class="flex-1 overflow-y-auto p-2 space-y-4 text-xs">
+        
+        <!-- Step Editor -->
+        <div class="border border-[#262c36] rounded p-2 space-y-2 bg-[#0d0f12]">
+          <div class="font-bold text-[#ffb000] text-[10px]">SELECTED STEP PARAMETERS</div>
+          <div>
+            <div class="flex justify-between text-[10px] text-[#8c96a5]">
+              <span>VELOCITY</span><span id="lblVel">100%</span>
+            </div>
+            <input id="stepVel" type="range" min="0" max="1" step="0.01" value="1" class="w-full touch-target">
+          </div>
+          <div>
+            <div class="flex justify-between text-[10px] text-[#8c96a5]">
+              <span>PROBABILITY</span><span id="lblProb">100%</span>
+            </div>
+            <input id="stepProb" type="range" min="0" max="1" step="0.01" value="1" class="w-full touch-target">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] text-[#8c96a5] block">RATCHET</label>
+              <select id="stepRatchet" class="w-full">
+                <option value="1">1x</option>
+                <option value="2">2x</option>
+                <option value="3">3x</option>
+                <option value="4">4x</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] text-[#8c96a5] block">NUDGE</label>
+              <input id="stepNudge" type="range" min="-0.4" max="0.4" step="0.05" value="0" class="w-full touch-target">
+            </div>
+          </div>
+          
+          <div class="pt-1 border-t border-[#262c36]">
+            <div class="font-bold text-[10px] text-[#8c96a5] mb-1">P-LOCK OVERRIDES</div>
+            <div class="grid grid-cols-2 gap-1">
+              <div>
+                <label class="text-[9px] text-[#8c96a5] block">LOCK PITCH</label>
+                <input id="lockPitch" type="range" min="-24" max="24" value="0" class="w-full touch-target">
+              </div>
+              <div>
+                <label class="text-[9px] text-[#8c96a5] block">LOCK FILTER</label>
+                <input id="lockFilter" type="range" min="100" max="20000" value="20000" class="w-full touch-target">
+              </div>
+            </div>
+            <button id="btnApplyLock" class="btn w-full mt-2 text-[10px]">APPLY LOCKS TO STEP</button>
+          </div>
+        </div>
+
+        <!-- Master FX -->
+        <div class="border border-[#262c36] rounded p-2 space-y-2 bg-[#0d0f12]">
+          <div class="font-bold text-[#ffb000] text-[10px]">BUS & MASTER FX</div>
+          <div>
+            <div class="flex justify-between text-[10px] text-[#8c96a5]">
+              <span>REVERB DUCK</span><span id="lblRev">0%</span>
+            </div>
+            <input id="fxReverb" type="range" min="0" max="1" step="0.01" value="0" class="w-full touch-target">
+          </div>
+          <div>
+            <div class="flex justify-between text-[10px] text-[#8c96a5]">
+              <span>DELAY (1/8 N)</span><span id="lblDelay">0%</span>
+            </div>
+            <input id="fxDelay" type="range" min="0" max="1" step="0.01" value="0" class="w-full touch-target">
+          </div>
+          <div>
+            <div class="flex justify-between text-[10px] text-[#8c96a5]">
+              <span>SATURATION / DRIVE</span><span id="lblDrive">0%</span>
+            </div>
+            <input id="fxDrive" type="range" min="0" max="1" step="0.01" value="0" class="w-full touch-target">
+          </div>
+        </div>
+
+        <!-- Song Sequence Editor -->
+        <div class="border border-[#262c36] rounded p-2 space-y-2 bg-[#0d0f12]">
+          <div class="font-bold text-[#ffb000] text-[10px]">SONG SEQUENCE ARRANGEMENT</div>
+          <div class="flex gap-1">
+            <button id="btnAddSongPat" class="btn flex-1 text-[10px]">+ ADD PAT</button>
+            <button id="btnClearSong" class="btn text-[10px] text-[#e65b64]">RESET</button>
+          </div>
+          <div id="songSeqDisplay" class="text-xs font-mono bg-[#000] p-2 rounded border border-[#262c36] break-all min-h-[40px]">
+            01
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER STATUS BAR -->
+  <footer class="h-8 bg-[#0a0c0e] border-t border-[#262c36] px-3 flex items-center justify-between text-xs text-[#8c96a5] shrink-0">
+    <span id="footerMsg">Ready. Load samples or trigger pads.</span>
+    <button id="btnKit" class="btn h-6 text-[10px] px-2">LOAD SYNTH KIT</button>
+  </footer>
 
 <script>
-(()=>{"use strict";
-const $=id=>document.getElementById(id);
-let AC=null, master=null, dryBus=null, analyser=null, inputStream=null, recorder=null, recChunks=[], recording=false;
-let currentBuffer=null, selected=0, selectedStep=null, playing=false, timer=null, playStep=0, patternNo=1;
-const history=[];
-const kitFreq=[55,110,220,330,140,180,65,330,262,520,440,45,180,300,800,90];
-const kitType=["kick","snare","hat","clap","tom","perc","bass","pluck","chord","fx","vox","808","rim","ohat","crash","ghost"];
-const padNames=["KICK","SNARE","HAT","CLAP","TOM","PERC","BASS","PLUCK","CHORD","FX","VOX","808","RIM","OPEN HAT","CRASH","GHOST"];
-const pads=Array.from({length:16},(_,i)=>({name:padNames[i],buffer:null,start:0,end:1,layer:null}));
-const patterns={1:makePattern()};
-let currentPattern=patterns[1];
-let bus={reverb:0,delay:0,drive:0,master:.8};
-let delayNode=null, reverbNode=null, convolver=null;
+(() => {
+  "use strict";
 
-function makePattern(){return Array.from({length:16},()=>({on:false,velocity:1,prob:1,ratchet:1,nudge:0,lock:null}))}
-function initAudio(){
- if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)(); master=AC.createGain();dryBus=AC.createGain();analyser=AC.createAnalyser();analyser.fftSize=256;dryBus.connect(master);master.connect(analyser);analyser.connect(AC.destination);master.gain.value=bus.master;setupFX();}
- if(AC.state==="suspended")AC.resume(); return AC;
-}
-function setupFX(){
- delayNode=AC.createDelay(2);delayNode.delayTime.value=.24;
- const dg=AC.createGain();dg.gain.value=0;
- dryBus.connect(delayNode);delayNode.connect(dg);dg.connect(master);
- convolver=AC.createConvolver();
- const len=AC.sampleRate*1.2, b=AC.createBuffer(2,len,AC.sampleRate);
- for(let c=0;c<2;c++){let d=b.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.2)}
- convolver.buffer=b;reverbNode=AC.createGain();reverbNode.gain.value=0;
- dryBus.connect(convolver);convolver.connect(reverbNode);reverbNode.connect(master);
-}
-function setStatus(t){$("status").textContent=t}
-function saveHistory(){history.push(pads.map(p=>({...p})));if(history.length>20)history.shift()}
-function synth(i,velocity=1,params=null,when=null){
- const a=initAudio(),t=when??a.currentTime,type=kitType[i],f=kitFreq[i];
- const out=a.createGain();out.gain.value=0;out.connect(dryBus);
- const filter=a.createBiquadFilter();filter.type="lowpass";filter.frequency.value=params?.filter??+$("filter").value;filter.connect(out);
- const pitch=params?.pitch??+$("pitch").value;
- const hz=f*Math.pow(2,pitch/12);
- if(type==="kick"||type==="808"){const o=a.createOscillator();o.type="sine";o.frequency.setValueAtTime(hz*2,t);o.frequency.exponentialRampToValueAtTime(Math.max(25,hz),t+.07);o.frequency.exponentialRampToValueAtTime(25,t+.42);out.gain.setValueAtTime(.001,t);out.gain.exponentialRampToValueAtTime(.85*velocity,t+.005);out.gain.exponentialRampToValueAtTime(.001,t+.45);o.connect(filter);o.start(t);o.stop(t+.5)}
- else if(type==="hat"||type==="ohat"||type==="crash"){const n=a.createBufferSource(),nb=a.createBuffer(1,Math.floor(a.sampleRate*(type==="crash"?.8:.25)),a.sampleRate),d=nb.getChannelData(0);for(let k=0;k<d.length;k++)d[k]=Math.random()*2-1;n.buffer=nb;const hp=a.createBiquadFilter();hp.type="highpass";hp.frequency.value=type==="crash"?3000:5500;n.connect(hp).connect(filter);out.gain.setValueAtTime(.001,t);out.gain.exponentialRampToValueAtTime(.4*velocity,t+.002);out.gain.exponentialRampToValueAtTime(.001,t+(type==="crash"?.75:.18));n.start(t)}
- else {const o=a.createOscillator();o.type=type==="snare"||type==="clap"?"triangle":type==="bass"?"sawtooth":"square";o.frequency.value=hz;out.gain.setValueAtTime(.001,t);out.gain.exponentialRampToValueAtTime(.28*velocity,t+.008);out.gain.exponentialRampToValueAtTime(.001,t+(type==="snare"?.16:.32));o.connect(filter);o.start(t);o.stop(t+.4)}
-}
-function playSample(i,velocity=1,when=null){
- const p=pads[i],a=initAudio(),t=when??a.currentTime;
- if(!p.buffer){synth(i,velocity,p.lock,t);return}
- const src=a.createBufferSource(),g=a.createGain(),f=a.createBiquadFilter();
- src.buffer=p.buffer;src.playbackRate.value=Math.pow(2,((p.lock?.pitch??+$("pitch").value))/12);
- f.type="lowpass";f.frequency.value=p.lock?.filter??+$("filter").value;
- src.connect(f).connect(g).connect(dryBus);
- const st=Math.max(0,Math.min(1,p.start)),en=Math.max(st+.001,Math.min(1,p.end));
- const dur=(en-st)*p.buffer.duration/Math.max(.01,src.playbackRate.value);
- const attack=+$("attack").value,release=Math.min(+$("release").value,dur*.5);
- g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(+$("level").value*velocity,t+attack);
- g.gain.setValueAtTime(+$("level").value*velocity,Math.max(t+attack,t+dur-release));
- g.gain.linearRampToValueAtTime(.0001,t+dur);
- src.start(t,st*p.buffer.duration);src.stop(t+dur+.02);
-}
-function playPad(i,v=1){initAudio();playSample(i,v);flashPad(i)}
-function flashPad(i){const el=document.querySelector(`.pad[data-i="${i}"]`);if(el){el.classList.add("active");setTimeout(()=>el.classList.toggle("active",i===selected),90)}}
-function renderPads(){
- const box=$("pads");box.innerHTML="";
- pads.forEach((p,i)=>{const b=document.createElement("button");b.className="pad"+(i===selected?" active":"");b.dataset.i=i;b.innerHTML=`<span class="n">${String(i+1).padStart(2,"0")}</span><span class="name">${p.name}</span><span class="meter"><i></i></span>`;b.addEventListener("pointerdown",()=>{selected=i;renderPads();playPad(i,.9)});box.appendChild(b)})
-}
-function drawWave(){
- const c=$("wave"),ctx=c.getContext("2d"),dpr=devicePixelRatio||1,w=c.clientWidth*dpr,h=c.clientHeight*dpr;c.width=w;c.height=h;ctx.clearRect(0,0,w,h);ctx.strokeStyle="#49d487";ctx.lineWidth=dpr;ctx.beginPath();
- if(currentBuffer){const d=currentBuffer.getChannelData(0),step=Math.max(1,Math.ceil(d.length/w));for(let x=0;x<w;x++){let mn=1,mx=-1;for(let j=0;j<step;j++){const v=d[x*step+j]||0;mn=Math.min(mn,v);mx=Math.max(mx,v)}ctx.moveTo(x,h*(.5+mn*.45));ctx.lineTo(x,h*(.5+mx*.45))}}else{ctx.moveTo(0,h/2);ctx.lineTo(w,h/2)}ctx.stroke();
- $("startMark").style.left=(+$("start").value*100)+"%";$("endMark").style.left=(+$("end").value*100)+"%";
-}
-function renderGrid(){
- const g=$("grid");g.innerHTML="";
- for(let r=0;r<4;r++){const lane=document.createElement("div");lane.className="lane";const lh=document.createElement("div");lh.className="lh";lh.textContent=`${pads[r*4].name} / ${pads[r*4+3].name}`;lane.appendChild(lh);
- for(let c=0;c<16;c++){const idx=r*4+c,st=currentPattern[idx],b=document.createElement("button");b.className="step"+(st.on?" on":"")+(c===playStep&&playing?" play":"");b.dataset.idx=idx;b.innerHTML=`<span class="rat">${st.ratchet>1?"×"+st.ratchet:""}</span><span class="prob">${Math.round(st.prob*100)}%</span><i class="vel" style="transform:scaleX(${st.velocity})"></i>`;b.addEventListener("pointerdown",()=>{selectedStep=idx;if(!st.on)st.on=true;else st.on=false;renderGrid();loadStepEditor()});lane.appendChild(b)}g.appendChild(lane)}
-}
-function loadStepEditor(){
- if(selectedStep==null)return;const s=currentPattern[selectedStep];
- $("stepVel").value=s.velocity;$("stepProb").value=s.prob;$("stepRat").value=s.ratchet;$("stepNudge").value=s.nudge;
- $("stepVelVal").textContent=Math.round(s.velocity*100)+"%";$("stepProbVal").textContent=Math.round(s.prob*100)+"%";$("stepNudgeVal").textContent=Math.round(s.nudge*100)+"%";
- $("lockPitch").value=s.lock?.pitch??0;$("lockFilter").value=s.lock?.filter??20000;updateLockLabels();
-}
-function updateLockLabels(){$("lockPitchVal").textContent=$("lockPitch").value;$("lockFilterVal").textContent=(+$("lockFilter").value>=1000?(+$("lockFilter").value/1000).toFixed(1)+"k":$("lockFilter").value)}
-function tick(){
- if(!playing)return;const a=initAudio(),bpm=Math.max(40,Math.min(240,+$("bpm").value||92)),stepDur=60/bpm/4,now=a.currentTime+.025;
- for(let r=0;r<4;r++){const idx=r*4+playStep,s=currentPattern[idx];if(s.on&&Math.random()<=s.prob){const hits=s.ratchet;for(let q=0;q<hits;q++){const at=now+q*stepDur/hits+s.nudge*stepDur;playSample(idx,s.velocity,at)}}}
- $("stepInfo").textContent=`STEP ${playStep+1} · ${Math.round(bpm)} BPM`;renderGrid();playStep=(playStep+1)%16;timer=setTimeout(tick,stepDur*1000*.92)
-}
-function togglePlay(){initAudio();playing=!playing;if(playing){$("playBtn").textContent="PAUSE";setStatus("PLAYING");tick()}else{clearTimeout(timer);$("playBtn").textContent="PLAY";setStatus("READY")}}
-function reset(){playing=false;clearTimeout(timer);resetSong();Object.keys(patterns).forEach(k=>delete patterns[k]);patterns[1]=makePattern();patternNo=1;currentPattern=patterns[1];pads.forEach((p,i)=>{p.buffer=null;p.start=0;p.end=1;p.name=padNames[i];p.layer=null});selected=0;currentBuffer=null;drawWave();renderPads();renderGrid();setStatus("NEW PROJECT")}
-async function importAudioFile(file){
- initAudio();setStatus("DECODING…");$("footerInfo").textContent=`Loading ${file.name}…`;
- try{const ab=await file.arrayBuffer();let b=null;try{b=await AC.decodeAudioData(ab.slice(0))}catch(e){}
- if(!b){const url=URL.createObjectURL(file);b=await decodeWithMediaElement(url);URL.revokeObjectURL(url)}
- if(!b)throw Error("decode failed");currentBuffer=b;saveHistory();pads[selected].buffer=b;pads[selected].name=file.name.replace(/\.[^.]+$/,"").slice(0,14).toUpperCase();pads[selected].start=0;pads[selected].end=1;drawWave();renderPads();$("footerInfo").textContent=`LOADED · ${file.name} · ${b.duration.toFixed(2)}s · ${b.sampleRate}Hz`;setStatus("SAMPLE LOADED");playPad(selected,.2)
- }catch(e){console.error(e);setStatus("IMPORT FAILED");$("footerInfo").textContent="Could not decode this file in Safari. PCM WAV, MP3/M4A or AAC MP4/MOV are recommended."}
- $("fileInput").value="";
-}
-function decodeWithMediaElement(url){
- return new Promise(async(resolve,reject)=>{
-  const a=initAudio(),media=document.createElement("audio");media.src=url;media.preload="auto";media.playsInline=true;
-  const finish=()=>{media.removeEventListener("error",bad);media.removeEventListener("loadedmetadata",ready)};
-  const bad=()=>{finish();reject(Error("media error"))};
-  const ready=async()=>{
-   try{const dest=a.createMediaStreamDestination(),src=a.createMediaElementSource(media),g=a.createGain();src.connect(g);g.connect(dest);g.connect(a.destination);
-    const chunks=[],types=["audio/mp4","audio/webm;codecs=opus","audio/webm"];let mime="";for(const t of types)if(window.MediaRecorder?.isTypeSupported(t)){mime=t;break}
-    if(!window.MediaRecorder)throw Error("MediaRecorder unavailable");const mr=new MediaRecorder(dest.stream,mime?{mimeType:mime}:undefined);mr.ondataavailable=e=>e.data.size&&chunks.push(e.data);const done=new Promise(r=>mr.onstop=r);mr.start(100);await media.play();await new Promise((r,j)=>{media.onended=r;media.onerror=j});mr.stop();await done;const b=await a.decodeAudioData(await new Blob(chunks,{type:mr.mimeType||mime}).arrayBuffer());src.disconnect();g.disconnect();media.removeAttribute("src");media.load();finish();resolve(b)
-   }catch(e){finish();reject(e)}
-  };media.addEventListener("error",bad,{once:true});media.addEventListener("loadedmetadata",ready,{once:true});media.load()
- })
-}
-async function recordMic(){
- initAudio();
- if(recording){recorder.stop();recording=false;$("recordBtn").textContent="● RECORD MIC / INTERFACE";return}
- try{inputStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});const src=AC.createMediaStreamSource(inputStream),meter=AC.createAnalyser();meter.fftSize=256;src.connect(meter);const chunks=[];const mime=MediaRecorder.isTypeSupported("audio/mp4")?"audio/mp4":"audio/webm";recorder=new MediaRecorder(inputStream,{mimeType:mime});recorder.ondataavailable=e=>e.data.size&&chunks.push(e.data);recorder.onstop=async()=>{const b=await AC.decodeAudioData(await new Blob(chunks,{type:recorder.mimeType}).arrayBuffer());currentBuffer=b;pads[selected].buffer=b;pads[selected].name="REC "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});drawWave();renderPads();$("footerInfo").textContent=`RECORDED · ${b.duration.toFixed(2)}s`;inputStream.getTracks().forEach(t=>t.stop());setStatus("RECORDING READY")};recorder.start(100);recording=true;$("recordBtn").textContent="■ STOP RECORDING";setStatus("RECORDING…");(function meter(){if(!recording)return;const ar=new Uint8Array(meter.frequencyBinCount);meter.getByteTimeDomainData(ar);let sum=0;for(const v of ar){const q=(v-128)/128;sum+=q*q}$("inputMeter").style.width=Math.min(100,Math.sqrt(sum/ar.length)*180)+"%";requestAnimationFrame(meter)})()}catch(e){setStatus("MIC ACCESS FAILED")}}
-function autoChop(){if(!currentBuffer){alert("Load or record a sample first.");return}saveHistory();for(let i=0;i<16;i++){pads[i].buffer=currentBuffer;pads[i].start=i/16;pads[i].end=(i+1)/16;pads[i].name="CHOP "+String(i+1).padStart(2,"0")}renderPads();setStatus("16 CHOPS ASSIGNED")}
-function trimToPad(){const p=pads[selected];if(!p.buffer)return;saveHistory();const st=Math.floor(p.start*p.buffer.length),en=Math.floor(p.end*p.buffer.length),n=Math.max(1,en-st),b=AC.createBuffer(p.buffer.numberOfChannels,n,p.buffer.sampleRate);for(let c=0;c<b.numberOfChannels;c++)b.getChannelData(c).set(p.buffer.getChannelData(c).slice(st,en));p.buffer=b;p.start=0;p.end=1;currentBuffer=b;drawWave();setStatus("PAD TRIMMED")}
-function duplicate(){saveHistory();const dst=(selected+1)%16;pads[dst]={...pads[selected],name:pads[selected].name+" COPY"};selected=dst;renderPads();setStatus("PAD DUPLICATED")}
-function clearPad(){saveHistory();pads[selected].buffer=null;pads[selected].layer=null;renderPads();setStatus("PAD CLEARED")}
-function renderWavBuffer(buf,name="sampler-export.wav"){const ch=buf.numberOfChannels,len=buf.length,rate=buf.sampleRate,ab=new ArrayBuffer(44+len*ch*2),v=new DataView(ab);let p=0;const ws=x=>{for(let i=0;i<x.length;i++)v.setUint8(p++,x.charCodeAt(i))};ws("RIFF");v.setUint32(p,ab.byteLength-8,true);p+=4;ws("WAVEfmt ");v.setUint32(p,16,true);p+=4;v.setUint16(p,1,true);p+=2;v.setUint16(p,ch,true);p+=2;v.setUint32(p,rate,true);p+=4;v.setUint32(p,rate*ch*2,true);p+=4;v.setUint16(p,ch*2,true);p+=2;v.setUint16(p,16,true);p+=2;ws("data");v.setUint32(p,len*ch*2,true);p+=4;for(let i=0;i<len;i++)for(let c=0;c<ch;c++){const q=Math.max(-1,Math.min(1,buf.getChannelData(c)[i]));v.setInt16(p,q<0?q*32768:q*32767,true);p+=2}const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([ab],{type:"audio/wav"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-async function exportCurrent(){if(!currentBuffer){alert("Nothing to export.");return}const p=pads[selected],a=AC,st=Math.floor(p.start*currentBuffer.length),en=Math.floor(p.end*currentBuffer.length),b=a.createBuffer(currentBuffer.numberOfChannels,en-st,currentBuffer.sampleRate);for(let c=0;c<b.numberOfChannels;c++)b.getChannelData(c).set(currentBuffer.getChannelData(c).slice(st,en));renderWavBuffer(b,"pad-"+String(selected+1).padStart(2,"0")+".wav");setStatus("PAD WAV EXPORTED")}
-async function exportPattern(){
- const bpm=+$("bpm").value||92,beats=16,seconds=beats*60/bpm,rate=AC?.sampleRate||48000,off=new OfflineAudioContext(2,Math.ceil(seconds*rate),rate);
- const destination=off.destination;
- for(let r=0;r<4;r++)for(let c=0;c<16;c++){const idx=r*4+c,s=currentPattern[idx];if(!s.on||Math.random()>s.prob)continue;for(let q=0;q<s.ratchet;q++){const t=(c*60/bpm/4)+q*(60/bpm/4)/s.ratchet;const p=pads[idx];if(p.buffer){const src=off.createBufferSource();src.buffer=p.buffer;src.playbackRate.value=Math.pow(2,(p.lock?.pitch||0)/12);const g=off.createGain();g.gain.value=s.velocity*.7;src.connect(g).connect(destination);const st=p.start*p.buffer.duration,dur=(p.end-p.start)*p.buffer.duration/src.playbackRate.value;src.start(t,st,Math.min(dur,seconds-t))}else{const o=off.createOscillator(),g=off.createGain();o.type="sine";o.frequency.value=kitFreq[idx];g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.3*s.velocity,t+.005);g.gain.exponentialRampToValueAtTime(.001,t+.25);o.connect(g).connect(destination);o.start(t);o.stop(t+.3)}}}
- const out=await off.startRendering();renderWavBuffer(out,"pattern-"+String(patternNo).padStart(2,"0")+".wav");setStatus("PATTERN WAV EXPORTED")}
-function resampleSequence(){exportPattern()}
-function audioBufferToPCM16Base64(buf){
- const ch=buf.numberOfChannels,len=buf.length;
- const bytes=new Uint8Array(len*ch*2);
- const dv=new DataView(bytes.buffer);let p=0;
- for(let i=0;i<len;i++)for(let c=0;c<ch;c++){
-   const q=Math.max(-1,Math.min(1,buf.getChannelData(c)[i]));
-   dv.setInt16(p,q<0?q*32768:q*32767,true);p+=2;
- }
- let binary="";const chunk=0x8000;
- for(let i=0;i<bytes.length;i+=chunk)binary+=String.fromCharCode(...bytes.subarray(i,Math.min(i+chunk,bytes.length)));
- return btoa(binary);
-}
-function base64ToBytes(str){
- const bin=atob(str),out=new Uint8Array(bin.length);
- for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);
- return out;
-}
-async function serializeProject(){
- const sampleData=[];
- for(let i=0;i<pads.length;i++){
-   const p=pads[i];
-   sampleData.push({
-     name:p.name,start:p.start,end:p.end,
-     sampleRate:p.buffer?.sampleRate||null,
-     channels:p.buffer?.numberOfChannels||0,
-     length:p.buffer?.length||0,
-     pcm:p.buffer?audioBufferToPCM16Base64(p.buffer):null
-   });
- }
- return {
-   version:3,created:new Date().toISOString(),bpm:+$("bpm").value||92,
-   patternNo,patterns,pads:sampleData,selected,bus,
-   arrangement:songArrangement
- };
-}
-async function saveProject(){
- try{
-   setStatus("PACKING PROJECT AUDIO…");
-   const data=await serializeProject();
-   const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
-   const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-   a.download="sampler-self-contained-project.json";a.click();
-   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-   setStatus("PROJECT SAVED · AUDIO EMBEDDED");
- }catch(e){console.error(e);setStatus("PROJECT SAVE FAILED")}
-}
-async function decodeEmbeddedPCM(x){
- if(!x?.pcm||!x.sampleRate)return null;
- const bytes=base64ToBytes(x.pcm),channels=x.channels||1,length=x.length;
- const b=AC.createBuffer(channels,length,x.sampleRate),dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
- let p=0;
- for(let i=0;i<length;i++)for(let c=0;c<channels;c++){b.getChannelData(c)[i]=dv.getInt16(p,true)/32768;p+=2}
- return b;
-}
-async function loadProject(file){
- try{
-   initAudio();setStatus("LOADING PROJECT…");
-   const d=JSON.parse(await file.text());
-   if(!d||d.version<3)throw Error("Old project format");
-   $("bpm").value=d.bpm||92;patternNo=d.patternNo||1;
-   Object.keys(patterns).forEach(k=>delete patterns[k]);
-   Object.entries(d.patterns||{}).forEach(([k,v])=>patterns[k]=v);
-   if(!patterns[patternNo])patterns[patternNo]=makePattern();
-   currentPattern=patterns[patternNo];
-   bus=Object.assign(bus,d.bus||{});
-   songArrangement=Array.isArray(d.arrangement)&&d.arrangement.length?d.arrangement:[1];
-   if(d.pads)for(let i=0;i<Math.min(16,d.pads.length);i++){
-     const x=d.pads[i];pads[i].name=x.name||padNames[i];pads[i].start=x.start??0;pads[i].end=x.end??1;
-     pads[i].buffer=await decodeEmbeddedPCM(x);
-   }
-   selected=d.selected||0;currentBuffer=pads[selected].buffer||null;
-   $("patternName").textContent="PATTERN "+String(patternNo).padStart(2,"0");
-   $("songMode").value=songArrangement.length>1?"song":"loop";
-   renderPads();renderGrid();drawWave();updateFX();
-   setStatus("PROJECT LOADED · AUDIO RESTORED");
-   $("footerInfo").textContent="Self-contained project · Samples restored";
- }catch(e){console.error(e);setStatus("PROJECT LOAD FAILED");$("footerInfo").textContent="Project may be from an older build or is damaged."}
-}
-let songArrangement=[1];
-let skipBuffer=null,skipProcessor=null,skipSource=null,skipRing=null,skipWrite=0,skipLength=0,skipRate=48000,skipChannels=2,skipCaptureActive=false;
+  const $ = id => document.getElementById(id);
 
-function startSkipback(){
- if(skipCaptureActive)return;
- initAudio();
- skipRate=AC.sampleRate;skipChannels=2;
- // Eight bars at the current tempo. The ring is resized automatically if BPM changes.
- skipLength=Math.max(1,Math.ceil((60/(+$("bpm").value||92))*4*8*skipRate));
- skipRing=Array.from({length:skipChannels},()=>new Float32Array(skipLength));
- skipWrite=0;skipCaptureActive=true;
- // Use a ScriptProcessor fed from the master bus. This is intentionally kept as a
- // compatibility path for iPad Safari's broad Web Audio support.
- skipProcessor=AC.createScriptProcessor(2048,2,2);
- master.connect(skipProcessor);
- skipProcessor.onaudioprocess=e=>{
-   if(!skipCaptureActive)return;
-   const n=e.inputBuffer.length;
-   for(let c=0;c<skipChannels;c++){
-     const input=e.inputBuffer.getChannelData(Math.min(c,e.inputBuffer.numberOfChannels-1));
-     for(let i=0;i<n;i++)skipRing[c][(skipWrite+i)%skipLength]=input[i];
-   }
-   skipWrite=(skipWrite+n)%skipLength;
- };
- setStatus("SKIPBACK · 8 BAR RING ACTIVE");
-}
-function captureSkipback(){
- if(!skipCaptureActive||!skipRing){setStatus("SKIPBACK NOT READY");return}
- const b=AC.createBuffer(skipChannels,skipLength,skipRate);
- const start=skipWrite;
- for(let c=0;c<skipChannels;c++){
-   const out=b.getChannelData(c),ring=skipRing[c];
-   for(let i=0;i<skipLength;i++)out[i]=ring[(start+i)%skipLength];
- }
- skipBuffer=b;pads[selected].buffer=b;pads[selected].start=0;pads[selected].end=1;
- currentBuffer=b;drawWave();renderPads();
- setStatus("8 BARS CAPTURED → PAD "+String(selected+1).padStart(2,"0"));
- $("footerInfo").textContent=`Skipback · ${((skipLength/skipRate)).toFixed(1)}s captured`;
-}
-function rebuildSkipRing(){
- if(skipCaptureActive){skipCaptureActive=false;if(skipProcessor){try{master.disconnect(skipProcessor)}catch(e){}skipProcessor.disconnect();skipProcessor=null}startSkipback()}
-}
-async function renderPatternOffline(patternId,durationBars=1,off=null,destination=null,startAt=0){
- const bpm=+$("bpm").value||92,rate=off?.sampleRate||AC.sampleRate;
- const seconds=durationBars*4*60/bpm;
- const ctx=off||new OfflineAudioContext(2,Math.ceil(seconds*rate),rate);
- const dest=destination||ctx.destination;
- const pat=patterns[patternId]||makePattern();
- for(let r=0;r<4;r++)for(let c=0;c<16;c++){
-   const idx=r*4+c,s=pat[idx];if(!s?.on||Math.random()>s.prob)continue;
-   for(let q=0;q<(s.ratchet||1);q++){
-     const t=startAt+c*60/bpm/4+q*(60/bpm/4)/(s.ratchet||1)+s.nudge*60/bpm/4;
-     const p=pads[idx];
-     if(p.buffer){
-       const src=ctx.createBufferSource(),g=ctx.createGain(),f=ctx.createBiquadFilter();
-       src.buffer=p.buffer;src.playbackRate.value=Math.pow(2,(p.lock?.pitch||0)/12);
-       f.type="lowpass";f.frequency.value=p.lock?.filter||20000;g.gain.value=s.velocity*.7;
-       src.connect(f).connect(g).connect(dest);
-       const st=p.start*p.buffer.duration,dur=Math.max(.01,(p.end-p.start)*p.buffer.duration/src.playbackRate.value);
-       if(t<seconds*durationBars)src.start(Math.max(0,t),st,Math.min(dur,seconds*durationBars-t));
-     }else{
-       const o=ctx.createOscillator(),g=ctx.createGain();o.type=kitType[idx]==="bass"?"sawtooth":"sine";o.frequency.value=kitFreq[idx];
-       g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.25*s.velocity,t+.005);g.gain.exponentialRampToValueAtTime(.001,t+.28);
-       o.connect(g).connect(dest);o.start(t);o.stop(t+.3);
-     }
-   }
- }
- return off?null:ctx.startRendering();
-}
-async function exportSong(){
- initAudio();setStatus("RENDERING SONG…");
- const seq=songArrangement.length?songArrangement:[1],bpm=+$("bpm").value||92,rate=AC.sampleRate;
- const bars=seq.length,seconds=bars*4*60/bpm;
- const off=new OfflineAudioContext(2,Math.ceil(seconds*rate),rate);
- const masterOff=off.createGain();masterOff.gain.value=bus.master;masterOff.connect(off.destination);
- for(let i=0;i<seq.length;i++)await renderPatternOffline(seq[i],1,off,masterOff,i*4*60/bpm);
- const out=await off.startRendering();renderWavBuffer(out,"song-export.wav");
- setStatus("SONG WAV EXPORTED");$("footerInfo").textContent=`Song · ${seq.length} pattern bar(s)`;
-}
-function addPatternToSong(id){songArrangement.push(id);renderSongInfo()}
-function renderSongInfo(){$("footerInfo").textContent=`Song: ${songArrangement.map(x=>String(x).padStart(2,"0")).join(" → ")} · ${songArrangement.length} bar(s)`}
-function resetSong(){songArrangement=[1];renderSongInfo()}
+  // Core Audio Context & State
+  let AC = null, masterBus = null, dryBus = null, fxReverbGain = null, fxDelayNode = null, fxDelayGain = null;
+  let recStream = null, mediaRecorder = null, recChunks = [];
+  let isRecording = false;
 
-function updateFX(){
- bus.reverb=+$("reverb").value;bus.delay=+$("delay").value;bus.drive=+$("drive").value;bus.master=+$("master").value;
- if(master)master.gain.value=bus.master;if(reverbNode)reverbNode.gain.value=bus.reverb*.7;if(delayNode&&delayNode.nextSibling){}$("reverbVal").textContent=Math.round(bus.reverb*100)+"%";$("delayVal").textContent=Math.round(bus.delay*100)+"%";$("driveVal").textContent=Math.round(bus.drive*100)+"%";$("masterVal").textContent=Math.round(bus.master*100)+"%"
-}
-$("fileInput").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)importAudioFile(f)});
-$("projectFile").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)loadProject(f);e.target.value=""});
-$("recordBtn").onclick=recordMic;$("playBtn").onclick=togglePlay;$("stopBtn").onclick=()=>{playing=false;clearTimeout(timer);$("playBtn").textContent="PLAY";setStatus("STOPPED")};
-$("newBtn").onclick=reset;$("saveBtn").onclick=saveProject;$("exportBtn").onclick=()=>currentBuffer?exportCurrent():exportPattern();
-$("autoChop").onclick=autoChop;$("duplicate").onclick=duplicate;$("trimPad").onclick=trimToPad;$("clearPad").onclick=clearPad;
-$("prevPat").onclick=()=>{if(patterns[patternNo])patterns[patternNo]=currentPattern;patternNo=Math.max(1,patternNo-1);currentPattern=patterns[patternNo]||(patterns[patternNo]=makePattern());$("patternName").textContent="PATTERN "+String(patternNo).padStart(2,"0");renderGrid()};
-$("nextPat").onclick=()=>{patterns[patternNo]=currentPattern;patternNo++;currentPattern=patterns[patternNo]||(patterns[patternNo]=makePattern());$("patternName").textContent="PATTERN "+String(patternNo).padStart(2,"0");renderGrid()};
-$("tempoMinus").onclick=()=>{$("bpm").value=Math.max(40,+$("bpm").value-1)};$("tempoPlus").onclick=()=>{$("bpm").value=Math.min(240,+$("bpm").value+1)};
-$("rollBtn").onclick=()=>{for(let i=0;i<16;i++)currentPattern[i].on=true;renderGrid();setStatus("16-STEP ROLL ENABLED")};
-$("levelsBtn").onclick=()=>{for(let i=0;i<16;i++)currentPattern[i].velocity=(i+1)/16;renderGrid();setStatus("16 LEVELS · VELOCITY 1–16")};
-$("resampleBtn").onclick=resampleSequence;$("skipBtn").onclick=captureSkipback;
-["stepVel","stepProb","stepNudge"].forEach(id=>$(id).addEventListener("input",()=>{if(selectedStep==null)return;const s=currentPattern[selectedStep];s.velocity=+$("stepVel").value;s.prob=+$("stepProb").value;s.nudge=+$("stepNudge").value;$("stepVelVal").textContent=Math.round(s.velocity*100)+"%";$("stepProbVal").textContent=Math.round(s.prob*100)+"%";$("stepNudgeVal").textContent=Math.round(s.nudge*100)+"%";renderGrid()}));
-$("stepRat").onchange=()=>{if(selectedStep!=null){currentPattern[selectedStep].ratchet=+$("stepRat").value;renderGrid()}};
-$("applyLock").onclick=()=>{if(selectedStep==null)return;currentPattern[selectedStep].lock={pitch:+$("lockPitch").value,filter:+$("lockFilter").value};setStatus("PARAMETER LOCK APPLIED");renderGrid()};
-$("lockPitch").oninput=updateLockLabels;$("lockFilter").oninput=updateLockLabels;
-["reverb","delay","drive","master"].forEach(id=>$(id).addEventListener("input",updateFX));
-$("start").oninput=e=>{if(+$("start").value>+$("end").value)$("start").value=$("end").value;drawWave();if(pads[selected].buffer)pads[selected].start=+$("start").value};
-$("end").oninput=e=>{if(+$("end").value<+$("start").value)$("end").value=$("start").value;drawWave();if(pads[selected].buffer)pads[selected].end=+$("end").value};
-$("pitch").oninput=()=>{};$("filter").oninput=()=>{};
-$("capture8").onclick=captureSkipback;$("captureSeq").onclick=resampleSequence;
-$("rollHalf").onclick=()=>{currentPattern.forEach((s,i)=>{if(i%2)s.on=true});renderGrid()};$("rollQuarter").onclick=()=>{currentPattern.forEach((s,i)=>{if(i%4)s.on=true});renderGrid()};$("rollEighth").onclick=()=>{currentPattern.forEach((s,i)=>{if(i%8)s.on=true});renderGrid()};
-$("exportSongBtn").onclick=exportSong;
-$("songMode").onchange=()=>{if($("songMode").value==="loop"){resetSong()}else{songArrangement=[1,2,3];renderSongInfo()}};
-$("kitBtn").onclick=()=>{initAudio();for(let i=0;i<16;i++)if(!pads[i].buffer)pads[i].name=padNames[i];renderPads();playPad(selected,.8);setStatus("BUILT-IN KIT READY")};
-startSkipback();renderSongInfo();
-$("micCheck").onclick=async()=>{try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());setStatus("MIC READY")}catch(e){setStatus("MIC ACCESS DENIED")}};
-window.addEventListener("resize",drawWave);
-renderPads();renderGrid();drawWave();updateFX();
+  let selectedPad = 0;
+  let selectedStep = null;
+  let activePatternIndex = 1;
+  let isPlaying = false;
+  let seqTimer = null;
+  let currentStep = 0;
+
+  // Continuous Skipback Ring Buffer (8 Bars at 92 BPM = ~21 seconds)
+  let skipRingBuffers = [new Float32Array(48000 * 22), new Float32Array(48000 * 22)];
+  let skipWritePos = 0;
+  let skipBufferLen = 48000 * 22;
+  let skipProcessor = null;
+
+  const kitDefaults = [
+    { name: "KICK", freq: 55, type: "kick" }, { name: "SNARE", freq: 180, type: "snare" },
+    { name: "CLOSED HAT", freq: 8000, type: "hat" }, { name: "OPEN HAT", freq: 7500, type: "ohat" },
+    { name: "CLAP", freq: 1000, type: "clap" }, { name: "TOM LOW", freq: 90, type: "tom" },
+    { name: "TOM MID", freq: 140, type: "tom" }, { name: "PERC 1", freq: 450, type: "perc" },
+    { name: "SUB BASS", freq: 45, type: "bass" }, { name: "SYNTH PLUCK", freq: 440, type: "pluck" },
+    { name: "CHORD PAD", freq: 261, type: "chord" }, { name: "VOX HIT", freq: 350, type: "vox" },
+    { name: "RIMSHOT", freq: 600, type: "perc" }, { name: "COWBELL", freq: 800, type: "perc" },
+    { name: "CRASH", freq: 5000, type: "crash" }, { name: "FX NOISE", freq: 1200, type: "fx" }
+  ];
+
+  const pads = Array.from({ length: 16 }, (_, i) => ({
+    name: kitDefaults[i].name,
+    buffer: null,
+    start: 0,
+    end: 1,
+    pitch: 0,
+    filter: 20000,
+    attack: 0.001,
+    release: 0.2
+  }));
+
+  function createBlankPattern() {
+    return Array.from({ length: 16 }, () => ({
+      on: false,
+      velocity: 1.0,
+      prob: 1.0,
+      ratchet: 1,
+      nudge: 0,
+      lockPitch: null,
+      lockFilter: null
+    }));
+  }
+
+  const patterns = { 1: createBlankPattern() };
+  let songArrangement = [1];
+
+  // Initialize Web Audio Stack
+  function initAudio() {
+    if (!AC) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      AC = new AudioCtx();
+      
+      masterBus = AC.createGain();
+      dryBus = AC.createGain();
+      
+      masterBus.gain.value = 0.85;
+      dryBus.connect(masterBus);
+      masterBus.connect(AC.destination);
+
+      // Simple Delay Node Setup
+      fxDelayNode = AC.createDelay();
+      fxDelayNode.delayTime.value = 0.326; // ~1/8 note at 92 BPM
+      fxDelayGain = AC.createGain();
+      fxDelayGain.gain.value = 0;
+      dryBus.connect(fxDelayNode);
+      fxDelayNode.connect(fxDelayGain);
+      fxDelayGain.connect(masterBus);
+
+      // Simple Reverb Setup
+      const convolver = AC.createConvolver();
+      const revLen = AC.sampleRate * 1.5;
+      const revBuf = AC.createBuffer(2, revLen, AC.sampleRate);
+      for (let c = 0; c < 2; c++) {
+        const d = revBuf.getChannelData(c);
+        for (let i = 0; i < revLen; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / revLen, 2);
+      }
+      convolver.buffer = revBuf;
+      fxReverbGain = AC.createGain();
+      fxReverbGain.gain.value = 0;
+      dryBus.connect(convolver);
+      convolver.connect(fxReverbGain);
+      fxReverbGain.connect(masterBus);
+
+      // Continuous Skipback Recording Node
+      try {
+        skipProcessor = AC.createScriptProcessor(2048, 2, 2);
+        masterBus.connect(skipProcessor);
+        skipProcessor.connect(AC.destination);
+        skipProcessor.onaudioprocess = e => {
+          const inL = e.inputBuffer.getChannelData(0);
+          const inR = e.inputBuffer.numberOfChannels > 1 ? e.inputBuffer.getChannelData(1) : inL;
+          const len = inL.length;
+          for (let i = 0; i < len; i++) {
+            skipRingBuffers[0][(skipWritePos + i) % skipBufferLen] = inL[i];
+            skipRingBuffers[1][(skipWritePos + i) % skipBufferLen] = inR[i];
+          }
+          skipWritePos = (skipWritePos + len) % skipBufferLen;
+        };
+      } catch (err) {
+        console.warn("Skipback processor setup fallback", err);
+      }
+    }
+    if (AC.state === "suspended") AC.resume();
+  }
+
+  function setStatus(msg) {
+    $("status").textContent = msg;
+    $("footerMsg").textContent = msg;
+  }
+
+  // Synthesize Built-In Drum/Tonal Kit when no custom audio is loaded
+  function playSynthKit(index, velocity = 1, when = 0, pitchOverride = null, filterOverride = null) {
+    const t = when || AC.currentTime;
+    const def = kitDefaults[index];
+    const osc = AC.createOscillator();
+    const gain = AC.createGain();
+    const filter = AC.createBiquadFilter();
+
+    const pitchShift = pitchOverride !== null ? pitchOverride : pads[index].pitch;
+    const freq = def.freq * Math.pow(2, pitchShift / 12);
+
+    filter.type = "lowpass";
+    filter.frequency.value = filterOverride !== null ? filterOverride : pads[index].filter;
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(dryBus);
+
+    if (def.type === "kick") {
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq * 2.5, t);
+      osc.frequency.exponentialRampToValueAtTime(Math.max(20, freq), t + 0.08);
+      gain.gain.setValueAtTime(0.9 * velocity, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      osc.start(t);
+      osc.stop(t + 0.36);
+    } else if (def.type === "hat" || def.type === "ohat" || def.type === "crash") {
+      const node = AC.createBufferSource();
+      const bLen = Math.floor(AC.sampleRate * (def.type === "ohat" ? 0.4 : def.type === "crash" ? 0.8 : 0.1));
+      const b = AC.createBuffer(1, bLen, AC.sampleRate);
+      const data = b.getChannelData(0);
+      for (let i = 0; i < bLen; i++) data[i] = Math.random() * 2 - 1;
+      node.buffer = b;
+      
+      const hp = AC.createBiquadFilter();
+      hp.type = "highpass";
+      hp.frequency.value = 6000;
+      
+      node.connect(hp);
+      hp.connect(filter);
+      gain.gain.setValueAtTime(0.5 * velocity, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + (def.type === "ohat" ? 0.35 : 0.08));
+      node.start(t);
+    } else {
+      osc.type = def.type === "snare" || def.type === "clap" ? "triangle" : def.type === "bass" ? "sawtooth" : "square";
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.5 * velocity, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      osc.start(t);
+      osc.stop(t + 0.26);
+    }
+  }
+
+  function triggerPad(index, velocity = 1, when = 0, pitchOverride = null, filterOverride = null) {
+    initAudio();
+    const pad = pads[index];
+    const t = when || AC.currentTime;
+
+    flashPadUI(index);
+
+    if (!pad.buffer) {
+      playSynthKit(index, velocity, t, pitchOverride, filterOverride);
+      return;
+    }
+
+    const src = AC.createBufferSource();
+    const gain = AC.createGain();
+    const filter = AC.createBiquadFilter();
+
+    src.buffer = pad.buffer;
+    
+    const finalPitch = pitchOverride !== null ? pitchOverride : pad.pitch;
+    src.playbackRate.value = Math.pow(2, finalPitch / 12);
+
+    filter.type = "lowpass";
+    filter.frequency.value = filterOverride !== null ? filterOverride : pad.filter;
+
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(dryBus);
+
+    const st = pad.start * pad.buffer.duration;
+    const dur = Math.max(0.01, (pad.end - pad.start) * pad.buffer.duration / src.playbackRate.value);
+
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(velocity, t + pad.attack);
+    gain.gain.setValueAtTime(velocity, Math.max(t + pad.attack, t + dur - pad.release));
+    gain.gain.linearRampToValueAtTime(0.0001, t + dur);
+
+    src.start(t, st);
+    src.stop(t + dur + 0.05);
+  }
+
+  function flashPadUI(index) {
+    const el = document.querySelector(`[data-pad-id="${index}"]`);
+    if (el) {
+      el.classList.add("playing");
+      setTimeout(() => el.classList.remove("playing"), 100);
+    }
+  }
+
+  // Render UI Components
+  function renderPadsGrid() {
+    const grid = $("padsGrid");
+    grid.innerHTML = "";
+    pads.forEach((pad, i) => {
+      const el = document.createElement("div");
+      el.className = `pad ${i === selectedPad ? 'selected' : ''}`;
+      el.dataset.padId = i;
+      el.innerHTML = `
+        <span class="pad-num text-[9px] font-mono text-[#8c96a5] self-start">${String(i+1).padStart(2,'0')}</span>
+        <span class="pad-name text-[10px] font-bold text-center leading-tight truncate w-full">${pad.name}</span>
+        <span class="text-[8px] text-[#49d487] font-mono">${pad.buffer ? 'WAV' : 'SYNTH'}</span>
+      `;
+      el.addEventListener("pointerdown", () => {
+        selectedPad = i;
+        renderPadsGrid();
+        syncPadToControls();
+        drawWaveform();
+        triggerPad(i, 0.9);
+      });
+      grid.appendChild(el);
+    });
+  }
+
+  function renderSequencerGrid() {
+    const matrix = $("seqMatrix");
+    matrix.innerHTML = "";
+    const pat = patterns[activePatternIndex] || createBlankPattern();
+
+    for (let r = 0; r < 4; r++) {
+      const lane = document.createElement("div");
+      lane.className = "flex items-center gap-1";
+
+      const label = document.createElement("div");
+      label.className = "w-20 text-[9px] font-bold text-[#8c96a5] truncate shrink-0";
+      label.textContent = `${pads[r*4].name.slice(0,6)}..`;
+      lane.appendChild(label);
+
+      for (let c = 0; c < 16; c++) {
+        const stepIdx = r * 4 + c;
+        const stepData = pat[stepIdx];
+
+        const btn = document.createElement("button");
+        btn.className = `step-btn ${stepData.on ? 'on' : ''} ${c === currentStep && isPlaying ? 'active-step' : ''}`;
+        btn.innerHTML = stepData.ratchet > 1 ? `<span class="text-[8px] text-[#ffb000] absolute top-0 left-0 font-mono">x${stepData.ratchet}</span>` : '';
+
+        btn.addEventListener("pointerdown", () => {
+          selectedStep = stepIdx;
+          stepData.on = !stepData.on;
+          renderSequencerGrid();
+          loadStepToEditor();
+        });
+
+        lane.appendChild(btn);
+      }
+      matrix.appendChild(lane);
+    }
+  }
+
+  function syncPadToControls() {
+    const pad = pads[selectedPad];
+    $("trimStart").value = pad.start;
+    $("trimEnd").value = pad.end;
+    $("padPitch").value = pad.pitch;
+    $("padFilter").value = pad.filter;
+    $("padAttack").value = pad.attack;
+    $("padRelease").value = pad.release;
+  }
+
+  function drawWaveform() {
+    const canvas = $("waveCanvas");
+    const ctx = canvas.getContext("2d");
+    const pad = pads[selectedPad];
+    const w = canvas.width = canvas.clientWidth;
+    const h = canvas.height = canvas.clientHeight;
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = "#49d487";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+
+    if (pad.buffer) {
+      const data = pad.buffer.getChannelData(0);
+      const step = Math.ceil(data.length / w);
+      const amp = h / 2;
+      for (let i = 0; i < w; i++) {
+        let min = 1.0, max = -1.0;
+        for (let j = 0; j < step; j++) {
+          const datum = data[i * step + j] || 0;
+          if (datum < min) min = datum;
+          if (datum > max) max = datum;
+        }
+        ctx.moveTo(i, (1 + min) * amp);
+        ctx.lineTo(i, (1 + max) * amp);
+      }
+    } else {
+      ctx.moveTo(0, h / 2);
+      ctx.lineTo(w, h / 2);
+    }
+    ctx.stroke();
+
+    $("markStart").style.left = (pad.start * 100) + "%";
+    $("markEnd").style.left = (pad.end * 100) + "%";
+  }
+
+  function loadStepToEditor() {
+    if (selectedStep === null) return;
+    const pat = patterns[activePatternIndex];
+    const s = pat[selectedStep];
+    $("stepVel").value = s.velocity;
+    $("stepProb").value = s.prob;
+    $("stepRatchet").value = s.ratchet;
+    $("stepNudge").value = s.nudge;
+    $("lockPitch").value = s.lockPitch !== null ? s.lockPitch : pads[selectedStep].pitch;
+    $("lockFilter").value = s.lockFilter !== null ? s.lockFilter : pads[selectedStep].filter;
+    $("lblVel").textContent = Math.round(s.velocity * 100) + "%";
+    $("lblProb").textContent = Math.round(s.prob * 100) + "%";
+  }
+
+  // Sequencer Engine
+  function runSequencerStep() {
+    if (!isPlaying) return;
+    const bpm = Math.max(40, Math.min(240, +$("inputBpm").value || 92));
+    const stepInterval = (60 / bpm) / 4;
+    const pat = patterns[activePatternIndex] || createBlankPattern();
+
+    for (let r = 0; r < 4; r++) {
+      const stepIdx = r * 4 + currentStep;
+      const s = pat[stepIdx];
+
+      if (s.on && Math.random() <= s.prob) {
+        const hits = s.ratchet;
+        for (let q = 0; q < hits; q++) {
+          const delayOffset = q * (stepInterval / hits) + (s.nudge * stepInterval);
+          triggerPad(stepIdx, s.velocity, AC.currentTime + Math.max(0, delayOffset), s.lockPitch, s.lockFilter);
+        }
+      }
+    }
+
+    $("stepDisplay").textContent = `STEP ${String(currentStep + 1).padStart(2, '0')}`;
+    renderSequencerGrid();
+
+    currentStep = (currentStep + 1) % 16;
+    seqTimer = setTimeout(runSequencerStep, stepInterval * 1000);
+  }
+
+  function togglePlay() {
+    initAudio();
+    isPlaying = !isPlaying;
+    if (isPlaying) {
+      currentStep = 0;
+      $("btnPlay").textContent = "PAUSE";
+      runSequencerStep();
+      setStatus("SEQUENCER RUNNING");
+    } else {
+      clearTimeout(seqTimer);
+      $("btnPlay").textContent = "PLAY";
+      setStatus("STOPPED");
+    }
+  }
+
+  // File Import Logic
+  async function handleAudioImport(file) {
+    initAudio();
+    setStatus("DECODING AUDIO...");
+    try {
+      const arrayBuf = await file.arrayBuffer();
+      const decoded = await AC.decodeAudioData(arrayBuf);
+      pads[selectedPad].buffer = decoded;
+      pads[selectedPad].name = file.name.replace(/\.[^/.]+$/, "").slice(0, 10).toUpperCase();
+      pads[selectedPad].start = 0;
+      pads[selectedPad].end = 1;
+      renderPadsGrid();
+      drawWaveform();
+      setStatus(`LOADED: ${pads[selectedPad].name}`);
+      triggerPad(selectedPad, 0.9);
+    } catch (e) {
+      console.error(e);
+      setStatus("IMPORT ERROR — COULD NOT DECODE FILE");
+    }
+  }
+
+  // PCM Base64 Helpers for Self-Contained JSON Projects
+  function bufferToPCMBase64(buf) {
+    if (!buf) return null;
+    const chans = buf.numberOfChannels;
+    const len = buf.length;
+    const out = new Uint8Array(len * chans * 2);
+    const view = new DataView(out.buffer);
+    let p = 0;
+    for (let i = 0; i < len; i++) {
+      for (let c = 0; c < chans; c++) {
+        const sample = Math.max(-1, Math.min(1, buf.getChannelData(c)[i]));
+        view.setInt16(p, sample < 0 ? sample * 32768 : sample * 32767, true);
+        p += 2;
+      }
+    }
+    let str = "";
+    const chunkSize = 0x8000;
+    for (let i = 0; i < out.length; i += chunkSize) {
+      str += String.fromCharCode.apply(null, out.subarray(i, Math.min(i + chunkSize, out.length)));
+    }
+    return btoa(str);
+  }
+
+  function pcmBase64ToBuffer(base64, channels, sampleRate, length) {
+    if (!base64) return null;
+    const binStr = atob(base64);
+    const bytes = new Uint8Array(binStr.length);
+    for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+    const view = new DataView(bytes.buffer);
+    const buf = AC.createBuffer(channels, length, sampleRate);
+    let p = 0;
+    for (let i = 0; i < length; i++) {
+      for (let c = 0; c < channels; c++) {
+        buf.getChannelData(c)[i] = view.getInt16(p, true) / 32768;
+        p += 2;
+      }
+    }
+    return buf;
+  }
+
+  function saveProjectJSON() {
+    setStatus("SERIALIZING PROJECT & AUDIO DATA...");
+    const serializedPads = pads.map(p => ({
+      name: p.name,
+      start: p.start,
+      end: p.end,
+      pitch: p.pitch,
+      filter: p.filter,
+      attack: p.attack,
+      release: p.release,
+      channels: p.buffer ? p.buffer.numberOfChannels : 0,
+      sampleRate: p.buffer ? p.buffer.sampleRate : 0,
+      length: p.buffer ? p.buffer.length : 0,
+      pcm: bufferToPCMBase64(p.buffer)
+    }));
+
+    const project = {
+      version: 1,
+      bpm: +$("inputBpm").value || 92,
+      patterns,
+      songArrangement,
+      pads: serializedPads
+    };
+
+    const blob = new Blob([JSON.stringify(project)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "sampler_project.json";
+    a.click();
+    setStatus("PROJECT SAVED");
+  }
+
+  async function loadProjectJSON(file) {
+    initAudio();
+    setStatus("RESTORING PROJECT AUDIO...");
+    try {
+      const text = await file.text();
+      const proj = JSON.parse(text);
+      $("inputBpm").value = proj.bpm || 92;
+      songArrangement = proj.songArrangement || [1];
+      
+      Object.keys(patterns).forEach(k => delete patterns[k]);
+      Object.assign(patterns, proj.patterns);
+
+      for (let i = 0; i < proj.pads.length; i++) {
+        const item = proj.pads[i];
+        pads[i].name = item.name;
+        pads[i].start = item.start;
+        pads[i].end = item.end;
+        pads[i].pitch = item.pitch;
+        pads[i].filter = item.filter;
+        pads[i].attack = item.attack;
+        pads[i].release = item.release;
+        pads[i].buffer = item.pcm ? pcmBase64ToBuffer(item.pcm, item.channels, item.sampleRate, item.length) : null;
+      }
+
+      renderPadsGrid();
+      renderSequencerGrid();
+      drawWaveform();
+      updateSongDisplay();
+      setStatus("PROJECT LOADED SUCCESFULLY");
+    } catch (e) {
+      console.error(e);
+      setStatus("ERROR LOADING JSON PROJECT");
+    }
+  }
+
+  // Skipback Continuous Buffer Capture
+  function captureSkipback() {
+    initAudio();
+    const bpm = +$("inputBpm").value || 92;
+    const durSec = (60 / bpm) * 32; // Exactly 8 Bars
+    const sampleCount = Math.floor(durSec * AC.sampleRate);
+    
+    const buf = AC.createBuffer(2, sampleCount, AC.sampleRate);
+    const startRead = (skipWritePos - sampleCount + skipBufferLen) % skipBufferLen;
+
+    for (let c = 0; c < 2; c++) {
+      const out = buf.getChannelData(c);
+      const ring = skipRingBuffers[c];
+      for (let i = 0; i < sampleCount; i++) {
+        out[i] = ring[(startRead + i) % skipBufferLen];
+      }
+    }
+
+    pads[selectedPad].buffer = buf;
+    pads[selectedPad].name = "SKIPBACK 8B";
+    pads[selectedPad].start = 0;
+    pads[selectedPad].end = 1;
+    renderPadsGrid();
+    drawWaveform();
+    setStatus(`CAPTURED 8 BARS TO PAD ${selectedPad + 1}`);
+  }
+
+  // Offline WAV Exporter
+  function exportWavFile(audioBuffer, filename) {
+    const chans = audioBuffer.numberOfChannels;
+    const len = audioBuffer.length;
+    const rate = audioBuffer.sampleRate;
+    const arrayBuf = new ArrayBuffer(44 + len * chans * 2);
+    const view = new DataView(arrayBuf);
+    let p = 0;
+
+    const writeStr = s => { for (let i = 0; i < s.length; i++) view.setUint8(p++, s.charCodeAt(i)); };
+    writeStr("RIFF");
+    view.setUint32(p, arrayBuf.byteLength - 8, true); p += 4;
+    writeStr("WAVEfmt ");
+    view.setUint32(p, 16, true); p += 4;
+    view.setUint16(p, 1, true); p += 2;
+    view.setUint16(p, chans, true); p += 2;
+    view.setUint32(p, rate, true); p += 4;
+    view.setUint32(p, rate * chans * 2, true); p += 4;
+    view.setUint16(p, chans * 2, true); p += 2;
+    view.setUint16(p, 16, true); p += 2;
+    writeStr("data");
+    view.setUint32(p, len * chans * 2, true); p += 4;
+
+    for (let i = 0; i < len; i++) {
+      for (let c = 0; c < chans; c++) {
+        const sample = Math.max(-1, Math.min(1, audioBuffer.getChannelData(c)[i]));
+        view.setInt16(p, sample < 0 ? sample * 32768 : sample * 32767, true);
+        p += 2;
+      }
+    }
+
+    const blob = new Blob([arrayBuf], { type: "audio/wav" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+  }
+
+  async function renderOfflineSong() {
+    initAudio();
+    setStatus("RENDERING SONG WAV...");
+    const bpm = +$("inputBpm").value || 92;
+    const barSec = (60 / bpm) * 4;
+    const totalSec = songArrangement.length * barSec;
+    const sampleRate = AC.sampleRate;
+
+    const offlineCtx = new OfflineAudioContext(2, Math.ceil(totalSec * sampleRate), sampleRate);
+
+    songArrangement.forEach((patIdx, barNum) => {
+      const pat = patterns[patIdx] || createBlankPattern();
+      const startTime = barNum * barSec;
+
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 16; c++) {
+          const stepIdx = r * 4 + c;
+          const s = pat[stepIdx];
+          if (s.on) {
+            const pad = pads[stepIdx];
+            const t = startTime + (c * (barSec / 16));
+            if (pad.buffer) {
+              const src = offlineCtx.createBufferSource();
+              src.buffer = pad.buffer;
+              src.connect(offlineCtx.destination);
+              src.start(t, pad.start * pad.buffer.duration, (pad.end - pad.start) * pad.buffer.duration);
+            }
+          }
+        }
+      }
+    });
+
+    const renderedBuf = await offlineCtx.startRendering();
+    exportWavFile(renderedBuf, "song_export.wav");
+    setStatus("SONG WAV EXPORT COMPLETE");
+  }
+
+  function updateSongDisplay() {
+    $("songSeqDisplay").textContent = songArrangement.map(x => String(x).padStart(2, '0')).join(" ➔ ");
+  }
+
+  // Event Listeners Routing
+  $("fileAudio").onchange = e => e.target.files[0] && handleAudioImport(e.target.files[0]);
+  $("fileProject").onchange = e => e.target.files[0] && loadProjectJSON(e.target.files[0]);
+  $("btnSave").onclick = saveProjectJSON;
+  $("btnPlay").onclick = togglePlay;
+  $("btnStop").onclick = () => { if (isPlaying) togglePlay(); };
+  $("btnSkipback").onclick = captureSkipback;
+  $("btnExportSong").onclick = renderOfflineSong;
+
+  $("btnPrevPat").onclick = () => {
+    if (activePatternIndex > 1) activePatternIndex--;
+    $("patDisplay").textContent = `PAT ${String(activePatternIndex).padStart(2, '0')}`;
+    renderSequencerGrid();
+  };
+  $("btnNextPat").onclick = () => {
+    activePatternIndex++;
+    if (!patterns[activePatternIndex]) patterns[activePatternIndex] = createBlankPattern();
+    $("patDisplay").textContent = `PAT ${String(activePatternIndex).padStart(2, '0')}`;
+    renderSequencerGrid();
+  };
+
+  $("trimStart").oninput = e => { pads[selectedPad].start = +e.target.value; drawWaveform(); };
+  $("trimEnd").oninput = e => { pads[selectedPad].end = +e.target.value; drawWaveform(); };
+  $("padPitch").oninput = e => pads[selectedPad].pitch = +e.target.value;
+  $("padFilter").oninput = e => pads[selectedPad].filter = +e.target.value;
+  $("padAttack").oninput = e => pads[selectedPad].attack = +e.target.value;
+  $("padRelease").oninput = e => pads[selectedPad].release = +e.target.value;
+
+  $("fxReverb").oninput = e => { if (fxReverbGain) fxReverbGain.gain.value = +e.target.value; $("lblRev").textContent = Math.round(e.target.value * 100) + "%"; };
+  $("fxDelay").oninput = e => { if (fxDelayGain) fxDelayGain.gain.value = +e.target.value; $("lblDelay").textContent = Math.round(e.target.value * 100) + "%"; };
+
+  $("btnApplyLock").onclick = () => {
+    if (selectedStep === null) return;
+    const s = patterns[activePatternIndex][selectedStep];
+    s.lockPitch = +$("lockPitch").value;
+    s.lockFilter = +$("lockFilter").value;
+    setStatus(`APPLIED OVERRIDES TO STEP ${selectedStep + 1}`);
+  };
+
+  $("btnAddSongPat").onclick = () => {
+    songArrangement.push(activePatternIndex);
+    updateSongDisplay();
+  };
+  $("btnClearSong").onclick = () => {
+    songArrangement = [1];
+    updateSongDisplay();
+  };
+
+  $("btnKit").onclick = () => {
+    pads.forEach(p => p.buffer = null);
+    renderPadsGrid();
+    drawWaveform();
+    setStatus("DEFAULT SYNTH DRUM/TONAL KIT RESTORED");
+  };
+
+  $("btnAutoChop").onclick = () => {
+    const pad = pads[selectedPad];
+    if (!pad.buffer) return setStatus("LOAD AN AUDIO SAMPLE FIRST TO CHOP");
+    const srcBuf = pad.buffer;
+    for (let i = 0; i < 16; i++) {
+      pads[i].buffer = srcBuf;
+      pads[i].start = i / 16;
+      pads[i].end = (i + 1) / 16;
+      pads[i].name = `CHOP ${i + 1}`;
+    }
+    renderPadsGrid();
+    drawWaveform();
+    setStatus("SAMPLE CHOPPED ACROSS 16 PADS");
+  };
+
+  // Microhpone Recording Interface
+  $("btnRecord").onclick = async () => {
+    initAudio();
+    if (!isRecording) {
+      try {
+        recStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(recStream);
+        recChunks = [];
+        mediaRecorder.ondataavailable = e => e.data.size > 0 && recChunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+          const blob = new Blob(recChunks, { type: "audio/wav" });
+          const arrayBuf = await blob.arrayBuffer();
+          pads[selectedPad].buffer = await AC.decodeAudioData(arrayBuf);
+          pads[selectedPad].name = "MIC REC";
+          pads[selectedPad].start = 0;
+          pads[selectedPad].end = 1;
+          renderPadsGrid();
+          drawWaveform();
+          setStatus("MIC RECORDING ASSIGNED TO PAD");
+        };
+        mediaRecorder.start();
+        isRecording = true;
+        $("btnRecord").textContent = "■ STOP RECORDING";
+        setStatus("RECORDING AUDIO...");
+      } catch (err) {
+        setStatus("MIC ACCESS DENIED");
+      }
+    } else {
+      mediaRecorder.stop();
+      recStream.getTracks().forEach(t => t.stop());
+      isRecording = false;
+      $("btnRecord").textContent = "● RECORD MIC / INPUT";
+    }
+  };
+
+  // Initialize Default App State
+  renderPadsGrid();
+  renderSequencerGrid();
+  drawWaveform();
+  updateSongDisplay();
+
 })();
 </script>
 </body>
