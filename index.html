@@ -6,23 +6,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#101216">
-    <title>Sampler — iPad</title>
+    <title>Sampler · iPad</title>
     <style>
-        :root {
-            --bg: #101216;
-            --p: #171a20;
-            --p2: #20242b;
-            --p3: #292e37;
-            --line: #363c47;
-            --text: #f3f5f7;
-            --muted: #9da5b0;
-            --a: #ffb000;
-            --ok: #49d487;
-            --danger: #e65b64
-        }
+        /* ---------- reset & base ---------- */
         * {
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent
+            -webkit-tap-highlight-color: transparent;
         }
         html,
         body {
@@ -30,474 +19,466 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: var(--bg);
-            color: var(--text);
+            background: #101216;
+            color: #f3f5f7;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             touch-action: manipulation;
             -webkit-user-select: none;
-            user-select: none
+            user-select: none;
         }
         button,
         input,
         select {
-            font: inherit
-        }
-        button {
+            font: inherit;
             touch-action: manipulation;
             min-height: 44px;
-            min-width: 44px
+            min-width: 44px;
         }
+        /* ---------- layout ---------- */
         .app {
+            display: grid;
+            grid-template-rows: 56px 1fr 48px;
             height: 100dvh;
             min-width: 1024px;
-            display: grid;
-            grid-template-rows: 58px 1fr 52px
+            background: #101216;
         }
         header,
         footer {
-            background: #0c0e12;
-            border-color: var(--line);
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 7px 12px;
+            gap: 6px;
+            padding: 4px 10px;
+            background: #0c0e12;
+            border-color: #363c47;
             flex-wrap: wrap;
         }
         header {
-            border-bottom: 1px solid var(--line)
+            border-bottom: 1px solid #363c47;
         }
         footer {
-            border-top: 1px solid var(--line)
+            border-top: 1px solid #363c47;
         }
         .brand {
             font-weight: 900;
-            letter-spacing: .12em
+            letter-spacing: .1em;
         }
         .status {
-            font-size: 12px;
-            color: var(--muted);
-            margin-right: auto
+            font-size: 11px;
+            color: #9da5b0;
+            margin-right: auto;
         }
         .btn {
-            min-height: 44px;
-            padding: 0 13px;
-            border-radius: 6px;
-            border: 1px solid var(--line);
-            background: var(--p2);
-            font-weight: 750;
-            cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            padding: 0 12px;
+            min-height: 40px;
+            min-width: 44px;
+            border-radius: 6px;
+            border: 1px solid #363c47;
+            background: #20242b;
+            font-weight: 700;
+            color: #f3f5f7;
+            cursor: pointer;
             white-space: nowrap;
             touch-action: manipulation;
         }
         .btn.primary {
-            background: var(--a);
+            background: #ffb000;
             border-color: #e6a000;
-            color: #111
-        }
-        .btn.active {
-            border-color: var(--a);
-            background: #3e341e
-        }
-        .btn.danger {
-            background: #381c20;
-            border-color: #704048
+            color: #111;
         }
         .btn:disabled {
-            opacity: .45;
-            cursor: not-allowed
+            opacity: .4;
+            cursor: not-allowed;
         }
         .main {
-            min-height: 0;
             display: grid;
-            grid-template-columns: 310px 1fr 335px;
-            gap: 9px;
-            padding: 9px
+            grid-template-columns: 300px 1fr 320px;
+            gap: 8px;
+            padding: 8px;
+            overflow: hidden;
         }
         .panel {
-            min-height: 0;
-            overflow: hidden;
-            background: var(--p);
-            border: 1px solid var(--line);
-            border-radius: 7px;
+            background: #171a20;
+            border: 1px solid #363c47;
+            border-radius: 8px;
             display: flex;
-            flex-direction: column
-        }
-        .panel>.scroll {
-            flex: 1;
-            overflow: auto;
-            -webkit-overflow-scrolling: touch
+            flex-direction: column;
+            overflow: hidden;
         }
         .panel h3 {
-            flex-shrink: 0
-        }
-        h3 {
-            font-size: 11px;
+            font-size: 10px;
             letter-spacing: .12em;
-            color: var(--muted);
+            color: #9da5b0;
             margin: 0;
-            padding: 11px 12px;
-            border-bottom: 1px solid var(--line)
+            padding: 8px 12px;
+            border-bottom: 1px solid #363c47;
+            flex-shrink: 0;
+        }
+        .panel .scroll {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 6px 10px;
         }
         .section {
-            padding: 10px;
-            border-bottom: 1px solid var(--line)
+            margin-bottom: 12px;
         }
         .section:last-child {
-            border-bottom: none
+            margin-bottom: 0;
         }
+        .smalltitle {
+            font-size: 10px;
+            color: #9da5b0;
+            letter-spacing: .08em;
+            margin-bottom: 6px;
+        }
+        /* ---------- file input ---------- */
         .filebox {
             border: 1px dashed #626a76;
             border-radius: 6px;
-            padding: 9px
+            padding: 8px;
         }
-        .filebox input[type=file] {
+        .filebox input[type="file"] {
             display: block;
             width: 100%;
-            min-height: 48px;
-            margin-top: 5px;
-            color: var(--text);
+            min-height: 44px;
+            margin-top: 4px;
+            color: #f3f5f7;
             background: #0f1115;
-            border: 1px solid var(--line);
+            border: 1px solid #363c47;
             border-radius: 6px;
-            padding: 5px;
+            padding: 4px 8px;
+            font-size: 13px;
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
             -webkit-appearance: auto;
             appearance: auto;
-            font-size: 14px
         }
-        .filebox input[type=file]::file-selector-button {
-            min-height: 40px;
+        .filebox input[type="file"]::file-selector-button {
+            min-height: 36px;
             margin-right: 8px;
-            border: 1px solid var(--line);
+            border: 1px solid #363c47;
             border-radius: 4px;
-            background: var(--p2);
-            color: var(--text);
+            background: #20242b;
+            color: #f3f5f7;
             cursor: pointer;
             font-size: 13px;
-            padding: 0 14px
+            padding: 0 14px;
         }
         .hint {
             font-size: 10px;
-            line-height: 1.35;
-            color: var(--muted);
-            margin-top: 6px
+            color: #9da5b0;
+            margin-top: 4px;
         }
+        /* ---------- waveform ---------- */
         .wave {
-            height: 104px;
-            background: #0c0e12;
-            border: 1px solid var(--line);
-            border-radius: 5px;
             position: relative;
-            margin: 8px 0;
-            overflow: hidden
+            height: 80px;
+            background: #0c0e12;
+            border: 1px solid #363c47;
+            border-radius: 4px;
+            margin: 6px 0;
+            overflow: hidden;
         }
         .wave canvas {
             width: 100%;
             height: 100%;
-            display: block
+            display: block;
         }
         .mark {
             position: absolute;
             top: 0;
             bottom: 0;
             width: 3px;
-            background: var(--a);
-            pointer-events: none
+            background: #ffb000;
+            pointer-events: none;
         }
+        /* ---------- controls ---------- */
         .controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 7px
+            gap: 4px 8px;
         }
-        .control label,
-        .row label {
+        .control label {
             display: block;
-            font-size: 10px;
-            color: var(--muted)
+            font-size: 9px;
+            color: #9da5b0;
         }
-        input[type=range] {
+        input[type="range"] {
             width: 100%;
-            height: 44px;
-            accent-color: var(--a);
-            min-height: 44px;
-            touch-action: none
+            height: 32px;
+            accent-color: #ffb000;
+            min-height: 32px;
+            touch-action: none;
         }
         select,
-        input[type=number] {
+        input[type="number"] {
             width: 100%;
-            min-height: 44px;
-            border: 1px solid var(--line);
-            border-radius: 5px;
+            min-height: 36px;
+            border: 1px solid #363c47;
+            border-radius: 4px;
             background: #0e1014;
-            color: var(--text);
-            padding: 0 8px;
-            font-size: 14px
+            color: #f3f5f7;
+            padding: 0 6px;
+            font-size: 13px;
         }
+        .twocol {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+        .three {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        /* ---------- pads ---------- */
         .padwrap {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 7px;
-            padding: 9px
+            gap: 6px;
+            padding: 4px 0;
         }
         .pad {
-            min-width: 0;
-            aspect-ratio: 1.12;
-            border: 1px solid var(--line);
+            aspect-ratio: 1.1;
+            border: 1px solid #363c47;
             border-radius: 6px;
             background: #252a32;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 2px;
             cursor: pointer;
-            min-height: 54px;
-            min-width: 54px;
-            padding: 4px
+            min-height: 50px;
+            min-width: 50px;
+            padding: 2px;
+            touch-action: manipulation;
         }
         .pad.active {
             background: #40361f;
-            border-color: var(--a)
+            border-color: #ffb000;
         }
         .pad .n {
-            font-size: 10px;
-            color: var(--muted)
+            font-size: 9px;
+            color: #9da5b0;
         }
         .pad .name {
-            font-size: 12px;
-            font-weight: 850;
+            font-size: 11px;
+            font-weight: 800;
             white-space: nowrap;
-            max-width: 95%;
             overflow: hidden;
-            text-overflow: ellipsis
+            text-overflow: ellipsis;
+            max-width: 95%;
         }
-        .meter {
-            height: 4px;
-            width: 65%;
+        .pad .meter {
+            height: 3px;
+            width: 60%;
             background: #0e1014;
             border-radius: 2px;
-            overflow: hidden
+            overflow: hidden;
         }
-        .meter i {
+        .pad .meter i {
             display: block;
-            width: 0;
             height: 100%;
-            background: var(--ok)
+            width: 0;
+            background: #49d487;
         }
-        .center {
-            display: grid;
-            grid-template-rows: auto 1fr auto;
-            min-height: 0
-        }
+        /* ---------- sequencer ---------- */
         .seqbar {
-            padding: 9px;
-            border-bottom: 1px solid var(--line);
             display: flex;
             align-items: center;
-            gap: 7px;
-            flex-wrap: wrap
+            gap: 4px;
+            padding: 4px 8px;
+            border-bottom: 1px solid #363c47;
+            flex-wrap: wrap;
         }
         .seqbar .spacer {
-            margin-left: auto
+            margin-left: auto;
         }
-        .seqbar input[type=number] {
-            width: 75px;
-            min-height: 44px
+        .seqbar input[type="number"] {
+            width: 60px;
+            min-height: 36px;
         }
         .grid {
             overflow: auto;
-            padding: 9px;
-            -webkit-overflow-scrolling: touch
+            padding: 4px;
+            -webkit-overflow-scrolling: touch;
+            flex: 1;
         }
         .lane {
             display: grid;
-            grid-template-columns: 84px repeat(16, 52px);
-            min-width: 916px;
-            margin-bottom: 7px
+            grid-template-columns: 70px repeat(16, 44px);
+            min-width: 774px;
+            margin-bottom: 4px;
         }
         .lh {
-            min-height: 54px;
+            min-height: 44px;
             display: flex;
             align-items: center;
-            color: var(--muted);
-            font-size: 10px;
-            padding-right: 7px
+            font-size: 9px;
+            color: #9da5b0;
+            padding-right: 4px;
         }
         .step {
-            min-width: 52px;
-            min-height: 54px;
-            padding: 0;
+            min-width: 44px;
+            min-height: 44px;
             border: 1px solid #303641;
             background: #14171c;
             position: relative;
             cursor: pointer;
-            touch-action: manipulation
+            touch-action: manipulation;
         }
         .step.on {
             background: #493b1c;
-            border-color: var(--a)
+            border-color: #ffb000;
         }
         .step.play {
             outline: 2px solid #fff;
-            z-index: 2
+            z-index: 2;
         }
         .step .vel {
             position: absolute;
-            left: 5px;
-            right: 5px;
-            bottom: 5px;
-            height: 4px;
-            background: var(--ok);
-            transform-origin: left
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            height: 3px;
+            background: #49d487;
+            transform-origin: left;
         }
         .step .prob {
             position: absolute;
-            top: 4px;
-            right: 4px;
-            font-size: 8px;
-            color: var(--muted)
+            top: 2px;
+            right: 3px;
+            font-size: 7px;
+            color: #9da5b0;
         }
         .step .rat {
             position: absolute;
-            top: 4px;
-            left: 4px;
-            font-size: 8px;
-            color: var(--a)
+            top: 2px;
+            left: 3px;
+            font-size: 7px;
+            color: #ffb000;
         }
         .transport {
-            border-top: 1px solid var(--line);
-            padding: 8px;
             display: flex;
-            gap: 7px;
             align-items: center;
-            flex-wrap: wrap
+            gap: 4px;
+            padding: 4px 8px;
+            border-top: 1px solid #363c47;
+            flex-wrap: wrap;
         }
         .info {
             font-size: 11px;
-            color: var(--muted);
-            margin-left: auto
+            color: #9da5b0;
+            margin-left: auto;
         }
-        .right .section {
-            padding: 10px
-        }
+        /* ---------- right panel rows ---------- */
         .row {
             display: grid;
-            grid-template-columns: 92px 1fr 54px;
-            gap: 6px;
+            grid-template-columns: 80px 1fr 48px;
+            gap: 4px;
             align-items: center;
-            margin-bottom: 4px
+            margin-bottom: 2px;
         }
-        .row select {
-            min-height: 44px
+        .row label {
+            font-size: 9px;
+            color: #9da5b0;
         }
         .val {
             text-align: right;
-            font-variant-numeric: tabular-nums;
-            color: var(--a);
-            font-size: 11px
-        }
-        .twocol {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 7px
-        }
-        .three {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 7px
-        }
-        .smalltitle {
             font-size: 10px;
-            color: var(--muted);
-            letter-spacing: .08em;
-            margin-bottom: 7px
+            color: #ffb000;
+            font-variant-numeric: tabular-nums;
         }
         .meterbig {
-            height: 8px;
+            height: 6px;
             background: #0c0e12;
-            border: 1px solid var(--line);
-            border-radius: 4px;
-            overflow: hidden
+            border: 1px solid #363c47;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
         }
         .meterbig i {
             display: block;
-            width: 0;
             height: 100%;
-            background: var(--ok)
+            width: 0;
+            background: #49d487;
         }
-        footer .foot {
+        .foot {
             font-size: 11px;
-            color: var(--muted);
-            margin-right: auto
+            color: #9da5b0;
+            margin-right: auto;
         }
-        #projectFile {
-            display: none;
-        }
-        @media(max-width:1100px) {
-            .app {
-                min-width: 1024px
-            }
-        }
-        @media(max-width:768px) {
+        /* ---------- responsive ---------- */
+        @media (max-width: 1100px) {
             .app {
                 min-width: 100%;
-                grid-template-rows: auto 1fr auto
             }
             .main {
                 grid-template-columns: 1fr;
-                gap: 9px
+                gap: 6px;
+                overflow-y: auto;
+            }
+            .panel {
+                max-height: 60vh;
+            }
+        }
+        @media (max-width: 768px) {
+            .main {
+                grid-template-columns: 1fr;
+                padding: 4px;
             }
             .padwrap {
-                grid-template-columns: repeat(4, 1fr)
+                grid-template-columns: repeat(4, 1fr);
             }
-        }
-        /* ensure all interactive elements have 44px minimum */
-        button,
-        .btn,
-        input[type=file],
-        input[type=range],
-        select,
-        .pad,
-        .step {
-            min-height: 44px;
-            min-width: 44px
-        }
-        input[type=range] {
-            min-height: 44px
+            .lane {
+                grid-template-columns: 60px repeat(16, 36px);
+                min-width: 636px;
+            }
+            .step {
+                min-width: 36px;
+                min-height: 36px;
+            }
+            .lh {
+                min-height: 36px;
+                font-size: 8px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app">
+        <!-- header -->
         <header>
-            <div class="brand">SAMPLER</div>
-            <div class="status" id="status">READY · 48 kHz</div>
+            <span class="brand">SAMPLER</span>
+            <span class="status" id="status">READY</span>
             <button class="btn" id="newBtn">NEW</button>
             <button class="btn" id="saveBtn">SAVE</button>
             <button class="btn" id="loadBtn">LOAD</button>
-            <input id="projectFile" type="file" accept=".json,application/json,text/json">
+            <input id="projectFile" type="file" accept=".json,application/json,text/json" style="display:none">
             <button class="btn" id="exportPadBtn">PAD WAV</button>
             <button class="btn" id="exportPatBtn">PAT WAV</button>
             <button class="btn" id="exportSongBtn">SONG WAV</button>
         </header>
 
-        <main class="main">
+        <!-- main -->
+        <div class="main">
+            <!-- left panel -->
             <section class="panel">
                 <h3>SAMPLE / CAPTURE</h3>
                 <div class="scroll">
                     <div class="section">
                         <div class="filebox">
-                            <label style="font-size:10px;color:var(--muted)">IMPORT AUDIO OR VIDEO</label>
+                            <label style="font-size:10px;color:#9da5b0;">IMPORT AUDIO OR VIDEO</label>
                             <input id="fileInput" type="file" accept=".wav,.wave,audio/wav,audio/x-wav,audio/vnd.wave,audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/ogg,audio/webm,video/mp4,video/quicktime,video/webm,.mp3,.m4a,.aac,.ogg,.webm,.mp4,.mov,.m4v">
-                            <div class="hint">WAV, MP3, M4A and common MP4/MOV video files. Files stay on the device.</div>
+                            <div class="hint">WAV, MP3, M4A, MP4, MOV, WebM</div>
                         </div>
-                        <button class="btn primary" id="recordBtn" style="width:100%;margin-top:8px">● RECORD MIC / INTERFACE</button>
-                        <div class="meterbig" style="margin-top:8px"><i id="inputMeter"></i></div>
+                        <button class="btn primary" id="recordBtn" style="width:100%;margin-top:6px;">● RECORD MIC / INTERFACE</button>
+                        <div class="meterbig"><i id="inputMeter"></i></div>
                     </div>
 
                     <div class="section">
@@ -516,47 +497,60 @@
 
                     <div class="section">
                         <div class="twocol">
-                            <button class="btn" id="autoChop">AUTO CHOP 16</button><button class="btn" id="duplicate">DUPLICATE PAD</button>
-                            <button class="btn" id="trimPad">TRIM TO PAD</button><button class="btn" id="clearPad">CLEAR PAD</button>
+                            <button class="btn" id="autoChop">CHOP 16</button>
+                            <button class="btn" id="duplicate">DUP PAD</button>
+                            <button class="btn" id="trimPad">TRIM</button>
+                            <button class="btn" id="clearPad">CLEAR</button>
                         </div>
                     </div>
-                    <div class="section"><div class="smalltitle">16 PADS</div><div class="padwrap" id="pads"></div></div>
+
+                    <div class="section">
+                        <div class="smalltitle">16 PADS</div>
+                        <div class="padwrap" id="pads"></div>
+                    </div>
                 </div>
             </section>
 
-            <section class="panel center">
+            <!-- center panel -->
+            <section class="panel">
                 <div class="seqbar">
                     <b id="patternName">PATTERN 01</b>
-                    <button class="btn" id="prevPat">−</button><button class="btn" id="nextPat">+</button>
-                    <button class="btn" id="tempoMinus">− BPM</button><input id="bpm" type="number" value="92" min="40" max="240" style="width:75px">
-                    <button class="btn" id="tempoPlus">+ BPM</button>
-                    <span class="spacer"></span><button class="btn primary" id="playBtn">PLAY</button><button class="btn" id="stopBtn">STOP</button>
+                    <button class="btn" id="prevPat">−</button>
+                    <button class="btn" id="nextPat">+</button>
+                    <button class="btn" id="tempoMinus">−BPM</button>
+                    <input id="bpm" type="number" value="92" min="40" max="240" style="width:60px;">
+                    <button class="btn" id="tempoPlus">+BPM</button>
+                    <span class="spacer"></span>
+                    <button class="btn primary" id="playBtn">PLAY</button>
+                    <button class="btn" id="stopBtn">STOP</button>
                 </div>
                 <div class="grid" id="grid"></div>
                 <div class="transport">
-                    <button class="btn" id="rollBtn">ROLL</button><button class="btn" id="levelsBtn">16 LEVELS</button><button class="btn" id="resampleBtn">RESAMPLE</button><button class="btn" id="skipBtn">SKIPBACK</button>
+                    <button class="btn" id="rollBtn">ROLL</button>
+                    <button class="btn" id="levelsBtn">16 LEVELS</button>
+                    <button class="btn" id="resampleBtn">RESAMPLE</button>
+                    <button class="btn" id="skipBtn">SKIPBACK</button>
                     <span class="info" id="stepInfo">STEP —</span>
                 </div>
             </section>
 
+            <!-- right panel -->
             <section class="panel">
-                <h3>SEQUENCER / FX / PERFORMANCE</h3>
+                <h3>STEP LOCKS / FX / SONG</h3>
                 <div class="scroll">
                     <div class="section">
                         <div class="smalltitle">SELECTED STEP</div>
                         <div class="row"><label>VELOCITY</label><input id="stepVel" type="range" min="0" max="1" step=".01" value="1"><span class="val" id="stepVelVal">100%</span></div>
-                        <div class="row"><label>PROBABILITY</label><input id="stepProb" type="range" min="0" max="1" step=".01" value="1"><span class="val" id="stepProbVal">100%</span></div>
+                        <div class="row"><label>PROB</label><input id="stepProb" type="range" min="0" max="1" step=".01" value="1"><span class="val" id="stepProbVal">100%</span></div>
                         <div class="row"><label>RATCHET</label><select id="stepRat"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option></select><span></span></div>
                         <div class="row"><label>NUDGE</label><input id="stepNudge" type="range" min="-0.45" max=".45" step=".01" value="0"><span class="val" id="stepNudgeVal">0%</span></div>
                     </div>
-
                     <div class="section">
                         <div class="smalltitle">PARAMETER LOCKS</div>
                         <div class="row"><label>LOCK PITCH</label><input id="lockPitch" type="range" min="-24" max="24" value="0"><span class="val" id="lockPitchVal">0</span></div>
                         <div class="row"><label>LOCK FILTER</label><input id="lockFilter" type="range" min="100" max="20000" value="20000"><span class="val" id="lockFilterVal">20k</span></div>
-                        <button class="btn" id="applyLock" style="width:100%">LOCK TO SELECTED STEP</button>
+                        <button class="btn" id="applyLock" style="width:100%;">LOCK TO STEP</button>
                     </div>
-
                     <div class="section">
                         <div class="smalltitle">BUS FX</div>
                         <div class="row"><label>REVERB</label><input id="reverb" type="range" min="0" max="1" step=".01" value="0"><span class="val" id="reverbVal">0%</span></div>
@@ -564,461 +558,545 @@
                         <div class="row"><label>DRIVE</label><input id="drive" type="range" min="0" max="1" step=".01" value="0"><span class="val" id="driveVal">0%</span></div>
                         <div class="row"><label>MASTER</label><input id="master" type="range" min="0" max="1" step=".01" value=".8"><span class="val" id="masterVal">80%</span></div>
                     </div>
-
                     <div class="section">
                         <div class="smalltitle">PERFORMANCE</div>
-                        <div class="three"><button class="btn" id="rollHalf">1/2</button><button class="btn" id="rollQuarter">1/4</button><button class="btn" id="rollEighth">1/8</button></div>
-                        <div style="height:7px"></div>
-                        <div class="twocol"><button class="btn" id="capture8">CAPTURE 8 BARS</button><button class="btn" id="captureSeq">RESAMPLE SEQUENCE</button></div>
+                        <div class="three">
+                            <button class="btn" id="rollHalf">1/2</button>
+                            <button class="btn" id="rollQuarter">1/4</button>
+                            <button class="btn" id="rollEighth">1/8</button>
+                        </div>
+                        <div style="height:4px;"></div>
+                        <div class="twocol">
+                            <button class="btn" id="capture8">CAPTURE 8 BARS</button>
+                            <button class="btn" id="captureSeq">RESAMPLE SEQ</button>
+                        </div>
                     </div>
-
                     <div class="section">
                         <div class="smalltitle">SONG ARRANGEMENT</div>
-                        <select id="songMode"><option value="loop">PATTERN LOOP</option><option value="song">SONG: 01 → 02 → 03</option></select>
-                        <div class="hint">Song export renders the current pattern. Pattern memory is preserved for editing and project save/load.</div>
+                        <select id="songMode"><option value="loop">PATTERN LOOP</option><option value="song">SONG: 01→02→03</option></select>
+                        <div class="hint">Song export renders the arrangement.</div>
                     </div>
                 </div>
             </section>
-        </main>
+        </div>
 
-        <footer><span class="foot" id="footerInfo">Built-in synth kit ready · Select a pad and tap PLAY</span><button class="btn" id="micCheck">MIC CHECK</button><button class="btn" id="kitBtn">BUILT-IN KIT</button></footer>
+        <!-- footer -->
+        <footer>
+            <span class="foot" id="footerInfo">Built‑in kit · Select a pad and tap PLAY</span>
+            <button class="btn" id="micCheck">MIC CHECK</button>
+            <button class="btn" id="kitBtn">BUILT‑IN KIT</button>
+        </footer>
     </div>
 
     <script>
-        (() => {
+        (function() {
             "use strict";
+
+            // ----- DOM refs -----
             const $ = id => document.getElementById(id);
 
-            // --- globals ---
-            let AC = null,
-                master = null,
-                dryBus = null,
-                analyser = null,
-                inputStream = null,
-                recorder = null,
-                recChunks = [],
-                recording = false;
-            let currentBuffer = null,
-                selected = 0,
-                selectedStep = null,
-                playing = false,
-                timer = null,
-                playStep = 0,
-                patternNo = 1;
-            const history = [];
-            const kitFreq = [55, 110, 220, 330, 140, 180, 65, 330, 262, 520, 440, 45, 180, 300, 800, 90];
-            const kitType = ["kick", "snare", "hat", "clap", "tom", "perc", "bass", "pluck", "chord", "fx", "vox", "808", "rim",
-                "ohat", "crash", "ghost"
-            ];
-            const padNames = ["KICK", "SNARE", "HAT", "CLAP", "TOM", "PERC", "BASS", "PLUCK", "CHORD", "FX", "VOX", "808",
-                "RIM", "OPEN HAT", "CRASH", "GHOST"
-            ];
-            const pads = Array.from({ length: 16 }, (_, i) => ({ name: padNames[i], buffer: null, start: 0, end: 1,
-                layer: null }));
+            // ----- audio globals -----
+            let AC = null;
+            let masterGain = null;
+            let dryGain = null;
+            let analyser = null;
+            let reverbNode = null;
+            let delayNode = null;
+            let delayGain = null;
+            let driveNode = null;
+            let masterNode = null;
+
+            // ----- sampler state -----
+            const pads = Array.from({ length: 16 }, (_, i) => ({
+                name: ['KICK', 'SNARE', 'HAT', 'CLAP', 'TOM', 'PERC', 'BASS', 'PLUCK', 'CHORD', 'FX', 'VOX', '808', 'RIM',
+                    'OPEN HAT', 'CRASH', 'GHOST'
+                ][i],
+                buffer: null,
+                start: 0,
+                end: 1,
+                layer: null
+            }));
+            let selectedPad = 0;
+            let currentBuffer = null; // the buffer of selected pad
+
+            // ----- patterns -----
             const patterns = { 1: makePattern() };
             let currentPattern = patterns[1];
-            let bus = { reverb: 0, delay: 0, drive: 0, master: .8 };
-            let delayNode = null,
-                reverbNode = null,
-                convolver = null;
-            let songArrangement = [1];
-            let skipBuffer = null,
-                skipProcessor = null,
-                skipRing = null,
-                skipWrite = 0,
-                skipLength = 0,
-                skipRate = 48000,
-                skipChannels = 2,
-                skipCaptureActive = false;
+            let patternNo = 1;
+            let selectedStep = null;
 
-            // --- helpers ---
-            function makePattern() { return Array.from({ length: 16 }, () => ({ on: false, velocity: 1, prob: 1,
-                    ratchet: 1, nudge: 0, lock: null })); }
-
-            function setStatus(s) { $("status").textContent = s; }
-
-            function saveHistory() { history.push(pads.map(p => ({ ...p }))); if (history.length > 20) history.shift(); }
-
-            // --- audio init (must be called from user gesture) ---
-            function initAudio() {
-                if (!AC) {
-                    try {
-                        AC = new(window.AudioContext || window.webkitAudioContext)();
-                        master = AC.createGain();
-                        dryBus = AC.createGain();
-                        analyser = AC.createAnalyser();
-                        analyser.fftSize = 256;
-                        dryBus.connect(master);
-                        master.connect(analyser);
-                        analyser.connect(AC.destination);
-                        master.gain.value = bus.master;
-                        setupFX();
-                    } catch (e) {
-                        console.warn("AudioContext init failed", e);
-                        return null;
-                    }
-                }
-                if (AC.state === "suspended") {
-                    AC.resume().catch(e => console.warn("resume failed", e));
-                }
-                return AC;
+            function makePattern() {
+                return Array.from({ length: 16 }, () => ({
+                    on: false,
+                    velocity: 1,
+                    prob: 1,
+                    ratchet: 1,
+                    nudge: 0,
+                    lock: null
+                }));
             }
 
-            function setupFX() {
-                if (!AC) return;
+            // ----- bus fx values -----
+            let bus = { reverb: 0, delay: 0, drive: 0, master: 0.8 };
+
+            // ----- song arrangement -----
+            let songArrangement = [1];
+
+            // ----- sequencer -----
+            let playing = false;
+            let playStep = 0;
+            let timer = null;
+
+            // ----- skipback -----
+            let skipRing = null;
+            let skipWrite = 0;
+            let skipLength = 0;
+            let skipRate = 48000;
+            let skipChannels = 2;
+            let skipActive = false;
+            let skipProcessor = null;
+
+            // ----- recording -----
+            let recording = false;
+            let recorder = null;
+            let inputStream = null;
+
+            // ----- init audio (call on user gesture) -----
+            function initAudio() {
+                if (AC) {
+                    if (AC.state === 'suspended') AC.resume().catch(() => {});
+                    return AC;
+                }
                 try {
-                    delayNode = AC.createDelay(2);
-                    delayNode.delayTime.value = .24;
-                    const dg = AC.createGain();
-                    dg.gain.value = 0;
-                    dryBus.connect(delayNode);
-                    delayNode.connect(dg);
-                    dg.connect(master);
-                    convolver = AC.createConvolver();
-                    const len = AC.sampleRate * 1.2,
-                        b = AC.createBuffer(2, len, AC.sampleRate);
-                    for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math
-                                .random() * 2 - 1) * Math.pow(1 - i / len, 2.2); }
-                    convolver.buffer = b;
+                    AC = new(window.AudioContext || window.webkitAudioContext)();
+                    // master chain
+                    masterGain = AC.createGain();
+                    masterGain.gain.value = bus.master;
+                    dryGain = AC.createGain();
+                    analyser = AC.createAnalyser();
+                    analyser.fftSize = 256;
+
+                    // reverb (convolver)
                     reverbNode = AC.createGain();
                     reverbNode.gain.value = 0;
-                    dryBus.connect(convolver);
-                    convolver.connect(reverbNode);
-                    reverbNode.connect(master);
-                } catch (e) { console.warn("FX setup", e); }
-            }
+                    const conv = AC.createConvolver();
+                    const len = AC.sampleRate * 1.2;
+                    const ir = AC.createBuffer(2, len, AC.sampleRate);
+                    for (let c = 0; c < 2; c++) {
+                        const d = ir.getChannelData(c);
+                        for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.2);
+                    }
+                    conv.buffer = ir;
+                    dryGain.connect(conv);
+                    conv.connect(reverbNode);
+                    reverbNode.connect(masterGain);
 
-            // --- synth engine ---
-            function synth(i, velocity = 1, params = null, when = null) {
-                const a = initAudio();
-                if (!a) return;
-                const t = when ?? a.currentTime,
-                    type = kitType[i],
-                    f = kitFreq[i];
-                const out = a.createGain();
-                out.gain.value = 0;
-                out.connect(dryBus);
-                const filter = a.createBiquadFilter();
-                filter.type = "lowpass";
-                filter.frequency.value = params?.filter ?? +$("filter").value;
-                filter.connect(out);
-                const pitch = params?.pitch ?? +$("pitch").value;
-                const hz = f * Math.pow(2, pitch / 12);
-                if (type === "kick" || type === "808") {
-                    const o = a.createOscillator();
-                    o.type = "sine";
-                    o.frequency.setValueAtTime(hz * 2, t);
-                    o.frequency.exponentialRampToValueAtTime(Math.max(25, hz), t + .07);
-                    o.frequency.exponentialRampToValueAtTime(25, t + .42);
-                    out.gain.setValueAtTime(.001, t);
-                    out.gain.exponentialRampToValueAtTime(.85 * velocity, t + .005);
-                    out.gain.exponentialRampToValueAtTime(.001, t + .45);
-                    o.connect(filter);
-                    o.start(t);
-                    o.stop(t + .5);
-                } else if (type === "hat" || type === "ohat" || type === "crash") {
-                    const n = a.createBufferSource(),
-                        nb = a.createBuffer(1, Math.floor(a.sampleRate * (type === "crash" ? .8 : .25)), a.sampleRate),
-                        d = nb.getChannelData(0);
-                    for (let k = 0; k < d.length; k++) d[k] = Math.random() * 2 - 1;
-                    n.buffer = nb;
-                    const hp = a.createBiquadFilter();
-                    hp.type = "highpass";
-                    hp.frequency.value = type === "crash" ? 3000 : 5500;
-                    n.connect(hp).connect(filter);
-                    out.gain.setValueAtTime(.001, t);
-                    out.gain.exponentialRampToValueAtTime(.4 * velocity, t + .002);
-                    out.gain.exponentialRampToValueAtTime(.001, t + (type === "crash" ? .75 : .18));
-                    n.start(t);
-                } else {
-                    const o = a.createOscillator();
-                    o.type = type === "snare" || type === "clap" ? "triangle" : type === "bass" ? "sawtooth" : "square";
-                    o.frequency.value = hz;
-                    out.gain.setValueAtTime(.001, t);
-                    out.gain.exponentialRampToValueAtTime(.28 * velocity, t + .008);
-                    out.gain.exponentialRampToValueAtTime(.001, t + (type === "snare" ? .16 : .32));
-                    o.connect(filter);
-                    o.start(t);
-                    o.stop(t + .4);
+                    // delay
+                    delayNode = AC.createDelay(2);
+                    delayNode.delayTime.value = 0.24;
+                    delayGain = AC.createGain();
+                    delayGain.gain.value = 0;
+                    dryGain.connect(delayNode);
+                    delayNode.connect(delayGain);
+                    delayGain.connect(masterGain);
+
+                    // drive (waveshaper)
+                    driveNode = AC.createWaveShaper();
+                    driveNode.curve = makeDriveCurve(0);
+                    dryGain.connect(driveNode);
+                    driveNode.connect(masterGain);
+
+                    // master output
+                    masterGain.connect(analyser);
+                    analyser.connect(AC.destination);
+
+                    // extra connection for dry (if drive is bypassed? we already have dry->drive->master)
+                    // but we need dry signal to also go to reverb/delay, already done.
+                    // Ensure dryGain also connects to master directly? no, through drive.
+                    // Actually we want dry->drive->master and dry->reverb->master and dry->delay->master.
+                    // So we have dryGain as source for all.
+                    // We'll set drive gain to 0 if not used.
+                    return AC;
+                } catch (e) {
+                    console.warn('Audio init failed', e);
+                    return null;
                 }
             }
 
-            // --- sample playback ---
-            function playSample(i, velocity = 1, when = null) {
-                const p = pads[i],
-                    a = initAudio();
-                if (!a) return;
-                const t = when ?? a.currentTime;
-                if (!p.buffer) { synth(i, velocity, p.lock, t); return; }
-                try {
-                    const src = a.createBufferSource(),
-                        g = a.createGain(),
-                        f = a.createBiquadFilter();
-                    src.buffer = p.buffer;
-                    src.playbackRate.value = Math.pow(2, ((p.lock?.pitch ?? +$("pitch").value)) / 12);
-                    f.type = "lowpass";
-                    f.frequency.value = p.lock?.filter ?? +$("filter").value;
-                    src.connect(f).connect(g).connect(dryBus);
-                    const st = Math.max(0, Math.min(1, p.start)),
-                        en = Math.max(st + .001, Math.min(1, p.end));
-                    const dur = (en - st) * p.buffer.duration / Math.max(.01, src.playbackRate.value);
-                    const attack = +$("attack").value,
-                        release = Math.min(+$("release").value, dur * .5 || .01);
-                    g.gain.setValueAtTime(.0001, t);
-                    g.gain.linearRampToValueAtTime(+$("level").value * velocity, t + attack);
-                    g.gain.setValueAtTime(+$("level").value * velocity, Math.max(t + attack, t + dur - release));
-                    g.gain.linearRampToValueAtTime(.0001, t + dur);
-                    src.start(t, st * p.buffer.duration);
-                    src.stop(t + dur + .02);
-                } catch (e) { console.warn("playSample error", e); }
+            function makeDriveCurve(amount) {
+                // simple soft clipping
+                const n = 4096;
+                const curve = new Float32Array(n);
+                const k = amount * 0.8 + 0.01;
+                for (let i = 0; i < n; i++) {
+                    const x = (i / n) * 2 - 1;
+                    curve[i] = (3 + k) * x / (1 + k * Math.abs(x));
+                }
+                return curve;
             }
 
-            function playPad(i, v = 1) { initAudio();
+            // ----- synth engine (built-in) -----
+            const kitFreq = [55, 110, 220, 330, 140, 180, 65, 330, 262, 520, 440, 45, 180, 300, 800, 90];
+            const kitType = ['kick', 'snare', 'hat', 'clap', 'tom', 'perc', 'bass', 'pluck', 'chord', 'fx', 'vox', '808',
+                'rim', 'ohat', 'crash', 'ghost'
+            ];
+
+            function playSynth(i, velocity = 1, params = null, when = null) {
+                const a = initAudio();
+                if (!a) return;
+                const t = when || a.currentTime;
+                const type = kitType[i];
+                const f = kitFreq[i];
+                const pitch = params?.pitch ?? parseFloat($('pitch').value) || 0;
+                const filterFreq = params?.filter ?? parseFloat($('filter').value) || 20000;
+                const hz = f * Math.pow(2, pitch / 12);
+
+                const out = a.createGain();
+                out.gain.setValueAtTime(0, t);
+                out.connect(dryGain);
+
+                const filter = a.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = filterFreq;
+                filter.connect(out);
+
+                if (type === 'kick' || type === '808') {
+                    const osc = a.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(hz * 2, t);
+                    osc.frequency.exponentialRampToValueAtTime(Math.max(25, hz), t + 0.07);
+                    osc.frequency.exponentialRampToValueAtTime(25, t + 0.4);
+                    out.gain.exponentialRampToValueAtTime(0.85 * velocity, t + 0.005);
+                    out.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+                    osc.connect(filter);
+                    osc.start(t);
+                    osc.stop(t + 0.5);
+                } else if (type === 'hat' || type === 'ohat' || type === 'crash') {
+                    const buf = a.createBuffer(1, Math.floor(a.sampleRate * (type === 'crash' ? 0.8 : 0.25)), a.sampleRate);
+                    const d = buf.getChannelData(0);
+                    for (let j = 0; j < d.length; j++) d[j] = Math.random() * 2 - 1;
+                    const src = a.createBufferSource();
+                    src.buffer = buf;
+                    const hp = a.createBiquadFilter();
+                    hp.type = 'highpass';
+                    hp.frequency.value = type === 'crash' ? 3000 : 5500;
+                    src.connect(hp);
+                    hp.connect(filter);
+                    out.gain.setValueAtTime(0.001, t);
+                    out.gain.exponentialRampToValueAtTime(0.4 * velocity, t + 0.002);
+                    out.gain.exponentialRampToValueAtTime(0.001, t + (type === 'crash' ? 0.75 : 0.18));
+                    src.start(t);
+                } else {
+                    const osc = a.createOscillator();
+                    osc.type = (type === 'snare' || type === 'clap') ? 'triangle' : (type === 'bass' ? 'sawtooth' :
+                    'square');
+                    osc.frequency.value = hz;
+                    out.gain.exponentialRampToValueAtTime(0.28 * velocity, t + 0.008);
+                    out.gain.exponentialRampToValueAtTime(0.001, t + (type === 'snare' ? 0.16 : 0.32));
+                    osc.connect(filter);
+                    osc.start(t);
+                    osc.stop(t + 0.4);
+                }
+            }
+
+            // ----- sample playback -----
+            function playSample(i, velocity = 1, when = null) {
+                const p = pads[i];
+                const a = initAudio();
+                if (!a) return;
+                const t = when || a.currentTime;
+
+                if (!p.buffer) {
+                    playSynth(i, velocity, p.lock, t);
+                    return;
+                }
+
+                try {
+                    const src = a.createBufferSource();
+                    const g = a.createGain();
+                    const f = a.createBiquadFilter();
+
+                    src.buffer = p.buffer;
+                    const pitch = (p.lock?.pitch ?? parseFloat($('pitch').value)) || 0;
+                    src.playbackRate.value = Math.pow(2, pitch / 12);
+                    f.type = 'lowpass';
+                    f.frequency.value = p.lock?.filter ?? parseFloat($('filter').value) || 20000;
+
+                    src.connect(f);
+                    f.connect(g);
+                    g.connect(dryGain);
+
+                    const start = Math.max(0, Math.min(1, p.start));
+                    const end = Math.max(start + 0.001, Math.min(1, p.end));
+                    const dur = (end - start) * p.buffer.duration / Math.max(0.01, src.playbackRate.value);
+                    const attack = parseFloat($('attack').value) || 0.01;
+                    const release = Math.min(parseFloat($('release').value) || 0.18, dur * 0.5);
+                    const level = parseFloat($('level').value) || 0.9;
+
+                    g.gain.setValueAtTime(0.0001, t);
+                    g.gain.linearRampToValueAtTime(level * velocity, t + attack);
+                    g.gain.setValueAtTime(level * velocity, Math.max(t + attack, t + dur - release));
+                    g.gain.linearRampToValueAtTime(0.0001, t + dur);
+
+                    src.start(t, start * p.buffer.duration);
+                    src.stop(t + dur + 0.02);
+                } catch (e) {
+                    console.warn('playSample error', e);
+                }
+            }
+
+            // ----- pad trigger -----
+            function triggerPad(i, v = 1) {
                 playSample(i, v);
-                flashPad(i); }
+                flashPad(i);
+            }
 
-            function flashPad(i) { const el = document.querySelector(`.pad[data-i="${i}"]`); if (el) { el.classList.add(
-                        "active");
-                    setTimeout(() => el.classList.toggle("active", i === selected), 90); } }
+            function flashPad(i) {
+                const el = document.querySelector(`.pad[data-i="${i}"]`);
+                if (el) {
+                    el.classList.add('active');
+                    setTimeout(() => el.classList.toggle('active', i === selectedPad), 100);
+                }
+            }
 
-            // --- render pads ---
+            // ----- render pads -----
             function renderPads() {
-                const box = $("pads");
-                box.innerHTML = "";
+                const box = $('pads');
+                box.innerHTML = '';
                 pads.forEach((p, i) => {
-                    const b = document.createElement("button");
-                    b.className = "pad" + (i === selected ? " active" : "");
+                    const b = document.createElement('button');
+                    b.className = 'pad' + (i === selectedPad ? ' active' : '');
                     b.dataset.i = i;
                     b.innerHTML =
-                        `<span class="n">${String(i+1).padStart(2,"0")}</span><span class="name">${p.name}</span><span class="meter"><i></i></span>`;
-                    b.addEventListener("pointerdown", () => { selected = i;
+                        `<span class="n">${String(i+1).padStart(2,'0')}</span><span class="name">${p.name}</span><span class="meter"><i></i></span>`;
+                    b.addEventListener('pointerdown', (e) => {
+                        selectedPad = i;
                         renderPads();
-                        playPad(i, .9); });
+                        triggerPad(i, 0.9);
+                    });
                     box.appendChild(b);
                 });
             }
 
-            // --- waveform ---
+            // ----- waveform -----
             function drawWave() {
-                const c = $("wave"),
-                    ctx = c.getContext("2d"),
-                    dpr = devicePixelRatio || 1,
-                    w = c.clientWidth * dpr,
-                    h = c.clientHeight * dpr;
+                const c = $('wave');
+                const ctx = c.getContext('2d');
+                const dpr = devicePixelRatio || 1;
+                const w = c.clientWidth * dpr;
+                const h = c.clientHeight * dpr;
                 c.width = w;
                 c.height = h;
                 ctx.clearRect(0, 0, w, h);
-                ctx.strokeStyle = "#49d487";
+                ctx.strokeStyle = '#49d487';
                 ctx.lineWidth = dpr;
+
+                const buf = currentBuffer || pads[selectedPad]?.buffer;
                 ctx.beginPath();
-                if (currentBuffer) {
-                    const d = currentBuffer.getChannelData(0),
-                        step = Math.max(1, Math.ceil(d.length / w));
+                if (buf) {
+                    const data = buf.getChannelData(0);
+                    const step = Math.max(1, Math.ceil(data.length / w));
                     for (let x = 0; x < w; x++) {
                         let mn = 1,
                             mx = -1;
-                        for (let j = 0; j < step; j++) { const v = d[x * step + j] || 0;
-                            mn = Math.min(mn, v);
-                            mx = Math.max(mx, v); }
-                        ctx.moveTo(x, h * (.5 + mn * .45));
-                        ctx.lineTo(x, h * (.5 + mx * .45));
+                        for (let j = 0; j < step; j++) {
+                            const v = data[x * step + j] || 0;
+                            if (v < mn) mn = v;
+                            if (v > mx) mx = v;
+                        }
+                        ctx.moveTo(x, h * (0.5 + mn * 0.45));
+                        ctx.lineTo(x, h * (0.5 + mx * 0.45));
                     }
-                } else { ctx.moveTo(0, h / 2);
-                    ctx.lineTo(w, h / 2); }
+                } else {
+                    ctx.moveTo(0, h / 2);
+                    ctx.lineTo(w, h / 2);
+                }
                 ctx.stroke();
-                $("startMark").style.left = (+$("start").value * 100) + "%";
-                $("endMark").style.left = (+$("end").value * 100) + "%";
+
+                const start = parseFloat($('start').value) || 0;
+                const end = parseFloat($('end').value) || 1;
+                $('startMark').style.left = (start * 100) + '%';
+                $('endMark').style.left = (end * 100) + '%';
             }
 
-            // --- grid ---
+            // ----- grid -----
             function renderGrid() {
-                const g = $("grid");
-                g.innerHTML = "";
+                const g = $('grid');
+                g.innerHTML = '';
                 for (let r = 0; r < 4; r++) {
-                    const lane = document.createElement("div");
-                    lane.className = "lane";
-                    const lh = document.createElement("div");
-                    lh.className = "lh";
-                    lh.textContent = `${pads[r*4].name} / ${pads[r*4+3].name}`;
+                    const lane = document.createElement('div');
+                    lane.className = 'lane';
+                    const lh = document.createElement('div');
+                    lh.className = 'lh';
+                    lh.textContent = pads[r * 4].name + '/' + pads[r * 4 + 3].name;
                     lane.appendChild(lh);
                     for (let c = 0; c < 16; c++) {
-                        const idx = r * 4 + c,
-                            st = currentPattern[idx],
-                            b = document.createElement("button");
-                        b.className = "step" + (st.on ? " on" : "") + (c === playStep && playing ? " play" : "");
-                        b.dataset.idx = idx;
-                        b.innerHTML =
-                            `<span class="rat">${st.ratchet>1?"×"+st.ratchet:""}</span><span class="prob">${Math.round(st.prob*100)}%</span><i class="vel" style="transform:scaleX(${st.velocity})"></i>`;
-                        b.addEventListener("pointerdown", () => {
+                        const idx = r * 4 + c;
+                        const step = currentPattern[idx];
+                        const btn = document.createElement('button');
+                        btn.className = 'step' + (step.on ? ' on' : '') + (c === playStep && playing ? ' play' : '');
+                        btn.dataset.idx = idx;
+                        btn.innerHTML =
+                            `<span class="rat">${step.ratchet>1?'×'+step.ratchet:''}</span><span class="prob">${Math.round(step.prob*100)}%</span><i class="vel" style="transform:scaleX(${step.velocity})"></i>`;
+                        btn.addEventListener('pointerdown', () => {
                             selectedStep = idx;
-                            if (!st.on) st.on = true;
-                            else st.on = false;
+                            step.on = !step.on;
                             renderGrid();
                             loadStepEditor();
                         });
-                        lane.appendChild(b);
+                        lane.appendChild(btn);
                     }
                     g.appendChild(lane);
                 }
             }
 
             function loadStepEditor() {
-                if (selectedStep == null) return;
+                if (selectedStep === null) return;
                 const s = currentPattern[selectedStep];
-                $("stepVel").value = s.velocity;
-                $("stepProb").value = s.prob;
-                $("stepRat").value = s.ratchet;
-                $("stepNudge").value = s.nudge;
-                $("stepVelVal").textContent = Math.round(s.velocity * 100) + "%";
-                $("stepProbVal").textContent = Math.round(s.prob * 100) + "%";
-                $("stepNudgeVal").textContent = Math.round(s.nudge * 100) + "%";
-                $("lockPitch").value = s.lock?.pitch ?? 0;
-                $("lockFilter").value = s.lock?.filter ?? 20000;
+                $('stepVel').value = s.velocity;
+                $('stepProb').value = s.prob;
+                $('stepRat').value = s.ratchet;
+                $('stepNudge').value = s.nudge;
+                $('stepVelVal').textContent = Math.round(s.velocity * 100) + '%';
+                $('stepProbVal').textContent = Math.round(s.prob * 100) + '%';
+                $('stepNudgeVal').textContent = Math.round(s.nudge * 100) + '%';
+                $('lockPitch').value = s.lock?.pitch ?? 0;
+                $('lockFilter').value = s.lock?.filter ?? 20000;
                 updateLockLabels();
             }
 
-            function updateLockLabels() { $("lockPitchVal").textContent = $("lockPitch").value;
-                $("lockFilterVal").textContent = (+$("lockFilter").value >= 1000 ? (+$("lockFilter").value / 1000).toFixed(
-                    1) + "k" : $("lockFilter").value); }
+            function updateLockLabels() {
+                $('lockPitchVal').textContent = $('lockPitch').value;
+                const f = parseFloat($('lockFilter').value);
+                $('lockFilterVal').textContent = f >= 1000 ? (f / 1000).toFixed(1) + 'k' : f;
+            }
 
-            // --- sequencer tick ---
+            // ----- sequencer tick -----
             function tick() {
                 if (!playing) return;
                 const a = initAudio();
                 if (!a) { playing = false; return; }
-                const bpm = Math.max(40, Math.min(240, +$("bpm").value || 92)),
-                    stepDur = 60 / bpm / 4,
-                    now = a.currentTime + .025;
+                const bpm = Math.max(40, Math.min(240, parseFloat($('bpm').value) || 92));
+                const stepDur = 60 / bpm / 4;
+                const now = a.currentTime + 0.02;
+
                 for (let r = 0; r < 4; r++) {
-                    const idx = r * 4 + playStep,
-                        s = currentPattern[idx];
+                    const idx = r * 4 + playStep;
+                    const s = currentPattern[idx];
                     if (s.on && Math.random() <= s.prob) {
-                        const hits = s.ratchet;
+                        const hits = s.ratchet || 1;
                         for (let q = 0; q < hits; q++) {
-                            const at = now + q * stepDur / hits + s.nudge * stepDur;
-                            playSample(idx, s.velocity, at);
+                            const t = now + q * stepDur / hits + s.nudge * stepDur;
+                            playSample(idx, s.velocity, t);
                         }
                     }
                 }
-                $("stepInfo").textContent = `STEP ${playStep+1} · ${Math.round(bpm)} BPM`;
+
+                $('stepInfo').textContent = `STEP ${playStep+1} · ${Math.round(bpm)} BPM`;
                 renderGrid();
                 playStep = (playStep + 1) % 16;
-                const next = stepDur * 1000 * 0.94;
+                const next = stepDur * 1000 * 0.92;
                 timer = setTimeout(tick, next);
             }
 
+            // ----- play/stop -----
             function togglePlay() {
                 const a = initAudio();
                 if (!a) return;
                 playing = !playing;
                 if (playing) {
-                    $("playBtn").textContent = "PAUSE";
-                    setStatus("PLAYING");
+                    $('playBtn').textContent = 'PAUSE';
+                    setStatus('PLAYING');
                     tick();
                 } else {
                     clearTimeout(timer);
-                    $("playBtn").textContent = "PLAY";
-                    setStatus("READY");
+                    $('playBtn').textContent = 'PLAY';
+                    setStatus('STOPPED');
                 }
             }
 
-            // --- reset ---
-            function reset() {
+            function stopPlay() {
                 playing = false;
                 clearTimeout(timer);
-                resetSong();
-                Object.keys(patterns).forEach(k => delete patterns[k]);
-                patterns[1] = makePattern();
-                patternNo = 1;
-                currentPattern = patterns[1];
-                pads.forEach((p, i) => { p.buffer = null;
-                    p.start = 0;
-                    p.end = 1;
-                    p.name = padNames[i];
-                    p.layer = null; });
-                selected = 0;
-                currentBuffer = null;
-                drawWave();
-                renderPads();
+                $('playBtn').textContent = 'PLAY';
+                setStatus('STOPPED');
                 renderGrid();
-                setStatus("NEW PROJECT");
-                $("footerInfo").textContent = "New project · Built-in kit ready";
             }
 
-            // --- import audio (with robust fallback) ---
+            // ----- status -----
+            function setStatus(msg) { $('status').textContent = msg; }
+
+            // ----- import audio -----
             async function importAudioFile(file) {
                 const a = initAudio();
-                if (!a) { setStatus("AUDIO INIT FAILED"); return; }
-                setStatus("DECODING…");
-                $("footerInfo").textContent = `Loading ${file.name}…`;
+                if (!a) { setStatus('AUDIO INIT FAILED'); return; }
+                setStatus('DECODING…');
                 try {
                     const ab = await file.arrayBuffer();
-                    let b = null;
-                    try { b = await a.decodeAudioData(ab.slice(0)); } catch (e) {}
-                    if (!b) {
+                    let buf = null;
+                    try { buf = await a.decodeAudioData(ab); } catch (e) {}
+                    if (!buf) {
+                        // fallback via media element
                         const url = URL.createObjectURL(file);
-                        try { b = await decodeWithMediaElement(url); } catch (e2) { console.warn("media fallback", e2); }
+                        try { buf = await decodeWithMediaElement(url); } catch (e2) { console.warn('fallback failed', e2); }
                         URL.revokeObjectURL(url);
                     }
-                    if (!b) throw Error("decode failed");
-                    currentBuffer = b;
-                    saveHistory();
-                    pads[selected].buffer = b;
-                    pads[selected].name = file.name.replace(/\.[^.]+$/, "").slice(0, 14).toUpperCase();
-                    pads[selected].start = 0;
-                    pads[selected].end = 1;
+                    if (!buf) throw new Error('Decode failed');
+                    currentBuffer = buf;
+                    pads[selectedPad].buffer = buf;
+                    pads[selectedPad].name = file.name.replace(/\.[^.]+$/, '').slice(0, 14).toUpperCase();
+                    pads[selectedPad].start = 0;
+                    pads[selectedPad].end = 1;
                     drawWave();
                     renderPads();
-                    $("footerInfo").textContent = `LOADED · ${file.name} · ${b.duration.toFixed(2)}s · ${b.sampleRate}Hz`;
-                    setStatus("SAMPLE LOADED");
-                    playPad(selected, .2);
+                    setStatus('LOADED');
+                    $('footerInfo').textContent = `${file.name} · ${buf.duration.toFixed(2)}s`;
+                    triggerPad(selectedPad, 0.2);
                 } catch (e) {
                     console.error(e);
-                    setStatus("IMPORT FAILED");
-                    $("footerInfo").textContent = "Could not decode this file. Try PCM WAV, MP3/M4A or AAC MP4/MOV.";
+                    setStatus('IMPORT FAILED');
+                    $('footerInfo').textContent = 'Could not decode. Try WAV/MP3/M4A.';
                 }
-                $("fileInput").value = "";
+                $('fileInput').value = '';
             }
 
-            // --- media element decode (iOS-friendly) ---
             function decodeWithMediaElement(url) {
-                return new Promise(async (resolve, reject) => {
+                return new Promise((resolve, reject) => {
                     const a = initAudio();
-                    if (!a) { reject(Error("no audio context")); return; }
-                    const media = document.createElement("audio");
+                    if (!a) { reject(Error('no audio context')); return; }
+                    const media = document.createElement('audio');
                     media.src = url;
-                    media.preload = "auto";
+                    media.preload = 'auto';
                     media.playsInline = true;
                     let done = false;
 
                     const cleanup = () => {
-                        media.removeEventListener("error", bad);
-                        media.removeEventListener("loadedmetadata", ready);
-                        media.removeEventListener("ended", onEnd);
+                        media.removeEventListener('error', bad);
+                        media.removeEventListener('loadedmetadata', ready);
+                        media.removeEventListener('ended', onEnd);
                     };
-
                     const bad = () => { if (!done) { done = true;
                             cleanup();
-                            reject(Error("media error")); } };
+                            reject(Error('media error')); } };
                     const onEnd = () => { if (!done) { done = true;
                             cleanup();
                             finish(); } };
-
                     const finish = async () => {
                         try {
                             const dest = a.createMediaStreamDestination();
-                            let src = null;
+                            let src;
                             try { src = a.createMediaElementSource(media); } catch (e) { reject(e); return; }
                             const g = a.createGain();
                             src.connect(g);
                             g.connect(dest);
                             g.connect(a.destination);
                             const chunks = [];
-                            let mime = "";
-                            const types = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm"];
-                            for (const t of types) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(t)) { mime =
-                                        t; break; } }
-                            if (!window.MediaRecorder) throw Error("MediaRecorder unavailable");
+                            let mime = '';
+                            const types = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm'];
+                            for (const t of types) {
+                                if (MediaRecorder.isTypeSupported(t)) { mime = t; break; }
+                            }
+                            if (!MediaRecorder) throw Error('MediaRecorder unavailable');
                             const mr = new MediaRecorder(dest.stream, mime ? { mimeType: mime } : undefined);
                             mr.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
                             const doneP = new Promise(r => mr.onstop = r);
@@ -1028,16 +1106,15 @@
                                 media.onerror = j; });
                             mr.stop();
                             await doneP;
-                            const blob = new Blob(chunks, { type: mr.mimeType || mime || "audio/webm" });
+                            const blob = new Blob(chunks, { type: mr.mimeType || mime || 'audio/webm' });
                             const buf = await a.decodeAudioData(await blob.arrayBuffer());
                             try { src.disconnect();
                                 g.disconnect(); } catch (e) {}
-                            media.removeAttribute("src");
+                            media.removeAttribute('src');
                             media.load();
                             resolve(buf);
                         } catch (e) { reject(e); }
                     };
-
                     const ready = async () => {
                         try {
                             media.currentTime = 0;
@@ -1047,35 +1124,35 @@
                             finish();
                         } catch (e) { reject(e); }
                     };
-                    media.addEventListener("error", bad, { once: true });
-                    media.addEventListener("loadedmetadata", ready, { once: true });
-                    media.addEventListener("ended", onEnd, { once: true });
+                    media.addEventListener('error', bad, { once: true });
+                    media.addEventListener('loadedmetadata', ready, { once: true });
+                    media.addEventListener('ended', onEnd, { once: true });
                     media.load();
                     setTimeout(() => { if (!done) { done = true;
                             cleanup();
-                            reject(Error("timeout")); } }, 30000);
+                            reject(Error('timeout')); } }, 30000);
                 });
             }
 
-            // --- record ---
+            // ----- record -----
             async function recordMic() {
                 const a = initAudio();
                 if (!a) return;
                 if (recording) {
-                    if (recorder) { try { recorder.stop(); } catch (e) {} }
+                    if (recorder) recorder.stop();
                     recording = false;
-                    $("recordBtn").textContent = "● RECORD MIC / INTERFACE";
+                    $('recordBtn').textContent = '● RECORD MIC / INTERFACE';
                     return;
                 }
                 try {
                     inputStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false,
                             noiseSuppression: false, autoGainControl: false } });
-                    const src = a.createMediaStreamSource(inputStream),
-                        meter = a.createAnalyser();
+                    const src = a.createMediaStreamSource(inputStream);
+                    const meter = a.createAnalyser();
                     meter.fftSize = 256;
                     src.connect(meter);
                     const chunks = [];
-                    const mime = (MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" : "audio/webm");
+                    const mime = MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : 'audio/webm';
                     recorder = new MediaRecorder(inputStream, { mimeType: mime });
                     recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
                     recorder.onstop = async () => {
@@ -1083,264 +1160,335 @@
                             const blob = new Blob(chunks, { type: recorder.mimeType || mime });
                             const buf = await a.decodeAudioData(await blob.arrayBuffer());
                             currentBuffer = buf;
-                            pads[selected].buffer = buf;
-                            pads[selected].name = "REC " + new Date().toLocaleTimeString([], { hour: "2-digit",
-                                minute: "2-digit" });
+                            pads[selectedPad].buffer = buf;
+                            pads[selectedPad].name = 'REC ' + new Date().toLocaleTimeString([], { hour: '2-digit',
+                                minute: '2-digit' });
                             drawWave();
                             renderPads();
-                            $("footerInfo").textContent = `RECORDED · ${buf.duration.toFixed(2)}s`;
-                            setStatus("RECORDING READY");
-                        } catch (e) { console.warn("record decode", e); }
-                        if (inputStream) { try { inputStream.getTracks().forEach(t => t.stop()); } catch (e) {} }
+                            $('footerInfo').textContent = `Recorded ${buf.duration.toFixed(2)}s`;
+                            setStatus('RECORDED');
+                        } catch (e) { console.warn('record decode', e); }
+                        if (inputStream) inputStream.getTracks().forEach(t => t.stop());
                         recording = false;
-                        $("recordBtn").textContent = "● RECORD MIC / INTERFACE";
+                        $('recordBtn').textContent = '● RECORD MIC / INTERFACE';
                     };
                     recorder.start(100);
                     recording = true;
-                    $("recordBtn").textContent = "■ STOP RECORDING";
-                    setStatus("RECORDING…");
+                    $('recordBtn').textContent = '■ STOP RECORDING';
+                    setStatus('RECORDING…');
+                    // meter loop
                     (function meterLoop() {
                         if (!recording) return;
                         try {
-                            const ar = new Uint8Array(meter.frequencyBinCount);
-                            meter.getByteTimeDomainData(ar);
+                            const arr = new Uint8Array(meter.frequencyBinCount);
+                            meter.getByteTimeDomainData(arr);
                             let sum = 0;
-                            for (const v of ar) { const q = (v - 128) / 128;
+                            for (const v of arr) { const q = (v - 128) / 128;
                                 sum += q * q; }
-                            $("inputMeter").style.width = Math.min(100, Math.sqrt(sum / ar.length) * 180) + "%";
+                            $('inputMeter').style.width = Math.min(100, Math.sqrt(sum / arr.length) * 180) + '%';
                             requestAnimationFrame(meterLoop);
                         } catch (e) {}
                     })();
-                } catch (e) { setStatus("MIC ACCESS FAILED");
-                    $("footerInfo").textContent = "Microphone permission denied or no device."; }
+                } catch (e) {
+                    setStatus('MIC ACCESS DENIED');
+                    $('footerInfo').textContent = 'Permission denied.';
+                }
             }
 
-            // --- chop ---
+            // ----- chop -----
             function autoChop() {
-                if (!currentBuffer) { alert("Load or record a sample first."); return; }
-                saveHistory();
+                const buf = currentBuffer || pads[selectedPad]?.buffer;
+                if (!buf) { alert('Load a sample first.'); return; }
                 for (let i = 0; i < 16; i++) {
-                    pads[i].buffer = currentBuffer;
+                    pads[i].buffer = buf;
                     pads[i].start = i / 16;
                     pads[i].end = (i + 1) / 16;
-                    pads[i].name = "CHOP " + String(i + 1).padStart(2, "0");
+                    pads[i].name = 'CHOP ' + String(i + 1).padStart(2, '0');
                 }
                 renderPads();
-                setStatus("16 CHOPS ASSIGNED");
+                setStatus('16 CHOPS');
             }
 
-            function trimToPad() {
-                const p = pads[selected];
+            function trimPad() {
+                const p = pads[selectedPad];
                 if (!p.buffer) return;
-                saveHistory();
-                const st = Math.floor(p.start * p.buffer.length),
-                    en = Math.floor(p.end * p.buffer.length),
-                    n = Math.max(1, en - st),
-                    b = AC.createBuffer(p.buffer.numberOfChannels, n, p.buffer.sampleRate);
-                for (let c = 0; c < b.numberOfChannels; c++) b.getChannelData(c).set(p.buffer.getChannelData(c).slice(st,
-                    en));
+                const st = Math.floor(p.start * p.buffer.length);
+                const en = Math.floor(p.end * p.buffer.length);
+                const len = Math.max(1, en - st);
+                const b = AC.createBuffer(p.buffer.numberOfChannels, len, p.buffer.sampleRate);
+                for (let c = 0; c < b.numberOfChannels; c++) {
+                    b.getChannelData(c).set(p.buffer.getChannelData(c).slice(st, en));
+                }
                 p.buffer = b;
                 p.start = 0;
                 p.end = 1;
                 currentBuffer = b;
                 drawWave();
-                setStatus("PAD TRIMMED");
+                setStatus('TRIMMED');
             }
 
-            function duplicate() {
-                saveHistory();
-                const dst = (selected + 1) % 16;
-                pads[dst] = { ...pads[selected], name: pads[selected].name + " COPY" };
-                selected = dst;
+            function duplicatePad() {
+                const src = pads[selectedPad];
+                const dst = (selectedPad + 1) % 16;
+                pads[dst] = { ...src, name: src.name + ' COPY' };
+                selectedPad = dst;
                 renderPads();
-                setStatus("PAD DUPLICATED");
+                setStatus('DUPLICATED');
             }
 
-            function clearPad() { saveHistory();
-                pads[selected].buffer = null;
-                pads[selected].layer = null;
+            function clearPad() {
+                pads[selectedPad].buffer = null;
+                pads[selectedPad].layer = null;
+                if (currentBuffer === pads[selectedPad].buffer) currentBuffer = null;
                 renderPads();
-                setStatus("PAD CLEARED"); }
+                drawWave();
+                setStatus('CLEARED');
+            }
 
-            // --- WAV export helper ---
-            function renderWavBuffer(buf, name = "sampler-export.wav") {
-                const ch = buf.numberOfChannels,
-                    len = buf.length,
-                    rate = buf.sampleRate,
-                    ab = new ArrayBuffer(44 + len * ch * 2),
-                    v = new DataView(ab);
+            // ----- export WAV helpers -----
+            function renderWavBuffer(buf, name) {
+                const ch = buf.numberOfChannels;
+                const len = buf.length;
+                const rate = buf.sampleRate;
+                const ab = new ArrayBuffer(44 + len * ch * 2);
+                const dv = new DataView(ab);
                 let p = 0;
-                const ws = x => { for (let i = 0; i < x.length; i++) v.setUint8(p++, x.charCodeAt(i)); };
-                ws("RIFF");
-                v.setUint32(p, ab.byteLength - 8, true);
+                const writeString = (s) => { for (let i = 0; i < s.length; i++) dv.setUint8(p++, s.charCodeAt(i)); };
+                writeString('RIFF');
+                dv.setUint32(p, ab.byteLength - 8, true);
                 p += 4;
-                ws("WAVEfmt ");
-                v.setUint32(p, 16, true);
+                writeString('WAVEfmt ');
+                dv.setUint32(p, 16, true);
                 p += 4;
-                v.setUint16(p, 1, true);
+                dv.setUint16(p, 1, true);
                 p += 2;
-                v.setUint16(p, ch, true);
+                dv.setUint16(p, ch, true);
                 p += 2;
-                v.setUint32(p, rate, true);
+                dv.setUint32(p, rate, true);
                 p += 4;
-                v.setUint32(p, rate * ch * 2, true);
+                dv.setUint32(p, rate * ch * 2, true);
                 p += 4;
-                v.setUint16(p, ch * 2, true);
+                dv.setUint16(p, ch * 2, true);
                 p += 2;
-                v.setUint16(p, 16, true);
+                dv.setUint16(p, 16, true);
                 p += 2;
-                ws("data");
-                v.setUint32(p, len * ch * 2, true);
+                writeString('data');
+                dv.setUint32(p, len * ch * 2, true);
                 p += 4;
-                for (let i = 0; i < len; i++)
-                    for (let c = 0; c < ch; c++) { const q = Math.max(-1, Math.min(1, buf.getChannelData(c)[i]));
-                        v.setInt16(p, q < 0 ? q * 32768 : q * 32767, true);
-                        p += 2; }
-                const a = document.createElement("a");
-                a.href = URL.createObjectURL(new Blob([ab], { type: "audio/wav" }));
-                a.download = name;
+                for (let i = 0; i < len; i++) {
+                    for (let c = 0; c < ch; c++) {
+                        const v = Math.max(-1, Math.min(1, buf.getChannelData(c)[i]));
+                        dv.setInt16(p, v < 0 ? v * 32768 : v * 32767, true);
+                        p += 2;
+                    }
+                }
+                const blob = new Blob([ab], { type: 'audio/wav' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = name || 'export.wav';
                 a.click();
-                setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
             }
 
-            // --- pad export ---
             function exportPad() {
-                if (!currentBuffer) { alert("No sample loaded on selected pad."); return; }
-                const p = pads[selected],
-                    a = initAudio();
-                if (!a) return;
-                const st = Math.floor(p.start * currentBuffer.length),
-                    en = Math.floor(p.end * currentBuffer.length),
-                    b = a.createBuffer(currentBuffer.numberOfChannels, en - st, currentBuffer.sampleRate);
-                for (let c = 0; c < b.numberOfChannels; c++) b.getChannelData(c).set(currentBuffer.getChannelData(c).slice(
-                    st, en));
-                renderWavBuffer(b, "pad-" + String(selected + 1).padStart(2, "0") + ".wav");
-                setStatus("PAD WAV EXPORTED");
+                const p = pads[selectedPad];
+                if (!p.buffer) { alert('No sample on this pad.'); return; }
+                const st = Math.floor(p.start * p.buffer.length);
+                const en = Math.floor(p.end * p.buffer.length);
+                const len = Math.max(1, en - st);
+                const b = AC.createBuffer(p.buffer.numberOfChannels, len, p.buffer.sampleRate);
+                for (let c = 0; c < b.numberOfChannels; c++) {
+                    b.getChannelData(c).set(p.buffer.getChannelData(c).slice(st, en));
+                }
+                renderWavBuffer(b, 'pad_' + String(selectedPad + 1).padStart(2, '0') + '.wav');
+                setStatus('PAD EXPORTED');
             }
 
-            // --- pattern export (offline) ---
+            // ----- pattern export (offline) -----
             async function exportPattern() {
                 const a = initAudio();
                 if (!a) return;
-                const bpm = +$("bpm").value || 92,
-                    bars = 1,
-                    seconds = bars * 4 * 60 / bpm,
-                    rate = a.sampleRate || 48000;
+                const bpm = Math.max(40, Math.min(240, parseFloat($('bpm').value) || 92));
+                const seconds = 4 * 60 / bpm;
+                const rate = a.sampleRate || 48000;
                 const off = new OfflineAudioContext(2, Math.ceil(seconds * rate), rate);
                 const dest = off.destination;
                 const pat = currentPattern;
-                for (let r = 0; r < 4; r++)
+
+                for (let r = 0; r < 4; r++) {
                     for (let c = 0; c < 16; c++) {
-                        const idx = r * 4 + c,
-                            s = pat[idx];
-                        if (!s?.on || Math.random() > s.prob) continue;
-                        for (let q = 0; q < (s.ratchet || 1); q++) {
-                            const t = c * 60 / bpm / 4 + q * (60 / bpm / 4) / (s.ratchet || 1) + s.nudge * 60 / bpm / 4;
+                        const idx = r * 4 + c;
+                        const s = pat[idx];
+                        if (!s.on || Math.random() > s.prob) continue;
+                        for (let q = 0; q < s.ratchet; q++) {
+                            const t = c * 60 / bpm / 4 + q * (60 / bpm / 4) / s.ratchet + s.nudge * 60 / bpm / 4;
                             const p = pads[idx];
                             if (p.buffer) {
                                 try {
-                                    const src = off.createBufferSource(),
-                                        g = off.createGain(),
-                                        f = off.createBiquadFilter();
+                                    const src = off.createBufferSource();
+                                    const g = off.createGain();
+                                    const f = off.createBiquadFilter();
                                     src.buffer = p.buffer;
                                     src.playbackRate.value = Math.pow(2, (p.lock?.pitch || 0) / 12);
-                                    f.type = "lowpass";
+                                    f.type = 'lowpass';
                                     f.frequency.value = p.lock?.filter || 20000;
-                                    g.gain.value = s.velocity * .7;
-                                    src.connect(f).connect(g).connect(dest);
-                                    const st = p.start * p.buffer.duration,
-                                        dur = Math.max(.01, (p.end - p.start) * p.buffer.duration / src.playbackRate
-                                        .value);
+                                    g.gain.value = s.velocity * 0.7;
+                                    src.connect(f);
+                                    f.connect(g);
+                                    g.connect(dest);
+                                    const st = p.start * p.buffer.duration;
+                                    const dur = (p.end - p.start) * p.buffer.duration / src.playbackRate.value;
                                     if (t < seconds) src.start(Math.max(0, t), st, Math.min(dur, seconds - t));
-                                } catch (e) { console.warn("offline render sample", e); }
+                                } catch (e) { console.warn('offline render error', e); }
                             } else {
+                                // use synth offline (simplified)
                                 try {
-                                    const o = off.createOscillator(),
-                                        g = off.createGain();
-                                    o.type = kitType[idx] === "bass" ? "sawtooth" : "sine";
-                                    o.frequency.value = kitFreq[idx];
-                                    g.gain.setValueAtTime(.001, t);
-                                    g.gain.exponentialRampToValueAtTime(.25 * s.velocity, t + .005);
-                                    g.gain.exponentialRampToValueAtTime(.001, t + .28);
-                                    o.connect(g).connect(dest);
-                                    o.start(t);
-                                    o.stop(t + .3);
+                                    const osc = off.createOscillator();
+                                    const g = off.createGain();
+                                    osc.type = 'sine';
+                                    osc.frequency.value = kitFreq[idx];
+                                    g.gain.setValueAtTime(0.001, t);
+                                    g.gain.exponentialRampToValueAtTime(0.25 * s.velocity, t + 0.005);
+                                    g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+                                    osc.connect(g);
+                                    g.connect(dest);
+                                    osc.start(t);
+                                    osc.stop(t + 0.3);
                                 } catch (e) {}
                             }
                         }
                     }
+                }
                 const out = await off.startRendering();
-                renderWavBuffer(out, "pattern-" + String(patternNo).padStart(2, "0") + ".wav");
-                setStatus("PATTERN WAV EXPORTED");
+                renderWavBuffer(out, 'pattern_' + String(patternNo).padStart(2, '0') + '.wav');
+                setStatus('PATTERN EXPORTED');
             }
 
-            // --- song export ---
+            // ----- song export -----
             async function exportSong() {
                 const a = initAudio();
                 if (!a) return;
-                setStatus("RENDERING SONG…");
-                const seq = songArrangement.length ? songArrangement : [1],
-                    bpm = +$("bpm").value || 92,
-                    rate = a.sampleRate || 48000;
-                const bars = seq.length,
-                    seconds = bars * 4 * 60 / bpm;
+                const seq = songArrangement.length ? songArrangement : [1];
+                const bpm = Math.max(40, Math.min(240, parseFloat($('bpm').value) || 92));
+                const bars = seq.length;
+                const seconds = bars * 4 * 60 / bpm;
+                const rate = a.sampleRate || 48000;
                 const off = new OfflineAudioContext(2, Math.ceil(seconds * rate), rate);
                 const masterOff = off.createGain();
                 masterOff.gain.value = bus.master;
                 masterOff.connect(off.destination);
 
-                for (let i = 0; i < seq.length; i++) {
-                    const pat = patterns[seq[i]] || makePattern();
-                    const startAt = i * 4 * 60 / bpm;
-                    for (let r = 0; r < 4; r++)
+                for (let pIdx = 0; pIdx < seq.length; pIdx++) {
+                    const pat = patterns[seq[pIdx]] || makePattern();
+                    const startAt = pIdx * 4 * 60 / bpm;
+                    for (let r = 0; r < 4; r++) {
                         for (let c = 0; c < 16; c++) {
-                            const idx = r * 4 + c,
-                                s = pat[idx];
-                            if (!s?.on || Math.random() > s.prob) continue;
-                            for (let q = 0; q < (s.ratchet || 1); q++) {
-                                const t = startAt + c * 60 / bpm / 4 + q * (60 / bpm / 4) / (s.ratchet || 1) + s.nudge *
-                                    60 / bpm / 4;
+                            const idx = r * 4 + c;
+                            const s = pat[idx];
+                            if (!s.on || Math.random() > s.prob) continue;
+                            for (let q = 0; q < s.ratchet; q++) {
+                                const t = startAt + c * 60 / bpm / 4 + q * (60 / bpm / 4) / s.ratchet + s.nudge * 60 /
+                                    bpm / 4;
                                 const p = pads[idx];
                                 if (p.buffer) {
                                     try {
-                                        const src = off.createBufferSource(),
-                                            g = off.createGain(),
-                                            f = off.createBiquadFilter();
+                                        const src = off.createBufferSource();
+                                        const g = off.createGain();
+                                        const f = off.createBiquadFilter();
                                         src.buffer = p.buffer;
                                         src.playbackRate.value = Math.pow(2, (p.lock?.pitch || 0) / 12);
-                                        f.type = "lowpass";
+                                        f.type = 'lowpass';
                                         f.frequency.value = p.lock?.filter || 20000;
-                                        g.gain.value = s.velocity * .7;
-                                        src.connect(f).connect(g).connect(masterOff);
-                                        const st = p.start * p.buffer.duration,
-                                            dur = Math.max(.01, (p.end - p.start) * p.buffer.duration / src
-                                            .playbackRate.value);
+                                        g.gain.value = s.velocity * 0.7;
+                                        src.connect(f);
+                                        f.connect(g);
+                                        g.connect(masterOff);
+                                        const st = p.start * p.buffer.duration;
+                                        const dur = (p.end - p.start) * p.buffer.duration / src.playbackRate.value;
                                         if (t < seconds) src.start(Math.max(0, t), st, Math.min(dur, seconds - t));
                                     } catch (e) {}
                                 } else {
+                                    // synth fallback
                                     try {
-                                        const o = off.createOscillator(),
-                                            g = off.createGain();
-                                        o.type = kitType[idx] === "bass" ? "sawtooth" : "sine";
-                                        o.frequency.value = kitFreq[idx];
-                                        g.gain.setValueAtTime(.001, t);
-                                        g.gain.exponentialRampToValueAtTime(.25 * s.velocity, t + .005);
-                                        g.gain.exponentialRampToValueAtTime(.001, t + .28);
-                                        o.connect(g).connect(masterOff);
-                                        o.start(t);
-                                        o.stop(t + .3);
+                                        const osc = off.createOscillator();
+                                        const g = off.createGain();
+                                        osc.type = 'sine';
+                                        osc.frequency.value = kitFreq[idx];
+                                        g.gain.setValueAtTime(0.001, t);
+                                        g.gain.exponentialRampToValueAtTime(0.25 * s.velocity, t + 0.005);
+                                        g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+                                        osc.connect(g);
+                                        g.connect(masterOff);
+                                        osc.start(t);
+                                        osc.stop(t + 0.3);
                                     } catch (e) {}
                                 }
                             }
                         }
+                    }
                 }
                 const out = await off.startRendering();
-                renderWavBuffer(out, "song-export.wav");
-                setStatus("SONG WAV EXPORTED");
-                $("footerInfo").textContent = `Song · ${seq.length} pattern bar(s)`;
+                renderWavBuffer(out, 'song_export.wav');
+                setStatus('SONG EXPORTED');
             }
 
-            // --- project serialization with PCM embedding ---
+            // ----- skipback -----
+            function startSkipback() {
+                if (skipActive) return;
+                const a = initAudio();
+                if (!a) return;
+                skipRate = a.sampleRate;
+                skipChannels = 2;
+                const bpm = Math.max(40, Math.min(240, parseFloat($('bpm').value) || 92));
+                skipLength = Math.max(1, Math.ceil((60 / bpm) * 4 * 8 * skipRate));
+                skipRing = Array.from({ length: skipChannels }, () => new Float32Array(skipLength));
+                skipWrite = 0;
+                skipActive = true;
+                try {
+                    skipProcessor = a.createScriptProcessor(2048, 2, 2);
+                    masterGain.connect(skipProcessor);
+                    skipProcessor.onaudioprocess = (e) => {
+                        if (!skipActive) return;
+                        const n = e.inputBuffer.length;
+                        for (let c = 0; c < skipChannels; c++) {
+                            const input = e.inputBuffer.getChannelData(Math.min(c, e.inputBuffer.numberOfChannels - 1));
+                            for (let i = 0; i < n; i++) {
+                                skipRing[c][(skipWrite + i) % skipLength] = input[i];
+                            }
+                        }
+                        skipWrite = (skipWrite + n) % skipLength;
+                    };
+                    setStatus('SKIPBACK ACTIVE');
+                } catch (e) { console.warn('skipback init', e);
+                    skipActive = false; }
+            }
+
+            function captureSkipback() {
+                if (!skipActive || !skipRing) { setStatus('SKIPBACK NOT READY'); return; }
+                const a = initAudio();
+                if (!a) return;
+                try {
+                    const b = a.createBuffer(skipChannels, skipLength, skipRate);
+                    const start = skipWrite;
+                    for (let c = 0; c < skipChannels; c++) {
+                        const out = b.getChannelData(c);
+                        const ring = skipRing[c];
+                        for (let i = 0; i < skipLength; i++) out[i] = ring[(start + i) % skipLength];
+                    }
+                    pads[selectedPad].buffer = b;
+                    pads[selectedPad].start = 0;
+                    pads[selectedPad].end = 1;
+                    currentBuffer = b;
+                    drawWave();
+                    renderPads();
+                    setStatus('8 BARS CAPTURED');
+                    $('footerInfo').textContent = `Skipback ${(skipLength/skipRate).toFixed(1)}s captured`;
+                } catch (e) { console.warn('capture skipback', e);
+                    setStatus('CAPTURE FAILED'); }
+            }
+
+            // ----- project save/load -----
             function audioBufferToPCM16Base64(buf) {
                 if (!buf) return null;
                 const ch = buf.numberOfChannels,
@@ -1348,13 +1496,14 @@
                 const bytes = new Uint8Array(len * ch * 2);
                 const dv = new DataView(bytes.buffer);
                 let p = 0;
-                for (let i = 0; i < len; i++)
+                for (let i = 0; i < len; i++) {
                     for (let c = 0; c < ch; c++) {
-                        const q = Math.max(-1, Math.min(1, buf.getChannelData(c)[i]));
-                        dv.setInt16(p, q < 0 ? q * 32768 : q * 32767, true);
+                        const v = Math.max(-1, Math.min(1, buf.getChannelData(c)[i]));
+                        dv.setInt16(p, v < 0 ? v * 32768 : v * 32767, true);
                         p += 2;
                     }
-                let binary = "";
+                }
+                let binary = '';
                 const chunk = 0x8000;
                 for (let i = 0; i < bytes.length; i += chunk) {
                     const slice = bytes.subarray(i, Math.min(i + chunk, bytes.length));
@@ -1364,17 +1513,18 @@
             }
 
             function base64ToBytes(str) {
-                const bin = atob(str),
-                    out = new Uint8Array(bin.length);
+                const bin = atob(str);
+                const out = new Uint8Array(bin.length);
                 for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
                 return out;
             }
 
-            async function serializeProject() {
-                const sampleData = [];
-                for (let i = 0; i < pads.length; i++) {
-                    const p = pads[i];
-                    sampleData.push({
+            async function saveProject() {
+                const a = initAudio();
+                if (!a) { setStatus('AUDIO NOT READY'); return; }
+                setStatus('SAVING…');
+                try {
+                    const padData = pads.map(p => ({
                         name: p.name,
                         start: p.start,
                         end: p.end,
@@ -1382,299 +1532,379 @@
                         channels: p.buffer?.numberOfChannels || 0,
                         length: p.buffer?.length || 0,
                         pcm: p.buffer ? audioBufferToPCM16Base64(p.buffer) : null
-                    });
-                }
-                const pats = {};
-                Object.keys(patterns).forEach(k => { pats[k] = patterns[k]; });
-                return {
-                    version: 3,
-                    created: new Date().toISOString(),
-                    bpm: +$("bpm").value || 92,
-                    patternNo: patternNo,
-                    patterns: pats,
-                    pads: sampleData,
-                    selected: selected,
-                    bus: bus,
-                    arrangement: songArrangement
-                };
-            }
-
-            async function saveProject() {
-                try {
-                    setStatus("PACKING PROJECT…");
-                    const data = await serializeProject();
-                    const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
-                    const a = document.createElement("a");
-                    a.href = URL.createObjectURL(blob);
-                    a.download = "sampler-project.json";
+                    }));
+                    const pats = {};
+                    Object.keys(patterns).forEach(k => { pats[k] = patterns[k]; });
+                    const data = {
+                        version: 3,
+                        bpm: parseFloat($('bpm').value) || 92,
+                        patternNo: patternNo,
+                        patterns: pats,
+                        pads: padData,
+                        selected: selectedPad,
+                        bus: bus,
+                        arrangement: songArrangement
+                    };
+                    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'sampler_project.json';
                     a.click();
-                    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-                    setStatus("PROJECT SAVED");
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    setStatus('SAVED');
                 } catch (e) { console.error(e);
-                    setStatus("PROJECT SAVE FAILED"); }
-            }
-
-            async function decodeEmbeddedPCM(x) {
-                if (!x?.pcm || !x.sampleRate || !x.length) return null;
-                try {
-                    const bytes = base64ToBytes(x.pcm),
-                        channels = x.channels || 1,
-                        length = x.length;
-                    const b = AC.createBuffer(channels, length, x.sampleRate),
-                        dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-                    let p = 0;
-                    for (let i = 0; i < length; i++)
-                        for (let c = 0; c < channels; c++) { b.getChannelData(c)[i] = dv.getInt16(p, true) / 32768;
-                            p += 2; }
-                    return b;
-                } catch (e) { console.warn("decode PCM", e); return null; }
+                    setStatus('SAVE FAILED'); }
             }
 
             async function loadProject(file) {
+                const a = initAudio();
+                if (!a) { setStatus('AUDIO NOT READY'); return; }
+                setStatus('LOADING…');
                 try {
-                    const a = initAudio();
-                    if (!a) { setStatus("AUDIO INIT FAILED"); return; }
-                    setStatus("LOADING PROJECT…");
-                    const d = JSON.parse(await file.text());
-                    if (!d || d.version < 3) throw Error("Old project format");
-                    $("bpm").value = d.bpm || 92;
-                    patternNo = d.patternNo || 1;
+                    const text = await file.text();
+                    const data = JSON.parse(text);
+                    if (data.version < 3) throw new Error('Old version');
+                    $('bpm').value = data.bpm || 92;
+                    patternNo = data.patternNo || 1;
                     Object.keys(patterns).forEach(k => delete patterns[k]);
-                    if (d.patterns) Object.entries(d.patterns).forEach(([k, v]) => patterns[k] = v);
+                    if (data.patterns) {
+                        Object.entries(data.patterns).forEach(([k, v]) => patterns[k] = v);
+                    }
                     if (!patterns[patternNo]) patterns[patternNo] = makePattern();
                     currentPattern = patterns[patternNo];
-                    bus = Object.assign(bus, d.bus || {});
-                    songArrangement = Array.isArray(d.arrangement) && d.arrangement.length ? d.arrangement : [1];
-                    if (d.pads) {
-                        for (let i = 0; i < Math.min(16, d.pads.length); i++) {
-                            const x = d.pads[i];
-                            pads[i].name = x.name || padNames[i];
-                            pads[i].start = x.start ?? 0;
-                            pads[i].end = x.end ?? 1;
-                            pads[i].buffer = await decodeEmbeddedPCM(x);
+                    bus = Object.assign(bus, data.bus || {});
+                    songArrangement = data.arrangement || [1];
+                    if (data.pads) {
+                        for (let i = 0; i < Math.min(16, data.pads.length); i++) {
+                            const d = data.pads[i];
+                            pads[i].name = d.name || padNames[i] || 'PAD';
+                            pads[i].start = d.start ?? 0;
+                            pads[i].end = d.end ?? 1;
+                            if (d.pcm && d.sampleRate && d.length) {
+                                try {
+                                    const bytes = base64ToBytes(d.pcm);
+                                    const b = a.createBuffer(d.channels || 1, d.length, d.sampleRate);
+                                    const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                                    let p = 0;
+                                    for (let j = 0; j < d.length; j++) {
+                                        for (let c = 0; c < (d.channels || 1); c++) {
+                                            b.getChannelData(c)[j] = dv.getInt16(p, true) / 32768;
+                                            p += 2;
+                                        }
+                                    }
+                                    pads[i].buffer = b;
+                                } catch (e) { console.warn('decode pcm', e); }
+                            } else {
+                                pads[i].buffer = null;
+                            }
                         }
                     }
-                    selected = d.selected || 0;
-                    currentBuffer = pads[selected]?.buffer || null;
-                    $("patternName").textContent = "PATTERN " + String(patternNo).padStart(2, "0");
-                    $("songMode").value = songArrangement.length > 1 ? "song" : "loop";
+                    selectedPad = data.selected || 0;
+                    currentBuffer = pads[selectedPad]?.buffer || null;
+                    $('patternName').textContent = 'PATTERN ' + String(patternNo).padStart(2, '0');
+                    $('songMode').value = songArrangement.length > 1 ? 'song' : 'loop';
                     renderPads();
                     renderGrid();
                     drawWave();
                     updateFX();
-                    setStatus("PROJECT LOADED");
-                    $("footerInfo").textContent = "Project loaded · " + pads.filter(p => p.buffer).length + " samples restored";
+                    setStatus('LOADED');
+                    $('footerInfo').textContent = 'Project loaded, ' + pads.filter(p => p.buffer).length + ' samples';
                 } catch (e) { console.error(e);
-                    setStatus("PROJECT LOAD FAILED");
-                    $("footerInfo").textContent = "Project file may be damaged or from an older version."; }
+                    setStatus('LOAD FAILED');
+                    $('footerInfo').textContent = 'Invalid project file.'; }
             }
 
-            // --- skipback ---
-            function startSkipback() {
-                if (skipCaptureActive) return;
-                const a = initAudio();
-                if (!a) return;
-                skipRate = a.sampleRate;
-                skipChannels = 2;
-                const bpm = Math.max(40, Math.min(240, +$("bpm").value || 92));
-                skipLength = Math.max(1, Math.ceil((60 / bpm) * 4 * 8 * skipRate));
-                skipRing = Array.from({ length: skipChannels }, () => new Float32Array(skipLength));
-                skipWrite = 0;
-                skipCaptureActive = true;
-                try {
-                    skipProcessor = a.createScriptProcessor(2048, 2, 2);
-                    master.connect(skipProcessor);
-                    skipProcessor.onaudioprocess = e => {
-                        if (!skipCaptureActive) return;
-                        const n = e.inputBuffer.length;
-                        for (let c = 0; c < skipChannels; c++) {
-                            const input = e.inputBuffer.getChannelData(Math.min(c, e.inputBuffer.numberOfChannels - 1));
-                            for (let i = 0; i < n; i++) skipRing[c][(skipWrite + i) % skipLength] = input[i];
-                        }
-                        skipWrite = (skipWrite + n) % skipLength;
+            // ----- FX update -----
+            function updateFX() {
+                bus.reverb = parseFloat($('reverb').value) || 0;
+                bus.delay = parseFloat($('delay').value) || 0;
+                bus.drive = parseFloat($('drive').value) || 0;
+                bus.master = parseFloat($('master').value) || 0.8;
+                if (masterGain) masterGain.gain.value = bus.master;
+                if (reverbNode) reverbNode.gain.value = bus.reverb * 0.7;
+                if (delayGain) delayGain.gain.value = bus.delay * 0.5;
+                if (driveNode) {
+                    const curve = makeDriveCurve(bus.drive);
+                    driveNode.curve = curve;
+                }
+                $('reverbVal').textContent = Math.round(bus.reverb * 100) + '%';
+                $('delayVal').textContent = Math.round(bus.delay * 100) + '%';
+                $('driveVal').textContent = Math.round(bus.drive * 100) + '%';
+                $('masterVal').textContent = Math.round(bus.master * 100) + '%';
+            }
+
+            // ----- reset project -----
+            function resetProject() {
+                stopPlay();
+                Object.keys(patterns).forEach(k => delete patterns[k]);
+                patterns[1] = makePattern();
+                patternNo = 1;
+                currentPattern = patterns[1];
+                pads.forEach((p, i) => {
+                    p.buffer = null;
+                    p.start = 0;
+                    p.end = 1;
+                    p.name = ['KICK', 'SNARE', 'HAT', 'CLAP', 'TOM', 'PERC', 'BASS', 'PLUCK', 'CHORD', 'FX', 'VOX',
+                        '808', 'RIM', 'OPEN HAT', 'CRASH', 'GHOST'
+                    ][i];
+                    p.layer = null;
+                });
+                selectedPad = 0;
+                currentBuffer = null;
+                songArrangement = [1];
+                $('patternName').textContent = 'PATTERN 01';
+                $('songMode').value = 'loop';
+                renderPads();
+                renderGrid();
+                drawWave();
+                setStatus('NEW PROJECT');
+                $('footerInfo').textContent = 'New project · Built-in kit';
+            }
+
+            // ----- pattern navigation -----
+            function prevPattern() {
+                if (patterns[patternNo]) patterns[patternNo] = currentPattern;
+                patternNo = Math.max(1, patternNo - 1);
+                currentPattern = patterns[patternNo] || (patterns[patternNo] = makePattern());
+                $('patternName').textContent = 'PATTERN ' + String(patternNo).padStart(2, '0');
+                renderGrid();
+            }
+
+            function nextPattern() {
+                patterns[patternNo] = currentPattern;
+                patternNo++;
+                currentPattern = patterns[patternNo] || (patterns[patternNo] = makePattern());
+                $('patternName').textContent = 'PATTERN ' + String(patternNo).padStart(2, '0');
+                renderGrid();
+            }
+
+            // ----- performance buttons -----
+            function rollAll() {
+                for (let i = 0; i < 16; i++) currentPattern[i].on = true;
+                renderGrid();
+                setStatus('ROLL');
+            }
+
+            function levels16() {
+                for (let i = 0; i < 16; i++) currentPattern[i].velocity = (i + 1) / 16;
+                renderGrid();
+                setStatus('16 LEVELS');
+            }
+
+            function rollHalf() {
+                currentPattern.forEach((s, i) => { if (i % 2 === 0) s.on = true; });
+                renderGrid();
+                setStatus('1/2 ROLL');
+            }
+
+            function rollQuarter() {
+                currentPattern.forEach((s, i) => { if (i % 4 === 0) s.on = true; });
+                renderGrid();
+                setStatus('1/4 ROLL');
+            }
+
+            function rollEighth() {
+                currentPattern.forEach((s, i) => { if (i % 8 === 0) s.on = true; });
+                renderGrid();
+                setStatus('1/8 ROLL');
+            }
+
+            // ----- event binding -----
+            function init() {
+                // file input
+                $('fileInput').addEventListener('change', (e) => {
+                    const f = e.target.files[0];
+                    if (f) importAudioFile(f);
+                    e.target.value = '';
+                });
+
+                // load project
+                $('loadBtn').addEventListener('click', () => $('projectFile').click());
+                $('projectFile').addEventListener('change', (e) => {
+                    const f = e.target.files[0];
+                    if (f) loadProject(f);
+                    e.target.value = '';
+                });
+
+                // record
+                $('recordBtn').addEventListener('click', recordMic);
+
+                // play/stop
+                $('playBtn').addEventListener('click', togglePlay);
+                $('stopBtn').addEventListener('click', stopPlay);
+
+                // new/save
+                $('newBtn').addEventListener('click', resetProject);
+                $('saveBtn').addEventListener('click', saveProject);
+
+                // export
+                $('exportPadBtn').addEventListener('click', exportPad);
+                $('exportPatBtn').addEventListener('click', exportPattern);
+                $('exportSongBtn').addEventListener('click', exportSong);
+
+                // pad operations
+                $('autoChop').addEventListener('click', autoChop);
+                $('duplicate').addEventListener('click', duplicatePad);
+                $('trimPad').addEventListener('click', trimPad);
+                $('clearPad').addEventListener('click', clearPad);
+
+                // pattern navigation
+                $('prevPat').addEventListener('click', prevPattern);
+                $('nextPat').addEventListener('click', nextPattern);
+
+                // tempo
+                $('tempoMinus').addEventListener('click', () => {
+                    $('bpm').value = Math.max(40, parseFloat($('bpm').value) - 1);
+                    rebuildSkipback();
+                });
+                $('tempoPlus').addEventListener('click', () => {
+                    $('bpm').value = Math.min(240, parseFloat($('bpm').value) + 1);
+                    rebuildSkipback();
+                });
+                $('bpm').addEventListener('change', rebuildSkipback);
+
+                // performance
+                $('rollBtn').addEventListener('click', rollAll);
+                $('levelsBtn').addEventListener('click', levels16);
+                $('resampleBtn').addEventListener('click', exportPattern); // resample = pattern export
+                $('skipBtn').addEventListener('click', captureSkipback);
+
+                // step editor
+                ['stepVel', 'stepProb', 'stepNudge'].forEach(id => {
+                    $(id).addEventListener('input', () => {
+                        if (selectedStep === null) return;
+                        const s = currentPattern[selectedStep];
+                        s.velocity = parseFloat($('stepVel').value);
+                        s.prob = parseFloat($('stepProb').value);
+                        s.nudge = parseFloat($('stepNudge').value);
+                        $('stepVelVal').textContent = Math.round(s.velocity * 100) + '%';
+                        $('stepProbVal').textContent = Math.round(s.prob * 100) + '%';
+                        $('stepNudgeVal').textContent = Math.round(s.nudge * 100) + '%';
+                        renderGrid();
+                    });
+                });
+                $('stepRat').addEventListener('change', () => {
+                    if (selectedStep === null) return;
+                    currentPattern[selectedStep].ratchet = parseInt($('stepRat').value);
+                    renderGrid();
+                });
+
+                // lock
+                $('applyLock').addEventListener('click', () => {
+                    if (selectedStep === null) return;
+                    currentPattern[selectedStep].lock = {
+                        pitch: parseFloat($('lockPitch').value),
+                        filter: parseFloat($('lockFilter').value)
                     };
-                    setStatus("SKIPBACK · 8 BAR RING ACTIVE");
-                } catch (e) { console.warn("skipback init", e);
-                    skipCaptureActive = false; }
-            }
+                    setStatus('LOCK APPLIED');
+                    renderGrid();
+                });
+                $('lockPitch').addEventListener('input', updateLockLabels);
+                $('lockFilter').addEventListener('input', updateLockLabels);
 
-            function captureSkipback() {
-                if (!skipCaptureActive || !skipRing) { setStatus("SKIPBACK NOT READY"); return; }
-                const a = initAudio();
-                if (!a) return;
-                try {
-                    const b = a.createBuffer(skipChannels, skipLength, skipRate);
-                    const start = skipWrite;
-                    for (let c = 0; c < skipChannels; c++) {
-                        const out = b.getChannelData(c),
-                            ring = skipRing[c];
-                        for (let i = 0; i < skipLength; i++) out[i] = ring[(start + i) % skipLength];
-                    }
-                    skipBuffer = b;
-                    pads[selected].buffer = b;
-                    pads[selected].start = 0;
-                    pads[selected].end = 1;
-                    currentBuffer = b;
+                // FX
+                ['reverb', 'delay', 'drive', 'master'].forEach(id => {
+                    $(id).addEventListener('input', updateFX);
+                });
+
+                // start/end
+                $('start').addEventListener('input', () => {
+                    if (parseFloat($('start').value) > parseFloat($('end').value))
+                        $('start').value = $('end').value;
                     drawWave();
+                    if (pads[selectedPad].buffer) pads[selectedPad].start = parseFloat($('start').value);
+                });
+                $('end').addEventListener('input', () => {
+                    if (parseFloat($('end').value) < parseFloat($('start').value))
+                        $('end').value = $('start').value;
+                    drawWave();
+                    if (pads[selectedPad].buffer) pads[selectedPad].end = parseFloat($('end').value);
+                });
+
+                // performance buttons
+                $('rollHalf').addEventListener('click', rollHalf);
+                $('rollQuarter').addEventListener('click', rollQuarter);
+                $('rollEighth').addEventListener('click', rollEighth);
+                $('capture8').addEventListener('click', captureSkipback);
+                $('captureSeq').addEventListener('click', exportPattern);
+
+                // song mode
+                $('songMode').addEventListener('change', () => {
+                    if ($('songMode').value === 'loop') {
+                        songArrangement = [1];
+                    } else {
+                        songArrangement = [1, 2, 3];
+                    }
+                    renderSongInfo();
+                });
+
+                // mic check
+                $('micCheck').addEventListener('click', async () => {
+                    try {
+                        const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        s.getTracks().forEach(t => t.stop());
+                        setStatus('MIC OK');
+                    } catch (e) { setStatus('MIC DENIED'); }
+                });
+
+                // built-in kit
+                $('kitBtn').addEventListener('click', () => {
+                    for (let i = 0; i < 16; i++) {
+                        if (!pads[i].buffer) pads[i].name = ['KICK', 'SNARE', 'HAT', 'CLAP', 'TOM', 'PERC', 'BASS',
+                            'PLUCK', 'CHORD', 'FX', 'VOX', '808', 'RIM', 'OPEN HAT', 'CRASH', 'GHOST'
+                        ][i];
+                    }
                     renderPads();
-                    setStatus("8 BARS CAPTURED → PAD " + String(selected + 1).padStart(2, "0"));
-                    $("footerInfo").textContent = `Skipback · ${(skipLength/skipRate).toFixed(1)}s captured`;
-                } catch (e) { console.warn("capture skipback", e);
-                    setStatus("SKIPBACK CAPTURE FAILED"); }
+                    triggerPad(selectedPad, 0.8);
+                    setStatus('KIT READY');
+                });
+
+                // initial render
+                renderPads();
+                renderGrid();
+                drawWave();
+                updateFX();
+                renderSongInfo();
+                setStatus('READY');
+
+                // start skipback after audio init
+                setTimeout(() => {
+                    if (initAudio()) startSkipback();
+                }, 300);
+
+                // kick audio context on user interaction
+                const kick = () => {
+                    const a = initAudio();
+                    if (a && a.state === 'suspended') a.resume().catch(() => {});
+                    document.removeEventListener('pointerdown', kick);
+                    document.removeEventListener('touchstart', kick);
+                };
+                document.addEventListener('pointerdown', kick, { once: true, passive: true });
+                document.addEventListener('touchstart', kick, { once: true, passive: true });
             }
 
-            function rebuildSkipRing() {
-                if (skipCaptureActive) {
-                    skipCaptureActive = false;
-                    try { if (skipProcessor) { master.disconnect(skipProcessor);
+            function rebuildSkipback() {
+                if (skipActive) {
+                    skipActive = false;
+                    try { if (skipProcessor) { masterGain.disconnect(skipProcessor);
                             skipProcessor.disconnect();
                             skipProcessor = null; } } catch (e) {}
                     startSkipback();
                 }
             }
 
-            // --- song arrangement helpers ---
-            function resetSong() { songArrangement = [1];
-                renderSongInfo(); }
-
-            function renderSongInfo() { $("footerInfo").textContent = `Song: ${songArrangement.map(x=>String(x).padStart(2,"0")).join(" → ")} · ${songArrangement.length} bar(s)`; }
-
-            // --- FX update ---
-            function updateFX() {
-                bus.reverb = +$("reverb").value;
-                bus.delay = +$("delay").value;
-                bus.drive = +$("drive").value;
-                bus.master = +$("master").value;
-                if (master) master.gain.value = bus.master;
-                if (reverbNode) reverbNode.gain.value = bus.reverb * .7;
-                if (delayNode) {
-                    let dg = delayNode.nextSibling;
-                    if (dg && dg.gain) dg.gain.value = bus.delay * .5;
-                }
-                $("reverbVal").textContent = Math.round(bus.reverb * 100) + "%";
-                $("delayVal").textContent = Math.round(bus.delay * 100) + "%";
-                $("driveVal").textContent = Math.round(bus.drive * 100) + "%";
-                $("masterVal").textContent = Math.round(bus.master * 100) + "%";
+            function renderSongInfo() {
+                const str = songArrangement.map(x => String(x).padStart(2, '0')).join(' → ');
+                $('footerInfo').textContent = `Song: ${str} · ${songArrangement.length} bar(s)`;
             }
 
-            // --- event bindings ---
-            // Load button triggers hidden file input
-            $("loadBtn").onclick = () => $("projectFile").click();
-            $("projectFile").addEventListener("change", e => {
-                const f = e.target.files?.[0];
-                if (f) loadProject(f);
-                e.target.value = "";
-            });
-
-            $("fileInput").addEventListener("change", e => { const f = e.target.files?.[0]; if (f) importAudioFile(f);
-                e.target.value = ""; });
-            $("recordBtn").onclick = recordMic;
-            $("playBtn").onclick = togglePlay;
-            $("stopBtn").onclick = () => { playing = false;
-                clearTimeout(timer);
-                $("playBtn").textContent = "PLAY";
-                setStatus("STOPPED"); };
-            $("newBtn").onclick = reset;
-            $("saveBtn").onclick = saveProject;
-            $("exportPadBtn").onclick = exportPad;
-            $("exportPatBtn").onclick = exportPattern;
-            $("exportSongBtn").onclick = exportSong;
-            $("autoChop").onclick = autoChop;
-            $("duplicate").onclick = duplicate;
-            $("trimPad").onclick = trimToPad;
-            $("clearPad").onclick = clearPad;
-            $("prevPat").onclick = () => { if (patterns[patternNo]) patterns[patternNo] = currentPattern;
-                patternNo = Math.max(1, patternNo - 1);
-                currentPattern = patterns[patternNo] || (patterns[patternNo] = makePattern());
-                $("patternName").textContent = "PATTERN " + String(patternNo).padStart(2, "0");
-                renderGrid(); };
-            $("nextPat").onclick = () => { patterns[patternNo] = currentPattern;
-                patternNo++;
-                currentPattern = patterns[patternNo] || (patterns[patternNo] = makePattern());
-                $("patternName").textContent = "PATTERN " + String(patternNo).padStart(2, "0");
-                renderGrid(); };
-            $("tempoMinus").onclick = () => { $("bpm").value = Math.max(40, +$("bpm").value - 1);
-                rebuildSkipRing(); };
-            $("tempoPlus").onclick = () => { $("bpm").value = Math.min(240, +$("bpm").value + 1);
-                rebuildSkipRing(); };
-            $("rollBtn").onclick = () => { for (let i = 0; i < 16; i++) currentPattern[i].on = true;
-                renderGrid();
-                setStatus("16-STEP ROLL ENABLED"); };
-            $("levelsBtn").onclick = () => { for (let i = 0; i < 16; i++) currentPattern[i].velocity = (i + 1) / 16;
-                renderGrid();
-                setStatus("16 LEVELS · VELOCITY 1–16"); };
-            $("resampleBtn").onclick = exportPattern; // resample = pattern export
-            $("skipBtn").onclick = captureSkipback;
-            ["stepVel", "stepProb", "stepNudge"].forEach(id => $(id).addEventListener("input", () => {
-                if (selectedStep == null) return;
-                const s = currentPattern[selectedStep];
-                s.velocity = +$("stepVel").value;
-                s.prob = +$("stepProb").value;
-                s.nudge = +$("stepNudge").value;
-                $("stepVelVal").textContent = Math.round(s.velocity * 100) + "%";
-                $("stepProbVal").textContent = Math.round(s.prob * 100) + "%";
-                $("stepNudgeVal").textContent = Math.round(s.nudge * 100) + "%";
-                renderGrid();
-            }));
-            $("stepRat").onchange = () => { if (selectedStep != null) { currentPattern[selectedStep].ratchet = +$(
-                        "stepRat").value;
-                    renderGrid(); } };
-            $("applyLock").onclick = () => { if (selectedStep == null) return;
-                currentPattern[selectedStep].lock = { pitch: +$("lockPitch").value, filter: +$("lockFilter").value };
-                setStatus("PARAMETER LOCK APPLIED");
-                renderGrid(); };
-            $("lockPitch").oninput = updateLockLabels;
-            $("lockFilter").oninput = updateLockLabels;
-            ["reverb", "delay", "drive", "master"].forEach(id => $(id).addEventListener("input", updateFX));
-
-            $("start").oninput = e => { if (+$("start").value > +$("end").value) $("start").value = $("end").value;
-                drawWave(); if (pads[selected].buffer) pads[selected].start = +$("start").value; };
-            $("end").oninput = e => { if (+$("end").value < +$("start").value) $("end").value = $("start").value;
-                drawWave(); if (pads[selected].buffer) pads[selected].end = +$("end").value; };
-            $("capture8").onclick = captureSkipback;
-            $("captureSeq").onclick = exportPattern; // resample sequence
-            $("rollHalf").onclick = () => { currentPattern.forEach((s, i) => { if (i % 2 == 0) s.on = true; });
-                renderGrid(); };
-            $("rollQuarter").onclick = () => { currentPattern.forEach((s, i) => { if (i % 4 == 0) s.on = true; });
-                renderGrid(); };
-            $("rollEighth").onclick = () => { currentPattern.forEach((s, i) => { if (i % 8 == 0) s.on = true; });
-                renderGrid(); };
-            $("songMode").onchange = () => { if ($("songMode").value === "loop") { resetSong(); } else { songArrangement = [
-                        1, 2, 3
-                    ];
-                    renderSongInfo(); } };
-            $("kitBtn").onclick = () => { initAudio(); for (let i = 0; i < 16; i++) { if (!pads[i].buffer) pads[i]
-                        .name = padNames[i]; } renderPads();
-                playPad(selected, .8);
-                setStatus("BUILT-IN KIT READY"); };
-
-            $("micCheck").onclick = async () => {
-                try { const s = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    s.getTracks().forEach(t => t.stop());
-                    setStatus("MIC READY"); } catch (e) { setStatus("MIC ACCESS DENIED"); }
-            };
-
-            // --- init ---
-            // Start skipback after a small delay to let audio init settle
-            setTimeout(() => { try { startSkipback(); } catch (e) {} }, 500);
-            renderSongInfo();
-            window.addEventListener("resize", drawWave);
-            renderPads();
-            renderGrid();
-            drawWave();
-            updateFX();
-
-            // Kick audio context on first user touch
-            const kickAudio = () => {
-                const a = initAudio();
-                if (a && a.state === "suspended") a.resume().catch(() => {});
-                document.removeEventListener("pointerdown", kickAudio);
-                document.removeEventListener("touchstart", kickAudio);
-            };
-            document.addEventListener("pointerdown", kickAudio, { once: true, passive: true });
-            document.addEventListener("touchstart", kickAudio, { once: true, passive: true });
-
-            console.log("SAMPLER ready · iPad 10.9 optimized");
+            // run
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
         })();
     </script>
 </body>
