@@ -26,7 +26,7 @@ h3{font-size:11px;letter-spacing:.12em;color:var(--muted);margin:0;padding:11px 
 .wave{height:104px;background:#0c0e12;border:1px solid var(--line);border-radius:5px;position:relative;margin:8px 0;overflow:hidden}.wave canvas{width:100%;height:100%;display:block}.mark{position:absolute;top:0;bottom:0;width:3px;background:var(--a);pointer-events:none}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:7px}.control label,.row label{display:block;font-size:10px;color:var(--muted)}input[type=range]{width:100%;height:44px;accent-color:var(--a)}select,input[type=number]{width:100%;min-height:44px;border:1px solid var(--line);border-radius:5px;background:#0e1014;color:var(--text);padding:0 8px}
 .padwrap{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:0 9px 9px 9px;border-bottom:1px solid var(--line)}.pad{min-width:0;aspect-ratio:1.12;border:1px solid var(--line);border-radius:6px;background:#252a32;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text)}.pad.active{background:#40361f;border-color:var(--a)}.pad .n{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px}.pad .lyr{background:var(--ok);color:#04150c;border-radius:3px;padding:0 3px;font-size:9px;font-weight:900}.pad .name{font-size:12px;font-weight:850;white-space:nowrap;max-width:95%;overflow:hidden;text-overflow:ellipsis}.meter{height:4px;width:65%;background:#0e1014;border-radius:2px;overflow:hidden}.meter i{display:block;width:0;height:100%;background:var(--ok)}
-.center{display:grid;grid-template-rows:auto 1fr auto;min-height:0}.seqbar{padding:9px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;flex-wrap:wrap}.spacer{margin-left:auto}.grid{overflow:auto;padding:9px}.lane{display:grid;grid-template-columns:132px repeat(16,52px);min-width:964px;margin-bottom:7px;align-items:stretch}.lh{min-height:54px;display:flex;align-items:center;padding-right:7px}.lh select{min-height:44px;font-size:11px}.step{min-width:52px;min-height:54px;padding:0;border:1px solid #303641;background:#14171c;position:relative;cursor:pointer}.step.on{background:#493b1c;border-color:var(--a)}.step.play{outline:2px solid #fff;z-index:2}.step.cur{box-shadow:inset 0 0 0 2px #6cc4ff}.step.locked{box-shadow:inset 0 0 0 2px var(--danger)}.step.cur.locked{box-shadow:inset 0 0 0 2px #6cc4ff,inset 0 0 0 4px var(--danger)}.step .vel{position:absolute;left:5px;right:5px;bottom:5px;height:4px;background:var(--ok);transform-origin:left}.step .prob{position:absolute;top:4px;right:4px;font-size:8px;color:var(--muted)}.step .rat{position:absolute;top:4px;left:4px;font-size:8px;color:var(--a)}.transport{border-top:1px solid var(--line);padding:8px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}.info{font-size:11px;color:var(--muted);margin-left:auto}
+.center{display:grid;grid-template-rows:auto 1fr auto;min-height:0}.seqbar{padding:9px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;flex-wrap:wrap}.spacer{margin-left:auto}.grid{overflow:auto;padding:9px}.lane{display:grid;grid-template-columns:118px repeat(16,52px);min-width:950px;margin-bottom:5px;align-items:stretch}.laneSel{outline:1px solid var(--a)}.lh{min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:2px 8px;margin-right:7px;border:1px solid var(--line);border-radius:5px;background:#181b21;color:var(--text);cursor:pointer}.lh .lhn{font-size:9px;color:var(--muted)}.lh .lhname{font-size:12px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:98px}.step{min-width:52px;min-height:44px;padding:0;border:1px solid #303641;background:#14171c;position:relative;cursor:pointer}.step.on{background:#493b1c;border-color:var(--a)}.step.play{outline:2px solid #fff;z-index:2}.step.cur{box-shadow:inset 0 0 0 2px #6cc4ff}.step.locked{box-shadow:inset 0 0 0 2px var(--danger)}.step.cur.locked{box-shadow:inset 0 0 0 2px #6cc4ff,inset 0 0 0 4px var(--danger)}.step .vel{position:absolute;left:5px;right:5px;bottom:5px;height:4px;background:var(--ok);transform-origin:left}.step .prob{position:absolute;top:4px;right:4px;font-size:8px;color:var(--muted)}.step .rat{position:absolute;top:4px;left:4px;font-size:8px;color:var(--a)}.transport{border-top:1px solid var(--line);padding:8px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}.info{font-size:11px;color:var(--muted);margin-left:auto}
 .right .section{padding:10px}.row{display:grid;grid-template-columns:92px 1fr 54px;gap:6px;align-items:center;margin-bottom:4px}.val{text-align:right;font-variant-numeric:tabular-nums;color:var(--a);font-size:11px}
 .twocol{display:grid;grid-template-columns:1fr 1fr;gap:7px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .smalltitle{font-size:10px;color:var(--muted);letter-spacing:.08em;margin-bottom:7px}.meterbig{height:8px;background:#0c0e12;border:1px solid var(--line);border-radius:4px;overflow:hidden}.meterbig i{display:block;width:0;height:100%;background:var(--ok)}
@@ -181,7 +181,7 @@ let selected=0, currentBuffer=null;
 
 /* ---------- patterns: 4 lanes x 16 steps, each lane assigned to a pad ---------- */
 function makeStep(){return {on:false,velocity:1,prob:1,ratchet:1,nudge:0,lock:null}}
-function makePattern(){return {lanePads:[0,1,2,3],lanes:Array.from({length:4},()=>Array.from({length:16},makeStep))}}
+function makePattern(){return {lanes:Array.from({length:16},()=>Array.from({length:16},makeStep))}}
 const patterns={1:makePattern()};
 let patternNo=1, currentPattern=patterns[1];
 let selectedStep=null; // {lane,step}
@@ -374,14 +374,13 @@ function drawWave(){
 /* ---------- sequencer grid ---------- */
 function renderGrid(){
  const g=$("grid");g.innerHTML="";
- for(let lane=0;lane<4;lane++){
-  const laneEl=document.createElement("div");laneEl.className="lane";
-  const lh=document.createElement("div");lh.className="lh";
-  const sel=document.createElement("select");
-  pads.forEach((p,i)=>{const o=document.createElement("option");o.value=i;o.textContent=String(i+1).padStart(2,"0")+" "+p.name;sel.appendChild(o)});
-  sel.value=currentPattern.lanePads[lane];
-  sel.addEventListener("change",()=>{currentPattern.lanePads[lane]=+sel.value;renderGrid()});
-  lh.appendChild(sel);laneEl.appendChild(lh);
+ for(let lane=0;lane<16;lane++){
+  const p=pads[lane];
+  const laneEl=document.createElement("div");laneEl.className="lane"+(lane===selected?" laneSel":"");
+  const lh=document.createElement("button");lh.className="lh";
+  lh.innerHTML=`<span class="lhn">${String(lane+1).padStart(2,"0")}</span><span class="lhname">${p.name}</span>`;
+  lh.addEventListener("pointerdown",()=>{selected=lane;loadPadEditor(lane);renderPads();renderGrid();playPad(lane,.8)});
+  laneEl.appendChild(lh);
   for(let step=0;step<16;step++){
    const st=currentPattern.lanes[lane][step];
    const cur=selectedStep&&selectedStep.lane===lane&&selectedStep.step===step;
@@ -417,11 +416,11 @@ function updateStepInfoDisplay(){
 function tick(){
  if(!playing)return;
  const a=initAudio(),bpm=Math.max(40,Math.min(240,+$("bpm").value||92)),stepDur=60/bpm/4,now=a.currentTime+.025;
- for(let lane=0;lane<4;lane++){
-  const padIdx=currentPattern.lanePads[lane],s=currentPattern.lanes[lane][playStep];
+ for(let lane=0;lane<16;lane++){
+  const s=currentPattern.lanes[lane][playStep];
   if(s.on&&Math.random()<=s.prob){
    const hits=s.ratchet;
-   for(let q=0;q<hits;q++){const at=now+q*stepDur/hits+s.nudge*stepDur;playSample(padIdx,s.velocity,at,s.lock)}
+   for(let q=0;q<hits;q++){const at=now+q*stepDur/hits+s.nudge*stepDur;playSample(lane,s.velocity,at,s.lock)}
   }
  }
  $("stepInfo").textContent=`STEP ${playStep+1} · ${Math.round(bpm)} BPM`;
@@ -558,8 +557,8 @@ async function renderPatternOffline(patternId,durationBars=1,off=null,destinatio
  const ctx=off||new OfflineAudioContext(2,Math.ceil(seconds*rate),rate);
  const dest=destination||ctx.destination;
  const pat=patterns[patternId]||makePattern();
- for(let lane=0;lane<4;lane++){
-  const padIdx=pat.lanePads[lane],p=pads[padIdx];
+ for(let lane=0;lane<16;lane++){
+  const padIdx=lane,p=pads[padIdx];
   for(let step=0;step<16;step++){
    const s=pat.lanes[lane][step];if(!s.on||Math.random()>s.prob)continue;
    for(let q=0;q<(s.ratchet||1);q++){
@@ -572,6 +571,12 @@ async function renderPatternOffline(patternId,durationBars=1,off=null,destinatio
      src.connect(f).connect(g).connect(dest);
      const stF=p.start*p.buffer.duration,dur=Math.max(.01,(p.end-p.start)*p.buffer.duration/Math.max(.01,src.playbackRate.value));
      src.start(Math.max(0,t),stF,dur);
+     if(p.layer&&p.layer.buffer){
+      const l=p.layer,src2=ctx.createBufferSource(),g2=ctx.createGain();
+      src2.buffer=l.buffer;src2.playbackRate.value=Math.pow(2,(l.pitch||0)/12);g2.gain.value=(l.level??.8)*s.velocity;
+      src2.connect(g2).connect(dest);
+      src2.start(Math.max(0,t),0,l.buffer.duration/Math.max(.01,src2.playbackRate.value));
+     }
     }else{
      const o=ctx.createOscillator(),g=ctx.createGain();
      const attack=Math.max(.001,s.lock?.attack??p.attack),release=Math.max(.03,s.lock?.release??p.release),lvl=(s.lock?.level??p.level)*s.velocity;
@@ -701,8 +706,8 @@ async function serializeProject(){
   }:null
  }));
  const patternData={};
- Object.entries(patterns).forEach(([k,pat])=>{patternData[k]={lanePads:pat.lanePads,lanes:pat.lanes.map(lane=>lane.map(s=>({on:s.on,velocity:s.velocity,prob:s.prob,ratchet:s.ratchet,nudge:s.nudge,lock:s.lock})))}});
- return {version:4,created:new Date().toISOString(),bpm:+$("bpm").value||92,patternNo,patterns:patternData,pads:sampleData,selected,bus,arrangement:songArrangement,songMode:$("songMode").value};
+ Object.entries(patterns).forEach(([k,pat])=>{patternData[k]={lanes:pat.lanes.map(lane=>lane.map(s=>({on:s.on,velocity:s.velocity,prob:s.prob,ratchet:s.ratchet,nudge:s.nudge,lock:s.lock})))}});
+ return {version:5,created:new Date().toISOString(),bpm:+$("bpm").value||92,patternNo,patterns:patternData,pads:sampleData,selected,bus,arrangement:songArrangement,songMode:$("songMode").value};
 }
 async function saveProject(){
  try{
@@ -718,11 +723,11 @@ async function loadProject(file){
  try{
   initAudio();setStatus("LOADING PROJECT…");
   const d=JSON.parse(await file.text());
-  if(!d||d.version<4)throw Error("Old/incompatible project format");
+  if(!d||d.version<5)throw Error("Old/incompatible project format");
   $("bpm").value=d.bpm||92;patternNo=d.patternNo||1;
   Object.keys(patterns).forEach(k=>delete patterns[k]);
   Object.entries(d.patterns||{}).forEach(([k,v])=>{
-   patterns[k]={lanePads:v.lanePads||[0,1,2,3],lanes:(v.lanes&&v.lanes.length===4?v.lanes:makePattern().lanes).map(lane=>lane.map(s=>({on:!!s.on,velocity:s.velocity??1,prob:s.prob??1,ratchet:s.ratchet??1,nudge:s.nudge??0,lock:s.lock||null})))};
+   patterns[k]={lanes:(v.lanes&&v.lanes.length===16?v.lanes:makePattern().lanes).map(lane=>lane.map(s=>({on:!!s.on,velocity:s.velocity??1,prob:s.prob??1,ratchet:s.ratchet??1,nudge:s.nudge??0,lock:s.lock||null})))};
   });
   if(!patterns[patternNo])patterns[patternNo]=makePattern();
   currentPattern=patterns[patternNo];selectedStep=null;
